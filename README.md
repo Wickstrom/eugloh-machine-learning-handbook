@@ -38,24 +38,24 @@ introductory course.
     | | |
     | --- | --- |
     | Slides | [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/01/linear_logistic_regression/index.html) |
-    | Synthetic regression in 2D | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/01/regression_synthetic_exercise.ipynb) |
-    | Regression on the California housing dataset | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/01/regression_california_exercise.ipynb) |
-    | Synthetic classification in 2D | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/01/classification_synthetic_exercise.ipynb) |
-    | Classification on the Iris dataset | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/01/classification_iris_exercise.ipynb) |
+    | Synthetic regression in 2D | [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Wickstrom/eugloh-machine-learning-handbook/main?urlpath=lab/tree/notebooks/01/regression_synthetic_exercise.ipynb) |
+    | Regression on the California housing dataset | [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Wickstrom/eugloh-machine-learning-handbook/main?urlpath=lab/tree/notebooks/01/regression_california_exercise.ipynb) |
+    | Synthetic classification in 2D | [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Wickstrom/eugloh-machine-learning-handbook/main?urlpath=lab/tree/notebooks/01/classification_synthetic_exercise.ipynb) |
+    | Classification on the Iris dataset | [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Wickstrom/eugloh-machine-learning-handbook/main?urlpath=lab/tree/notebooks/01/classification_iris_exercise.ipynb) |
 
-    *No local setup needed for Colab &mdash; a free Google account is required to sign in. If you can't or don't want to use Google, every notebook also has a **Binder** link inside (no account, ~1&ndash;2 min first build).*
+    > **⏳ Heads-up:** the first time you click a Binder link it takes **1&ndash;2 minutes** to spin up &mdash; Binder is building a Docker image from `pyproject.toml` so the environment matches local exactly. After that it is cached and launches in seconds. No account or sign-in is required. If you have a Google account and want it faster, every notebook also has an *Open in Colab* link inside.
 
 ## 💻 How to run the notebooks locally
 
 The recommended path: clone the repo, sync the environment with `uv`, and
 launch Jupyter Lab locally.
 
-> **No local setup?** Use the **Open in Colab** button next to each exercise
-> above. Colab is the fastest option (a few seconds), requires a free Google
-> account, and ships scikit-learn, numpy, pandas, and matplotlib
-> pre-installed. If you can't or don't want to use Google, every notebook also
-> has a **Binder** link inside (no account needed, but ~1&ndash;2 min first
-> build, and it uses the exact `pyproject.toml`).
+> **No local setup?** Use the **Binder** button next to each exercise above.
+> Binder reads `pyproject.toml` so the environment matches local exactly and
+> **needs no account or sign-in** &mdash; but the first launch takes
+> **1&ndash;2 minutes** while it builds the environment, and the session is
+> short-lived. If you have a Google account and want an instant, persistent
+> session, every notebook also has an *Open in Colab* link inside.
 
 We use [**uv**](https://docs.astral.sh/uv/) for fast, reproducible Python environments.
 

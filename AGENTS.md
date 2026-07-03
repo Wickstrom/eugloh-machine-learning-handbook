@@ -69,7 +69,7 @@ No pytest, ruff, mypy, or pre-commit. To check changes:
   nbformat.write(nb, p)
   ```
   (`nbformat.normalize` does not exist in nbformat 5.x — generate ids manually as shown.)
-- **Exercise notebook "Open in cloud" badges**: the second cell of every `*_exercise.ipynb` must be a markdown cell with id `open-in-cloud`. **Colab is the primary default** (official `colab-badge.svg`, points at the GitHub blob URL); **Binder is the smaller secondary option** (introduced by the text "No Google account?", points at `?urlpath=lab/tree/...`). Both services ship sklearn/numpy/pandas/matplotlib; no `%pip install` cell is needed. Badge URLs bake in `Wickstrom/eugloh-machine-learning-handbook` and `main` — if the repo moves, regenerate the badges.
+- **Exercise notebook "Open in cloud" badges**: the second cell of every `*_exercise.ipynb` must be a markdown cell with id `open-in-cloud`. **Binder is the primary default** (official `mybinder.org/badge_logo.svg`, points at `?urlpath=lab/tree/...`); the cell must include a short startup-time warning ("first launch takes 1-2 minutes while Binder builds the environment from `pyproject.toml`; subsequent launches are cached and instant; no account or sign-in required"). **Colab is the smaller secondary option** (introduced by "Have a Google account and want it faster?"), with the official `colab-badge.svg` pointing at the GitHub blob URL. Both services ship sklearn/numpy/pandas/matplotlib; no `%pip install` cell is needed. Badge URLs bake in `Wickstrom/eugloh-machine-learning-handbook` and `main` — if the repo moves, regenerate the badges.
 
 ## Gotchas
 
