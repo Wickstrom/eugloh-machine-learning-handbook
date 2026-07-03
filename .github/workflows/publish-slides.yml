@@ -1,0 +1,118 @@
+name: Publish slides
+
+# Rebuild and deploy the Reveal.js slide decks (from .ipynb) and Marimo WASM
+# notebooks (from .py) on every push to main. Deployed to GitHub Pages via the
+# official Pages API.
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+# Don't allow two deploys to run at the same time — they would race on the
+# gh-pages branch.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+            version: "latest"
+            enable-cache: true
+
+      - name: Set up Python
+        run: uv python install 3.10
+
+      - name: Sync dependencies
+        run: uv sync --python 3.10
+
+      # Convert .ipynb notebooks to Reveal.js slide decks. If a .py marimo
+      # counterpart exists for the same lecture, the .ipynb is skipped — the
+      # .py version is exported to a wasm-runnable directory instead.
+      - name: Convert notebooks to slides
+        run: |
+          mkdir -p _slides
+          for nb in notebooks/*/*.ipynb; do
+            dir=$(dirname "$nb")
+            base=$(basename "$nb" .ipynb)
+            case "$base" in
+              *_exercise) echo "Skipping $nb — exercise notebook"; continue ;;
+            esac
+            if [ -f "$dir/$base.py" ]; then
+              echo "Skipping $nb — Marimo counterpart at $dir/$base.py"
+              continue
+            fi
+            target="_slides/$dir"
+            mkdir -p "$target"
+            # Copy media alongside the notebook so relative image paths resolve.
+            cp -R "$dir/media" "$target/" 2>/dev/null || true
+            # nbconvert appends ".slides" + ".html" to --output, so pass just
+            # the basename to get "<base>.slides.html".
+            uv run jupyter nbconvert --to slides "$nb" \
+              --output-dir "$target" \
+              --output "$base"
+          done
+
+      # Export Marimo notebooks (paired .py files next to .ipynb files) to a
+      # WASM-runnable directory under _slides/. The exported dir contains an
+      # index.html, an assets/ directory, and a .nojekyll file — the assets
+      # must live next to the HTML, so we point the workflow at the notebook's
+      # own subdirectory rather than a flat file.
+      - name: Export Marimo notebooks to WASM
+        run: |
+          for nb in notebooks/*/*.py; do
+            dir=$(dirname "$nb")
+            base=$(basename "$nb" .py)
+            target="_slides/$dir/$base"
+            mkdir -p "$target"
+            # Copy media alongside the notebook so relative image paths resolve.
+            cp -R "$dir/media" "$target/" 2>/dev/null || true
+            # The notebook's `layout_file` (e.g. layouts/<base>.slides.json) is
+            # read by marimo at export time and inlined as a base64 data URI
+            # in the generated HTML, so we don't need to ship the JSON.
+            # `--no-show-code` keeps the slides looking like slides — code is
+            # still editable in `marimo edit` locally, just hidden in the
+            # public deck by default.
+            uv run marimo export html-wasm "$nb" -o "$target" --mode run --no-show-code
+            # Marimo >=0.23 ships a CLAUDE.md in its _static folder and copies
+            # it into every export. It's an authoring aid for Claude Code and
+            # is not relevant for a public slide deck, so strip it.
+            rm -f "$target/CLAUDE.md"
+          done
+
+      # Make sure the publish root does not get processed by Jekyll.
+      - name: Ensure .nojekyll exists at the publish root
+        run: |
+          touch _slides/.nojekyll
+
+      - name: Copy index.html into _slides/
+        run: cp index.html _slides/index.html
+
+      - name: Upload _slides/ artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _slides
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

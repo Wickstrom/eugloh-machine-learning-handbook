@@ -1,0 +1,24 @@
+[project]
+name = "ml-handbook"
+version = "0.1.0"
+description = "Machine Learning with Python — EUGLOH course material"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "matplotlib>=3.7",
+    "seaborn>=0.12",
+    "scipy>=1.10",
+    "scikit-learn>=1.3",
+    "ipykernel>=6.0",
+    "ipywidgets>=8.0",
+    "jupyter>=1.0",
+    "jupyterlab>=4.0",
+    "nbconvert>=7.0",
+    "marimo>=0.17",
+]
+
+[tool.uv]
+package = false
