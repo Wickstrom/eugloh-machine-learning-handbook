@@ -35,7 +35,7 @@ introductory course.
 
     [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/01/linear_logistic_regression/index.html)
 
-    **Exercises**
+    **Exercises** &mdash; every notebook has *Open in Colab* and *Binder* badges at the top, so students can start working without any local setup. Local setup (below) is recommended for an environment that matches `pyproject.toml` exactly.
 
     - Synthetic regression in 2D
       [![Exercise](https://img.shields.io/badge/-Exercise-green?logo=jupyter&style=flat&labelColor=gray)](notebooks/01/regression_synthetic_exercise.ipynb)
@@ -47,6 +47,15 @@ introductory course.
       [![Exercise](https://img.shields.io/badge/-Exercise-green?logo=jupyter&style=flat&labelColor=gray)](notebooks/01/classification_iris_exercise.ipynb)
 
 ## 💻 How to run the notebooks locally
+
+The recommended path: clone the repo, sync the environment with `uv`, and
+launch Jupyter Lab locally.
+
+> **No local setup?** Every exercise notebook also has *Open in Colab* and
+> *Binder* badges at the top. Both services ship scikit-learn, numpy, pandas,
+> and matplotlib pre-installed, so students can start immediately without
+> installing anything. Colab is the fastest option (a few seconds); Binder takes
+> 1&ndash;2 minutes the first time and uses the exact `pyproject.toml`.
 
 We use [**uv**](https://docs.astral.sh/uv/) for fast, reproducible Python environments.
 

@@ -59,7 +59,17 @@ No pytest, ruff, mypy, or pre-commit. To check changes:
 
 - **Marimo lectures**: `uv run marimo edit <file>.py` for interactive smoke-test, or `uv run marimo export html-wasm <file>.py -o /tmp/x` to validate the export pipeline. The marimo notebook must parse as Python and export without errors — `marimo export` is the de-facto typecheck.
 - **Exercise notebooks**: cells with `# YOUR CODE HERE` raise `TypeError: cannot unpack non-iterable ellipsis object` if executed unfilled. Fill them in (or write a standalone script that replicates the solution) to confirm the expected outputs in the comments match.
-- **Hand-authored `.ipynb`**: every cell needs an `id` field (nbformat 5.1+). After writing, `python -c "import nbformat; nb=nbformat.read(p, as_version=4); nbformat.normalize(nb); nbformat.write(nb, p)"`.
+- **Hand-authored `.ipynb`**: every cell needs an `id` field (nbformat 5.1+). After writing, fill any missing ids:
+  ```python
+  import nbformat, uuid
+  nb = nbformat.read(p, as_version=4)
+  for c in nb.cells:
+      if not c.get("id"):
+          c["id"] = uuid.uuid4().hex[:8]
+  nbformat.write(nb, p)
+  ```
+  (`nbformat.normalize` does not exist in nbformat 5.x — generate ids manually as shown.)
+- **Exercise notebook "Open in cloud" badges**: the second cell of every `*_exercise.ipynb` must be a markdown cell with id `open-in-cloud` containing both an `Open In Colab` badge (points at the GitHub blob URL) and a `Binder` badge (`?urlpath=lab/tree/...`). Both services ship sklearn/numpy/pandas/matplotlib; no `%pip install` cell is needed.
 
 ## Gotchas
 
