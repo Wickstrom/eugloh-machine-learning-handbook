@@ -10,11 +10,12 @@ The material follows the same structure as the
 by Kristoffer Wickstrøm, but is intentionally kept small and focused for a short,
 introductory course.
 
-- **Slides** are either Jupyter notebooks (rendered to static Reveal.js decks with
-  `jupyter nbconvert --to slides`) or Marimo notebooks (exported to a self-contained
-  WebAssembly app with `marimo export html-wasm`). Both are hosted on GitHub Pages.
-- **Exercises** are classic Jupyter notebooks that you open and work in locally —
-  clone the repo, fill in the cells, and run them.
+- **Slides** are [Marimo](https://marimo.io/) notebooks (`.py`), exported to a
+  self-contained WebAssembly app with `marimo export html-wasm` and hosted on
+  GitHub Pages. Reactive widgets (sliders, dropdowns, tabs) update figures live
+  in the browser — no Python kernel required.
+- **Exercises** are classic Jupyter notebooks (`.ipynb`) that you open and work
+  in locally — clone the repo, fill in the cells, and run them.
 
 ## 📑 Content
 
@@ -24,7 +25,7 @@ introductory course.
     - The ML workflow: data, model, evaluation
     - Practical information for the course
 
-    [![Slides](https://img.shields.io/badge/-Slides-blue?logo=jupyter&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/00/intro.slides.html)
+    [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/00/intro/index.html)
 
 2. **Linear and logistic regression**
     - Linear regression — the model, MSE loss, closed-form vs gradient descent
@@ -89,33 +90,19 @@ manually activate or deactivate anything.
 
 ## 🎞 Lecture slides (GitHub Pages)
 
-Lecture material is published in two formats:
-
-- **Jupyter notebooks** (`.ipynb`) — rendered to static Reveal.js slide decks with
-  `jupyter nbconvert --to slides`. Same pipeline as [RISE](https://rise.readthedocs.io/en/latest/),
-  nested horizontal/vertical slides, but static so they never time out.
-- **Marimo notebooks** (`.py`) — exported to a self-contained WASM app with
-  `marimo export html-wasm --mode run`. Runs entirely in the browser, including
-  the Python interpreter; reactive widgets (sliders, dropdowns, tabs) update
-  figures live.
+Each lecture is a Marimo notebook that is exported with
+`marimo export html-wasm --mode run` to a self-contained WebAssembly app.
+Everything runs in the browser — Python interpreter, dependencies, code, and
+all — so the slides never time out and need no kernel on the server. Give them
+a few seconds to spin up on first load.
 
 **Live slides:** https://wickstrom.github.io/eugloh-machine-learning-handbook/
 
 ### Build locally
 
-From the repo root, render everything with the same commands the CI uses:
+From the repo root, render every Marimo notebook with the same commands the CI uses:
 
 ```bash
-# Jupyter notebooks -> Reveal.js slide decks
-for nb in notebooks/*/*.ipynb; do
-  base=$(basename "$nb" .ipynb)
-  case "$base" in
-    *_exercise) echo "Skipping $nb — exercise notebook"; continue ;;
-  esac
-  uv run jupyter nbconvert --to slides "$nb" --output-dir "_slides/$(dirname "$nb")"
-done
-
-# Marimo notebooks -> WASM apps
 for nb in notebooks/*/*.py; do
   dir=$(dirname "$nb")
   base=$(basename "$nb" .py)
@@ -123,6 +110,14 @@ for nb in notebooks/*/*.py; do
   mkdir -p "$target"
   uv run marimo export html-wasm "$nb" -o "$target" --mode run --no-show-code
 done
+```
+
+To edit a lecture locally with live code, file watchers, and a variable
+explorer:
+
+```bash
+uv run marimo edit notebooks/00/intro.py
+uv run marimo edit notebooks/01/linear_logistic_regression.py
 ```
 
 ### Keyboard shortcuts (inside a deck)
@@ -142,13 +137,6 @@ A GitHub Actions workflow at
 rebuilds the slides on every push to `main` and publishes the output to GitHub
 Pages via the official Pages API (`actions/deploy-pages`). One-time setup: in
 **Settings → Pages → Source**, choose **"GitHub Actions"**.
-
-## 🎥 Notebook format and RISE (local interactive slides)
-
-For local lectures where you want to execute code live during the talk, the
-notebooks can be presented interactively with [RISE](https://rise.readthedocs.io/en/latest/).
-Open a notebook, select `View → Cell Toolbar → Slideshow`, and press the
-`Enter/Exit RISE Slideshow` button at the top to enter presentation mode.
 
 ## 📝 Citation
 

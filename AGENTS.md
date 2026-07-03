@@ -1,13 +1,14 @@
 # AGENTS.md
 
-EUGLOH machine-learning course material. Static-content repo with two notebook formats and a one-job CI that publishes slides to GitHub Pages.
+EUGLOH machine-learning course material. Marimo lectures (`.py`) + Jupyter exercises (`.ipynb`), with a one-job CI that exports Marimo decks to WASM and publishes them on GitHub Pages.
 
 ## Setup — uv only, no conda
 
 ```
 uv sync
-uv run jupyter lab                                      # exercise notebooks
-uv run marimo edit notebooks/01/linear_logistic_regression.py   # marimo slide deck
+uv run jupyter lab                                          # exercise notebooks
+uv run marimo edit notebooks/00/intro.py                    # edit a lecture locally
+uv run marimo edit notebooks/01/linear_logistic_regression.py
 ```
 
 Never run `pip install` / `conda env create` / `source .venv/bin/activate` — always `uv run` so the venv is picked up automatically. If `uv` is missing: `curl -LsSf https://astral.sh/uv/install.sh | sh`.
@@ -16,37 +17,30 @@ Never run `pip install` / `conda env create` / `source .venv/bin/activate` — a
 
 ```
 notebooks/
-  00/intro.ipynb                              # Reveal.js slides (nbconvert)
-  01/linear_logistic_regression.py            # Marimo slides (WASM)
-  01/layouts/<base>.slides.json               # required marimo slide layout
+  00/intro.py                            # Marimo lecture (WASM)
+  00/layouts/intro.slides.json           # required marimo slide layout
+  01/linear_logistic_regression.py       # Marimo lecture (WASM)
+  01/layouts/linear_logistic_regression.slides.json
   01/{regression,classification}_{synthetic,california,iris}_exercise.ipynb
-index.html                                    # copied to _slides/index.html by CI
-.github/workflows/publish-slides.yml          # single CI job, builds + deploys
-pyproject.toml                                # [tool.uv] package = false; Python >=3.10
+index.html                               # copied to _slides/index.html by CI
+.github/workflows/publish-slides.yml     # single CI job, builds + deploys
+pyproject.toml                           # [tool.uv] package = false; Python >=3.10
 ```
 
 `_slides/` is build output and gitignored — never commit it.
 
-## Three notebook conventions the CI cares about
+## Conventions the CI cares about
 
-1. **Exercise notebooks must end in `_exercise.ipynb`** — the workflow skips them. Anything else without a same-named `.py` is converted by nbconvert.
-2. **A `.py` marimo notebook shadows its `.ipynb` sibling** — if both `intro.py` and `intro.ipynb` exist in the same folder, only the `.py` is exported (to a WASM directory at `_slides/notebooks/NN/<base>/index.html`).
-3. **Each `.py` marimo notebook needs a layout file** at `notebooks/NN/layouts/<base>.slides.json` with body `{"type": "slides", "data": {}}`. The CI inlines it as base64 into the exported HTML, so the JSON itself is not shipped. Missing → `marimo export html-wasm` errors.
+1. **Slides are Marimo only.** No `.ipynb` Reveal/RISE-style decks — every lecture lives at `notebooks/NN/<name>.py` with a matching layout file.
+2. **Exercise notebooks must end in `_exercise.ipynb`** — the workflow leaves them alone. They are run locally with `uv run jupyter lab`, not built into the site.
+3. **Each Marimo notebook needs a layout file** at `notebooks/NN/layouts/<base>.slides.json` with body `{"type": "slides", "data": {}}`. The CI inlines it as base64 into the exported HTML, so the JSON itself is not shipped. Missing → `marimo export html-wasm` errors.
 
-The first cell of every `.py` marimo notebook does `os.chdir(Path(__file__).resolve().parent)` so `media/` paths resolve the same in `marimo edit` and the deployed WASM build. Keep it.
+The first cell of every Marimo notebook does `os.chdir(Path(__file__).resolve().parent)` so `media/` paths resolve the same in `marimo edit` and the deployed WASM build. Keep it.
 
 ## Build slides locally (same commands as CI)
 
 ```bash
 mkdir -p _slides
-for nb in notebooks/*/*.ipynb; do
-  base=$(basename "$nb" .ipynb)
-  case "$base" in *_exercise) continue ;; esac
-  [ -f "$(dirname "$nb")/$base.py" ] && continue
-  uv run jupyter nbconvert --to slides "$nb" \
-    --output-dir "_slides/$(dirname "$nb")" --output "$base"
-done
-
 for nb in notebooks/*/*.py; do
   dir=$(dirname "$nb"); base=$(basename "$nb" .py)
   target="_slides/$dir/$base"
@@ -54,21 +48,18 @@ for nb in notebooks/*/*.py; do
   uv run marimo export html-wasm "$nb" -o "$target" --mode run --no-show-code
   rm -f "$target/CLAUDE.md"   # marimo >=0.23 ships one — strip it
 done
-
 cp index.html _slides/index.html && touch _slides/.nojekyll
 ```
 
-Output is `_slides/notebooks/NN/<base>.slides.html` (nbconvert) or `_slides/notebooks/NN/<base>/index.html` + `assets/` (marimo).
+Output: `_slides/notebooks/NN/<base>/index.html` + `assets/` per lecture, plus `_slides/index.html` as the landing page.
 
 ## Verification — there is no test suite
 
 No pytest, ruff, mypy, or pre-commit. To check changes:
 
-- **`.ipynb` slides**: `uv run jupyter nbconvert --to notebook --execute <file> --output /tmp/out.ipynb` to run end-to-end.
+- **Marimo lectures**: `uv run marimo edit <file>.py` for interactive smoke-test, or `uv run marimo export html-wasm <file>.py -o /tmp/x` to validate the export pipeline. The marimo notebook must parse as Python and export without errors — `marimo export` is the de-facto typecheck.
 - **Exercise notebooks**: cells with `# YOUR CODE HERE` raise `TypeError: cannot unpack non-iterable ellipsis object` if executed unfilled. Fill them in (or write a standalone script that replicates the solution) to confirm the expected outputs in the comments match.
-- **`.py` marimo**: `uv run marimo edit <file>.py` for interactive smoke-test, or `uv run marimo export html-wasm <file>.py -o /tmp/x` to validate the export pipeline.
 - **Hand-authored `.ipynb`**: every cell needs an `id` field (nbformat 5.1+). After writing, `python -c "import nbformat; nb=nbformat.read(p, as_version=4); nbformat.normalize(nb); nbformat.write(nb, p)"`.
-- **`.ipynb` slide metadata**: RISE uses `{"slideshow": {"slide_type": "slide" | "subslide" | "fragment" | "skip"}}` on each markdown cell. Without it the deck renders as a single wall.
 
 ## Gotchas
 
