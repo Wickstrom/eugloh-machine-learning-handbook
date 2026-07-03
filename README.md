@@ -5,17 +5,13 @@ This repository contains the teaching material for the machine-learning module o
 hosted by the **University of Novi Sad** and taught as a blended (online + on-site) course
 within the [European University Alliance for Global Health (EUGLOH)](https://www.eugloh.eu/).
 
-The material follows the same structure as the
-[Pattern Recognition Handbook](https://github.com/Wickstrom/pattern-recognition-handbook)
-by Kristoffer Wickstrøm, but is intentionally kept small and focused for a short,
-introductory course.
-
 - **Slides** are [Marimo](https://marimo.io/) notebooks (`.py`), exported to a
   self-contained WebAssembly app with `marimo export html-wasm` and hosted on
   GitHub Pages. Reactive widgets (sliders, dropdowns, tabs) update figures live
   in the browser — no Python kernel required.
 - **Exercises** are classic Jupyter notebooks (`.ipynb`) that you open and work
-  in locally — clone the repo, fill in the cells, and run them.
+  in locally, or directly in the cloud via the **Binder** badge in the content
+  list below.
 
 ## 📑 Content
 
@@ -25,9 +21,7 @@ introductory course.
     - The ML workflow: data, model, evaluation
     - Practical information for the course
 
-    | | |
-    | --- | --- |
-    | Slides | [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/00/intro/index.html) |
+    [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/00/intro/index.html)
 
 2. **Linear and logistic regression**
     - Linear regression — the model, MSE loss, closed-form vs gradient descent
@@ -35,27 +29,20 @@ introductory course.
     - Practical considerations: feature scaling, regularisation, multi-class
     - Interactive decision-boundary demo with a class-separation slider
 
-    | | |
-    | --- | --- |
-    | Slides | [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/01/linear_logistic_regression/index.html) |
-    | Synthetic regression in 2D | [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Wickstrom/eugloh-machine-learning-handbook/main?urlpath=lab/tree/notebooks/01/regression_synthetic_exercise.ipynb) |
-    | Regression on the California housing dataset | [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Wickstrom/eugloh-machine-learning-handbook/main?urlpath=lab/tree/notebooks/01/regression_california_exercise.ipynb) |
-    | Synthetic classification in 2D | [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Wickstrom/eugloh-machine-learning-handbook/main?urlpath=lab/tree/notebooks/01/classification_synthetic_exercise.ipynb) |
-    | Classification on the Iris dataset | [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Wickstrom/eugloh-machine-learning-handbook/main?urlpath=lab/tree/notebooks/01/classification_iris_exercise.ipynb) |
+    [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/01/linear_logistic_regression/index.html)
+    [![Synthetic regression in 2D](https://img.shields.io/badge/-Exercise-green?logo=binder&style=flat&labelColor=gray)](https://mybinder.org/v2/gh/Wickstrom/eugloh-machine-learning-handbook/main?urlpath=lab/tree/notebooks/01/regression_synthetic_exercise.ipynb)
+    [![California housing](https://img.shields.io/badge/-Exercise-green?logo=binder&style=flat&labelColor=gray)](https://mybinder.org/v2/gh/Wickstrom/eugloh-machine-learning-handbook/main?urlpath=lab/tree/notebooks/01/regression_california_exercise.ipynb)
+    [![Synthetic classification in 2D](https://img.shields.io/badge/-Exercise-green?logo=binder&style=flat&labelColor=gray)](https://mybinder.org/v2/gh/Wickstrom/eugloh-machine-learning-handbook/main?urlpath=lab/tree/notebooks/01/classification_synthetic_exercise.ipynb)
+    [![Iris](https://img.shields.io/badge/-Exercise-green?logo=binder&style=flat&labelColor=gray)](https://mybinder.org/v2/gh/Wickstrom/eugloh-machine-learning-handbook/main?urlpath=lab/tree/notebooks/01/classification_iris_exercise.ipynb)
 
-    > **⏳ Heads-up:** the first time you click a Binder link it takes **1&ndash;2 minutes** to spin up &mdash; Binder is building a Docker image from `pyproject.toml` so the environment matches local exactly. After that it is cached and launches in seconds. No account or sign-in is required. If you have a Google account and want it faster, every notebook also has an *Open in Colab* link inside.
+> **⏳ Heads-up:** the first time you click a Binder link it takes **1&ndash;2 minutes** to spin up &mdash; Binder is building a Docker image from `pyproject.toml` so the environment matches local exactly. After that it is cached and launches in seconds. No account or sign-in is required.
 
 ## 💻 How to run the notebooks locally
 
 The recommended path: clone the repo, sync the environment with `uv`, and
-launch Jupyter Lab locally.
-
-> **No local setup?** Use the **Binder** button next to each exercise above.
-> Binder reads `pyproject.toml` so the environment matches local exactly and
-> **needs no account or sign-in** &mdash; but the first launch takes
-> **1&ndash;2 minutes** while it builds the environment, and the session is
-> short-lived. If you have a Google account and want an instant, persistent
-> session, every notebook also has an *Open in Colab* link inside.
+launch Jupyter Lab locally. If you don't want to set anything up locally,
+each exercise above also has a **Binder** badge that opens the notebook in
+the cloud (no account, 1&ndash;2 min first build).
 
 We use [**uv**](https://docs.astral.sh/uv/) for fast, reproducible Python environments.
 
@@ -162,12 +149,28 @@ consider citing it as follows:
 }
 ```
 
-This repository is heavily based on the
-[Pattern Recognition Handbook](https://github.com/Wickstrom/pattern-recognition-handbook)
-by Kristoffer Wickstrøm at UiT The Arctic University of Norway, which in turn
-is based on [Time Series Analysis with Python](https://github.com/FilippoMB/python-time-series-handbook)
-by Filippo Maria Bianchi.
+This repository is heavily based on:
 
-## 📄 License
+- [Pattern Recognition Handbook](https://github.com/Wickstrom/pattern-recognition-handbook) by Kristoffer Wickstrøm:
 
-[MIT](./LICENSE)
+    ```bibtex
+    @misc{wick2025prbook,
+      author       = {Kristoffer Wickstr{\o}m},
+      title        = {Pattern Recognition Course},
+      year         = {2025},
+      howpublished = {Online},
+      url          = {https://github.com/Wickstrom/pattern-recognition-handbook}
+    }
+    ```
+
+- [Time Series Analysis with Python](https://github.com/FilippoMB/python-time-series-handbook) by Filippo Maria Bianchi:
+
+    ```bibtex
+    @misc{bianchi2024tsbook,
+      author       = {Filippo Maria Bianchi},
+      title        = {Time Series Analysis with Python},
+      year         = {2024},
+      howpublished = {Online},
+      url          = {https://github.com/FilippoMB/python-time-series-handbook}
+    }
+    ```
