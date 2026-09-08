@@ -9,9 +9,9 @@ within the [European University Alliance for Global Health (EUGLOH)](https://www
   self-contained WebAssembly app with `marimo export html-wasm` and hosted on
   GitHub Pages. Reactive widgets (sliders, dropdowns, tabs) update figures live
   in the browser — no Python kernel required.
-- **Exercises** are classic Jupyter notebooks (`.ipynb`) that you open and work
-  in locally, or directly in the cloud via the **Binder** badge in the content
-  list below.
+- **Exercises** are classic Jupyter notebooks (`.ipynb`) that you open and
+  work in locally — click the exercise badge to view the notebook on GitHub,
+  then clone the repo (or download the file) to fill in your solutions.
 
 ## 📑 Content
 
@@ -23,7 +23,7 @@ within the [European University Alliance for Global Health (EUGLOH)](https://www
     - Interactive demos: labeling paradigms, class separation, decision threshold
 
     [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/01/introduction_logistic_regression/index.html)
-    [![Exercise](https://img.shields.io/badge/-Exercise-green?logo=binder&style=flat&labelColor=gray)](https://mybinder.org/v2/gh/Wickstrom/eugloh-machine-learning-handbook/main?urlpath=lab/tree/notebooks/01/introduction_logistic_regression_exercise.ipynb)
+    [![Exercises](https://img.shields.io/badge/-Exercises-green?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/01/introduction_logistic_regression_exercise.ipynb)
 
 2. **Decision trees and random forests**
     - Impurity (Gini/entropy) and the CART algorithm — one split computed **by hand** and verified against scikit-learn
@@ -32,7 +32,7 @@ within the [European University Alliance for Global Health (EUGLOH)](https://www
     - Interactive demos: impurity curves, tree-depth slider, forest-size slider
 
     [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/02/decision_trees_random_forests/index.html)
-    [![Exercise](https://img.shields.io/badge/-Exercise-green?logo=binder&style=flat&labelColor=gray)](https://mybinder.org/v2/gh/Wickstrom/eugloh-machine-learning-handbook/main?urlpath=lab/tree/notebooks/02/decision_trees_random_forests_exercise.ipynb)
+    [![Exercises](https://img.shields.io/badge/-Exercises-green?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/02/decision_trees_random_forests_exercise.ipynb)
 
 3. **Neural networks**
     - Neurons, activation functions, the multi-layer perceptron
@@ -42,16 +42,12 @@ within the [European University Alliance for Global Health (EUGLOH)](https://www
     - Interactive demo: hidden-layer-size and activation-function widgets
 
     [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/03/neural_networks/index.html)
-    [![Exercise](https://img.shields.io/badge/-Exercise-green?logo=binder&style=flat&labelColor=gray)](https://mybinder.org/v2/gh/Wickstrom/eugloh-machine-learning-handbook/main?urlpath=lab/tree/notebooks/03/neural_networks_exercise.ipynb)
-
-> **⏳ Heads-up:** the first time you click a Binder link it takes **1&ndash;2 minutes** to spin up &mdash; Binder is building a Docker image from `pyproject.toml` so the environment matches local exactly. After that it is cached and launches in seconds. No account or sign-in is required.
+    [![Exercises](https://img.shields.io/badge/-Exercises-green?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/03/neural_networks_exercise.ipynb)
 
 ## 💻 How to run the notebooks locally
 
 The recommended path: clone the repo, sync the environment with `uv`, and
-launch Jupyter Lab locally. If you don't want to set anything up locally,
-each exercise above also has a **Binder** badge that opens the notebook in
-the cloud (no account, 1&ndash;2 min first build).
+launch Jupyter Lab locally.
 
 We use [**uv**](https://docs.astral.sh/uv/) for fast, reproducible Python environments.
 

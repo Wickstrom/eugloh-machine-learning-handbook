@@ -9,8 +9,17 @@
 # ///
 #
 # Lecture 3 — Neural Networks.
+# Structure inspired by the Pattern Recognition Handbook's "Neural Networks I"
+# (non-linear motivation → brief history → XOR → the big idea → the neuron →
+# MLP → backpropagation recipe), kept simpler and self-contained.
 # Run locally with `marimo edit notebooks/03/neural_networks.py`
 # or export to WASM for GitHub Pages (see .github/workflows/publish-slides.yml).
+#
+# NOTE on scoping: Marimo requires each global name to be owned by exactly
+# one cell. All cell-locals are underscore-prefixed. UI elements are created
+# in one cell (which shows only the intro text) and *read* in the following
+# cell, which displays the widget together with its figure via mo.vstack —
+# this keeps every interactive demo on a single slide.
 
 import marimo
 
@@ -47,6 +56,8 @@ def _(mo):
         EUGLOH — *Problem Solving Using Open-Source Languages; R and Python*
 
         University of Novi Sad
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 25</div>
         """
     )
     return
@@ -58,11 +69,14 @@ def _(mo):
         r"""
         ## Today's lecture
 
-        - Where linear models (and trees!) hit a wall: smooth non-linear boundaries
-        - **Neurons** and **activation functions**
-        - **Multi-layer perceptrons**: forward pass, backpropagation, gradient descent
-        - A neural network **written from scratch in numpy** — then the same in sklearn
-        - Practical tips: scaling, capacity, early stopping, multi-class softmax
+        - From **linear to non-linear** classifiers — why we need them
+        - **The neuron** and **activation functions**
+        - **Stacking neurons** into a multi-layer perceptron (MLP)
+        - **Backpropagation** — the training algorithm — and an MLP
+          **written from scratch in numpy**
+        - Practical tips, and multi-class classification with **softmax**
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 25</div>
         """
     )
     return
@@ -72,13 +86,16 @@ def _(mo):
 def _(mo):
     mo.md(
         r"""
-        # Part 1 — Why we need non-linear models
+        ## Introduction
 
-        Concentric circles: **no straight line** can separate the classes.
-        A tree can only cut with axis-aligned rules — it would need many
-        rectangles to imitate a circle.
+        - So far our classifiers have drawn **straight lines** (logistic
+          regression) or **axis-aligned cuts** (trees).
+        - Many real problems need **smooth, curved boundaries**.
 
-        Let's watch logistic regression fail.
+        Our focus now shifts to **non-linear classifiers** — and we start
+        with the most influential one: the neural network.
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 25</div>
         """
     )
     return
@@ -97,7 +114,6 @@ def _(mo):
     nn_Xs = _Scaler().fit_transform(_X)  # scaled copy — used for training
 
     _clf = _LR().fit(nn_Xs, nn_y)
-    _acc = _clf.score(nn_Xs, nn_y)
 
     _xx, _yy = _np.meshgrid(
         _np.linspace(nn_Xs[:, 0].min() - 0.5, nn_Xs[:, 0].max() + 0.5, 250),
@@ -105,16 +121,94 @@ def _(mo):
     )
     _Z = _clf.predict(_np.c_[_xx.ravel(), _yy.ravel()]).reshape(_xx.shape)
 
-    _fig, _ax = _plt.subplots(figsize=(5.5, 5))
+    _fig, _ax = _plt.subplots(figsize=(5.4, 4.6))
     _ax.contourf(_xx, _yy, _Z, alpha=0.25, cmap="RdYlGn")
     _ax.scatter(nn_Xs[nn_y == 0, 0], nn_Xs[nn_y == 0, 1], color="#dc2626", s=16, label="class 0")
     _ax.scatter(nn_Xs[nn_y == 1, 0], nn_Xs[nn_y == 1, 1], color="#16a34a", s=16, label="class 1")
-    _ax.set_title(f"Logistic regression — accuracy {_acc:.2f}. Stuck at a line.")
+    _ax.set_title(f"Concentric circles: logistic regression gets stuck at a line (acc {_clf.score(nn_Xs, nn_y):.2f})")
     _ax.set_aspect("equal")
     _ax.legend()
-    mo.as_html(_fig)
     _plt.close(_fig)
+    mo.vstack(
+        [
+            mo.as_html(_fig),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 25</div>"""),
+        ]
+    )
     return nn_X, nn_Xs, nn_y
+
+
+@app.cell
+def _(mo):
+    mo.md(
+        r"""
+        ## Neural networks — a brief history
+
+        - **McCulloch–Pitts neuron** (1943) — the first mathematical model of a neuron
+        - **The perceptron** (Rosenblatt, 1957) — a learning algorithm!
+        - **The XOR problem** (Minsky & Papert, 1969) — the first AI winter
+        - **Backpropagation** (Rumelhart, Hinton & Williams, 1986) — a new hope
+        - Lacked data and compute; hard to train (1990s) — the second AI winter
+        - **AlexNet** (2012) — GPUs + ImageNet → the deep-learning revolution
+        - **Transformers / LLMs** (2017–) — the same ideas, at scale
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 25</div>
+        """
+    )
+    return
+
+
+@app.cell
+def _(mo):
+    import matplotlib.pyplot as _plt
+    import numpy as _np
+
+    _rng = _np.random.default_rng(42)
+    _n, _std = 50, 0.15
+    _centers = _np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
+    _labels = _np.array([0, 1, 1, 0])
+    _X = _np.vstack([_c + _std * _rng.standard_normal((_n, 2)) for _c in _centers])
+    _y = _np.concatenate([_np.full(_n, _l) for _l in _labels])
+
+    _fig, _ax = _plt.subplots(figsize=(4.6, 4.6))
+    _ax.scatter(_X[_y == 0, 0], _X[_y == 0, 1], color="#dc2626", s=60,
+                edgecolor="k", alpha=0.75, label="class 0")
+    _ax.scatter(_X[_y == 1, 0], _X[_y == 1, 1], color="#16a34a", s=60,
+                edgecolor="k", alpha=0.75, label="class 1")
+    _ax.set_aspect("equal")
+    _ax.set_xlim(-0.55, 1.55)
+    _ax.set_ylim(-0.55, 1.55)
+    _ax.set_title("The XOR problem — no single line can solve it")
+    _ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.08), ncol=2)
+    _plt.close(_fig)
+    mo.vstack(
+        [
+            mo.as_html(_fig),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 25</div>"""),
+        ]
+    )
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(
+        r"""
+        ## The big idea
+
+        - A perceptron (a linear classifier) requires **linearly separable** data.
+        - What if we could **transform** the data into a representation where
+          it *becomes* linearly separable?
+        - And who computes that transformation? **Another perceptron!**
+        - Stack layers of perceptrons → a **multi-layer perceptron (MLP)**.
+
+        The layers learn the transformation; the last layer separates.
+        Everything is trained end-to-end with one algorithm: **backpropagation**.
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 25</div>
+        """
+    )
+    return
 
 
 @app.cell
@@ -129,8 +223,10 @@ def _(mo):
         $$z = w^\top x + b, \qquad a = \phi(z)$$
 
         Recognise it? **Logistic regression is exactly one neuron** with the
-        sigmoid activation. A neural network is just *many neurons stacked in
-        layers*, each feeding the next.
+        sigmoid activation (lecture 1). A neural network is *many neurons
+        stacked in layers*, each feeding the next.
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 25</div>
         """
     )
     return
@@ -150,6 +246,8 @@ def _(mo):
 
         The non-linearity is the whole point: compose enough of them and the
         network can approximate **any** smooth function.
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 25</div>
         """
     )
     return
@@ -161,7 +259,7 @@ def _(mo):
     import numpy as _np
 
     _z = _np.linspace(-4, 4, 300)
-    _fig, _ax = _plt.subplots(figsize=(7.5, 3.8))
+    _fig, _ax = _plt.subplots(figsize=(7, 3.6))
     _ax.plot(_z, 1 / (1 + _np.exp(-_z)), lw=2, label="sigmoid", color="#2563eb")
     _ax.plot(_z, _np.tanh(_z), lw=2, label="tanh", color="#16a34a")
     _ax.plot(_z, _np.maximum(0, _z), lw=2, label="ReLU", color="#dc2626")
@@ -170,8 +268,13 @@ def _(mo):
     _ax.set_title("Activation functions")
     _ax.legend()
     _ax.grid(alpha=0.3)
-    mo.as_html(_fig)
     _plt.close(_fig)
+    mo.vstack(
+        [
+            mo.as_html(_fig),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 25</div>"""),
+        ]
+    )
     return
 
 
@@ -184,16 +287,16 @@ def _(mo):
         Layers of neurons: **input → hidden → output**. For one hidden layer
         with $H$ units (shapes for $n$ samples, $d$ features):
 
-        $$Z_1 = XW_1 + b_1 \quad (n \times H), \qquad A_1 = \tanh(Z_1)$$
+        $$Z_1 = XW_1 + b_1 \;\; (n \times H), \qquad A_1 = \tanh(Z_1)$$
 
-        $$Z_2 = A_1 W_2 + b_2 \quad (n \times 1), \qquad \hat{p} = \sigma(Z_2)$$
+        $$Z_2 = A_1 W_2 + b_2 \;\; (n \times 1), \qquad \hat{p} = \sigma(Z_2)$$
 
         Everything is **matrix multiplication** — the reason GPUs are so good
-        at this.
+        at this. (One hidden layer with enough units can approximate *any*
+        continuous function — but nobody tells you how many units: you learn
+        that from data.)
 
-        **Universal approximation:** one hidden layer with enough units can
-        approximate any continuous function on a compact set. The catch:
-        nobody tells you *how many* units — you must learn them from data.
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 25</div>
         """
     )
     return
@@ -206,19 +309,46 @@ def _(mo):
         ## Training: loss + backpropagation
 
         Same recipe as logistic regression — cross-entropy loss, gradient
-        descent. The only new skill is computing the gradient through the
-        layers, which is the **chain rule** applied layer by layer
-        (*backpropagation*). For our 1-hidden-layer network:
+        descent. The new skill is computing the gradient *through the
+        layers*: the **chain rule**, applied layer by layer from the output
+        back to the input — **backpropagation**:
 
         $$\delta_2 = \frac{\hat{p} - y}{n} \quad \text{(output error)}$$
 
         $$\frac{\partial \mathcal{L}}{\partial W_2} = A_1^\top \delta_2, \qquad \frac{\partial \mathcal{L}}{\partial b_2} = \textstyle\sum_i \delta_{2,i}$$
 
-        $$\delta_1 = (\delta_2 W_2^\top) \odot (1 - A_1^2) \quad \text{(chain rule through tanh)}$$
+        $$\delta_1 = (\delta_2 W_2^\top) \odot (1 - A_1^2) \quad \text{(through the tanh derivative)}$$
 
         $$\frac{\partial \mathcal{L}}{\partial W_1} = X^\top \delta_1, \qquad \frac{\partial \mathcal{L}}{\partial b_1} = \textstyle\sum_i \delta_{1,i}$$
 
-        You will implement exactly these four lines in the exercise.
+        You will implement exactly these lines — by hand — below and in the exercise.
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 25</div>
+        """
+    )
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(
+        r"""
+        ## The backpropagation recipe
+
+        1. **Initialise** the parameters (small random weights)
+        2. **Forward pass** — compute all activations
+        3. **Backward pass** — compute the gradients with the chain rule
+        4. **Update** all parameters with gradient descent
+        5. **Repeat!**
+
+        Top tips for implementing it:
+
+        - **Keep it simple in the beginning** — start with a fixed architecture
+        - **Do the calculations by hand first**, cross-reference while coding
+        - There is only **one loop** — the epochs; everything inside is
+          **matrix multiplication**
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 25</div>
         """
     )
     return
@@ -233,7 +363,9 @@ def _(mo):
         2 inputs → 16 hidden units (tanh) → 1 output (sigmoid), trained with
         full-batch gradient descent on the circles dataset.
 
-        TODO: walk through the forward pass, then the four gradient lines.
+        TODO: walk through the forward pass, then the gradient lines.
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 25</div>
         """
     )
     return
@@ -252,7 +384,7 @@ def _(nn_Xs, nn_y):
     W2h = _rng.normal(scale=_np.sqrt(2 / (_h + 1)), size=(_h, 1))
     b2h = _np.zeros(1)
 
-    _lr, _iters = 0.5, 4000
+    _lr, _iters = 0.5, 3000
     nn_losses = []
     for _i in range(_iters):
         _Z1 = nn_Xs @ W1h + b1h
@@ -279,7 +411,7 @@ def _(nn_Xs, nn_y):
             )
 
     nn_acc = _np.mean((_P.ravel() >= 0.5) == nn_y)
-    print(f"hand-written MLP (2 → 16 → 1): accuracy = {nn_acc:.3f}")
+    print(f"hand-written MLP (2 -> 16 -> 1): accuracy = {nn_acc:.3f}")
     return W1h, W2h, b1h, b2h, nn_acc, nn_losses
 
 
@@ -296,7 +428,7 @@ def _(b1h, b2h, mo, nn_X, nn_Xs, nn_acc, nn_losses, nn_y, W1h, W2h):
     _P = 1.0 / (1.0 + _np.exp(-(_np.tanh(_grid @ W1h + b1h) @ W2h + b2h)))
     _Z = _P.reshape(_xx.shape)
 
-    _fig, _axes = _plt.subplots(1, 2, figsize=(11, 4.4))
+    _fig, _axes = _plt.subplots(1, 2, figsize=(11, 4.2))
     _axes[0].plot(_np.arange(len(nn_losses)) * 100, nn_losses, color="#2563eb")
     _axes[0].set_xlabel("epoch")
     _axes[0].set_title("Cross-entropy during training")
@@ -305,8 +437,13 @@ def _(b1h, b2h, mo, nn_X, nn_Xs, nn_acc, nn_losses, nn_y, W1h, W2h):
     _axes[1].scatter(nn_X[nn_y == 1, 0], nn_X[nn_y == 1, 1], color="#16a34a", s=14)
     _axes[1].set_title(f"Learned boundary (by hand, acc {nn_acc:.2f})")
     _axes[1].set_aspect("equal")
-    mo.as_html(_fig)
     _plt.close(_fig)
+    mo.vstack(
+        [
+            mo.as_html(_fig),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">15 / 25</div>"""),
+        ]
+    )
     return
 
 
@@ -322,8 +459,10 @@ def _(mo):
                             max_iter=2000, random_state=0).fit(X, y)
         ```
 
-        `MLPClassifier` uses Adam (a smarter gradient-descent variant), tracks
-        its loss curve, and supports early stopping.
+        `MLPClassifier` uses **Adam** (a smarter gradient-descent variant),
+        tracks its loss curve, and supports early stopping.
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">16 / 25</div>
         """
     )
     return
@@ -337,7 +476,7 @@ def _(mo, nn_Xs, nn_y):
 
     _mlp = _MLP(
         hidden_layer_sizes=(16,), activation="tanh",
-        solver="adam", max_iter=2000, random_state=0,
+        solver="adam", max_iter=1500, random_state=0,
     ).fit(nn_Xs, nn_y)
 
     _xx, _yy = _np.meshgrid(
@@ -346,7 +485,7 @@ def _(mo, nn_Xs, nn_y):
     )
     _Z = _mlp.predict(_np.c_[_xx.ravel(), _yy.ravel()]).reshape(_xx.shape)
 
-    _fig, _axes = _plt.subplots(1, 2, figsize=(11, 4.4))
+    _fig, _axes = _plt.subplots(1, 2, figsize=(11, 4.2))
     _axes[0].contourf(_xx, _yy, _Z, levels=20, cmap="RdYlGn", alpha=0.7)
     _axes[0].scatter(nn_Xs[nn_y == 0, 0], nn_Xs[nn_y == 0, 1], color="#dc2626", s=14)
     _axes[0].scatter(nn_Xs[nn_y == 1, 0], nn_Xs[nn_y == 1, 1], color="#16a34a", s=14)
@@ -355,8 +494,13 @@ def _(mo, nn_Xs, nn_y):
     _axes[1].plot(_mlp.loss_curve_, color="#dc2626")
     _axes[1].set_xlabel("iteration")
     _axes[1].set_title("sklearn's loss curve (Adam)")
-    mo.as_html(_fig)
     _plt.close(_fig)
+    mo.vstack(
+        [
+            mo.as_html(_fig),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">17 / 25</div>"""),
+        ]
+    )
     return
 
 
@@ -368,23 +512,19 @@ def _(mo):
 
         Bigger hidden layers can draw more complex boundaries — but also
         overfit more. Switch the activation function and see how training
-        changes.
+        changes. (One hidden unit cannot even bend the boundary!)
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">18 / 25</div>
         """
     )
-    return
-
-
-@app.cell
-def _(mo):
     hidden_slider = mo.ui.slider(
-        start=1, stop=64, step=1, value=8,
-        label="hidden units", show_value=True,
+        start=1, stop=32, step=1, value=8,
+        label="hidden units", show_value=True, debounce=True,
     )
     act_dropdown = mo.ui.dropdown(
         options=["tanh", "relu", "logistic"], value="tanh",
         label="activation",
     )
-    mo.hstack([hidden_slider, act_dropdown])
     return act_dropdown, hidden_slider
 
 
@@ -397,7 +537,7 @@ def _(act_dropdown, hidden_slider, mo, nn_X, nn_Xs, nn_y):
     _mlp = _MLP(
         hidden_layer_sizes=(hidden_slider.value,),
         activation=act_dropdown.value,
-        max_iter=3000,
+        max_iter=1500,
         random_state=0,
     ).fit(nn_Xs, nn_y)
 
@@ -407,7 +547,7 @@ def _(act_dropdown, hidden_slider, mo, nn_X, nn_Xs, nn_y):
     )
     _Z = _mlp.predict(_np.c_[_xx.ravel(), _yy.ravel()]).reshape(_xx.shape)
 
-    _fig, _ax = _plt.subplots(figsize=(6, 5))
+    _fig, _ax = _plt.subplots(figsize=(5.4, 4.6))
     _ax.contourf(_xx, _yy, _Z, alpha=0.25, cmap="RdYlGn")
     _ax.scatter(nn_X[nn_y == 0, 0], nn_X[nn_y == 0, 1], color="#dc2626", s=14)
     _ax.scatter(nn_X[nn_y == 1, 0], nn_X[nn_y == 1, 1], color="#16a34a", s=14)
@@ -416,8 +556,14 @@ def _(act_dropdown, hidden_slider, mo, nn_X, nn_Xs, nn_y):
         f"accuracy {_mlp.score(nn_Xs, nn_y):.2f}"
     )
     _ax.set_aspect("equal")
-    mo.as_html(_fig)
     _plt.close(_fig)
+    mo.vstack(
+        [
+            mo.hstack([hidden_slider, act_dropdown]),
+            mo.as_html(_fig),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">19 / 25</div>"""),
+        ]
+    )
     return
 
 
@@ -428,50 +574,18 @@ def _(mo):
         ## Practical considerations
 
         - **Scale your features** — MLPs hate features of wildly different ranges
-        - **Weight init** — random but *not too large* (Xavier/He scaling; sklearn does this for you)
-        - **Learning rate** — too small: slow; too large: divergence (bonus exercise!)
-        - **Capacity** — more hidden units = more expressive, but watch the gap
-          between train and validation accuracy
+        - **Weight init** — random but *not too large* (Xavier/He scaling;
+          sklearn does this for you)
+        - **Learning rate** — too small: slow; too large: divergence
+          (see the bonus exercise!)
+        - **Capacity** — more hidden units = more expressive, but watch the
+          gap between **train and validation** accuracy (overfitting)
         - **Early stopping** — stop when validation loss stops improving
           (`MLPClassifier(early_stopping=True)`)
 
-        The figure below: train vs test accuracy as the network grows — the
-        classic overfitting gap.
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">20 / 25</div>
         """
     )
-    return
-
-
-@app.cell
-def _(mo):
-    import matplotlib.pyplot as _plt
-    import numpy as _np
-    from sklearn.datasets import make_moons as _make_moons
-    from sklearn.model_selection import train_test_split as _split
-    from sklearn.neural_network import MLPClassifier as _MLP
-
-    _X, _y = _make_moons(n_samples=400, noise=0.35, random_state=0)
-    _Xtr, _Xte, _ytr, _yte = _split(_X, _y, test_size=0.3, random_state=0, stratify=_y)
-
-    _sizes = [1, 2, 4, 8, 16, 32]
-    _train_acc, _test_acc = [], []
-    for _h in _sizes:
-        _m = _MLP(hidden_layer_sizes=(_h,), max_iter=2000, random_state=0).fit(_Xtr, _ytr)
-        _train_acc.append(_m.score(_Xtr, _ytr))
-        _test_acc.append(_m.score(_Xte, _yte))
-
-    _fig, _ax = _plt.subplots(figsize=(7, 4))
-    _ax.plot(_sizes, _train_acc, "o-", color="#2563eb", label="train")
-    _ax.plot(_sizes, _test_acc, "s-", color="#dc2626", label="test")
-    _ax.set_xlabel("hidden units")
-    _ax.set_ylabel("accuracy")
-    _ax.set_xscale("log", base=2)
-    _ax.set_xticks(_sizes, labels=[str(_s) for _s in _sizes])
-    _ax.set_title("Bigger networks memorise the train set — but stop helping on test")
-    _ax.legend()
-    _ax.grid(alpha=0.3)
-    mo.as_html(_fig)
-    _plt.close(_fig)
     return
 
 
@@ -491,6 +605,8 @@ def _(mo):
         cross-entropy for multi-class targets).
 
         Demo: 8×8 handwritten digits (1797 samples, 10 classes).
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">21 / 25</div>
         """
     )
     return
@@ -510,10 +626,10 @@ def _(mo):
     _y = _digits.target
     _Xtr, _Xte, _ytr, _yte = _split(_X, _y, test_size=0.3, random_state=0, stratify=_y)
 
-    _mlp = _MLP(hidden_layer_sizes=(32, 32), max_iter=300, random_state=0).fit(_Xtr, _ytr)
+    _mlp = _MLP(hidden_layer_sizes=(24,), max_iter=200, random_state=0).fit(_Xtr, _ytr)
     _acc = _mlp.score(_Xte, _yte)
 
-    _fig, _axes = _plt.subplots(1, 2, figsize=(12, 4.6),
+    _fig, _axes = _plt.subplots(1, 2, figsize=(12, 4.4),
                                 gridspec_kw={"width_ratios": [1, 1.4]})
     _axes[0].imshow(_digits.images[0], cmap="gray_r")
     _axes[0].set_title(f"an 8×8 digit — test accuracy {_acc:.3f}")
@@ -522,8 +638,13 @@ def _(mo):
     _CMD.from_predictions(_yte, _mlp.predict(_Xte), ax=_axes[1], colorbar=False)
     _axes[1].set_title("Confusion matrix — which digits get confused?")
     _fig.tight_layout()
-    mo.as_html(_fig)
     _plt.close(_fig)
+    mo.vstack(
+        [
+            mo.as_html(_fig),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">22 / 25</div>"""),
+        ]
+    )
     return
 
 
@@ -544,6 +665,8 @@ def _(mo):
         Rule of thumb: start with logistic regression, try a random forest,
         reach for a neural network when the data has *structure* (pixels,
         sequences) or the patterns are truly smooth.
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">23 / 25</div>
         """
     )
     return
@@ -556,12 +679,16 @@ def _(mo):
         ## Summary
 
         - A neuron = linear model + activation; an MLP stacks them into layers
+          — the network **learns the transformation** that makes the data
+          separable (the XOR insight).
         - Training = cross-entropy + **backpropagation** (chain rule through
           the layers) + gradient descent — you built one **from scratch** and
-          it drew a round boundary in a place no linear model could
-        - Capacity, scaling, learning rate and early stopping are the practical
-          levers — and the usual suspects behind overfitting
-        - Softmax extends everything to many classes
+          it drew a round boundary no linear model could.
+        - Capacity, scaling, learning rate and early stopping are the
+          practical levers — and the usual suspects behind overfitting.
+        - Softmax extends everything to many classes.
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">24 / 25</div>
         """
     )
     return
@@ -578,6 +705,8 @@ def _(mo):
           `MLPClassifier`, explore capacity on moons and digits.
         - This wraps the lecture series — the final project is an end-to-end
           ML pipeline on a dataset of your choice. Happy learning!
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">25 / 25</div>
         """
     )
     return
