@@ -15,25 +15,34 @@ within the [European University Alliance for Global Health (EUGLOH)](https://www
 
 ## 📑 Content
 
-1. **Introduction to machine learning**
-    - What is machine learning?
-    - Supervised, unsupervised, and reinforcement learning
-    - The ML workflow: data, model, evaluation
-    - Practical information for the course
+1. **Introduction to machine learning & logistic regression**
+    - What is ML? Supervised, unsupervised, and semi-supervised learning
+    - The ML workflow, overfitting, train/validation/test splits
+    - Logistic regression — sigmoid, cross-entropy, gradient descent,
+      implemented **by hand in numpy** and compared against scikit-learn
+    - Interactive demos: labeling paradigms, class separation, decision threshold
 
-    [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/00/intro/index.html)
+    [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/01/introduction_logistic_regression/index.html)
+    [![Exercise](https://img.shields.io/badge/-Exercise-green?logo=binder&style=flat&labelColor=gray)](https://mybinder.org/v2/gh/Wickstrom/eugloh-machine-learning-handbook/main?urlpath=lab/tree/notebooks/01/introduction_logistic_regression_exercise.ipynb)
 
-2. **Linear and logistic regression**
-    - Linear regression — the model, MSE loss, closed-form vs gradient descent
-    - Logistic regression — sigmoid, cross-entropy, decision boundaries
-    - Practical considerations: feature scaling, regularisation, multi-class
-    - Interactive decision-boundary demo with a class-separation slider
+2. **Decision trees and random forests**
+    - Impurity (Gini/entropy) and the CART algorithm — one split computed **by hand** and verified against scikit-learn
+    - Overfitting and depth control: `max_depth`, `min_samples_leaf`, cost-complexity pruning
+    - Bagging and random forests; feature importance
+    - Interactive demos: impurity curves, tree-depth slider, forest-size slider
 
-    [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/01/linear_logistic_regression/index.html)
-    [![Synthetic regression in 2D](https://img.shields.io/badge/-Exercise-green?logo=binder&style=flat&labelColor=gray)](https://mybinder.org/v2/gh/Wickstrom/eugloh-machine-learning-handbook/main?urlpath=lab/tree/notebooks/01/regression_synthetic_exercise.ipynb)
-    [![California housing](https://img.shields.io/badge/-Exercise-green?logo=binder&style=flat&labelColor=gray)](https://mybinder.org/v2/gh/Wickstrom/eugloh-machine-learning-handbook/main?urlpath=lab/tree/notebooks/01/regression_california_exercise.ipynb)
-    [![Synthetic classification in 2D](https://img.shields.io/badge/-Exercise-green?logo=binder&style=flat&labelColor=gray)](https://mybinder.org/v2/gh/Wickstrom/eugloh-machine-learning-handbook/main?urlpath=lab/tree/notebooks/01/classification_synthetic_exercise.ipynb)
-    [![Iris](https://img.shields.io/badge/-Exercise-green?logo=binder&style=flat&labelColor=gray)](https://mybinder.org/v2/gh/Wickstrom/eugloh-machine-learning-handbook/main?urlpath=lab/tree/notebooks/01/classification_iris_exercise.ipynb)
+    [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/02/decision_trees_random_forests/index.html)
+    [![Exercise](https://img.shields.io/badge/-Exercise-green?logo=binder&style=flat&labelColor=gray)](https://mybinder.org/v2/gh/Wickstrom/eugloh-machine-learning-handbook/main?urlpath=lab/tree/notebooks/02/decision_trees_random_forests_exercise.ipynb)
+
+3. **Neural networks**
+    - Neurons, activation functions, the multi-layer perceptron
+    - Forward pass and backpropagation — an MLP **written from scratch in numpy**,
+      compared against `MLPClassifier`
+    - Capacity, feature scaling, early stopping; multi-class with softmax (digits demo)
+    - Interactive demo: hidden-layer-size and activation-function widgets
+
+    [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/03/neural_networks/index.html)
+    [![Exercise](https://img.shields.io/badge/-Exercise-green?logo=binder&style=flat&labelColor=gray)](https://mybinder.org/v2/gh/Wickstrom/eugloh-machine-learning-handbook/main?urlpath=lab/tree/notebooks/03/neural_networks_exercise.ipynb)
 
 > **⏳ Heads-up:** the first time you click a Binder link it takes **1&ndash;2 minutes** to spin up &mdash; Binder is building a Docker image from `pyproject.toml` so the environment matches local exactly. After that it is cached and launches in seconds. No account or sign-in is required.
 
@@ -78,7 +87,7 @@ We use [**uv**](https://docs.astral.sh/uv/) for fast, reproducible Python enviro
 5. To edit a Marimo notebook locally with live code, file watchers, and a variable explorer:
 
     ```bash
-    uv run marimo edit notebooks/01/linear_logistic_regression.py
+    uv run marimo edit notebooks/01/introduction_logistic_regression.py
     ```
 
 You only ever need `uv run` — it will use the `.venv` automatically, no need to
@@ -112,8 +121,9 @@ To edit a lecture locally with live code, file watchers, and a variable
 explorer:
 
 ```bash
-uv run marimo edit notebooks/00/intro.py
-uv run marimo edit notebooks/01/linear_logistic_regression.py
+uv run marimo edit notebooks/01/introduction_logistic_regression.py
+uv run marimo edit notebooks/02/decision_trees_random_forests.py
+uv run marimo edit notebooks/03/neural_networks.py
 ```
 
 ### Keyboard shortcuts (inside a deck)

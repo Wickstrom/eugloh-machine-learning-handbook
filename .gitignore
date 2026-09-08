@@ -46,3 +46,9 @@ opencode.json
 
 # OS
 .DS_Store
+
+# Raw course materials (large binary presentations)
+resources/
+
+# Marimo local cache
+__marimo__/
