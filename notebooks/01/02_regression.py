@@ -8,24 +8,25 @@
 # ]
 # ///
 #
-# Lecture 1 — Introduction to Machine Learning & Logistic Regression.
+# Lecture 1 (Oct 19), Session 2 — Linear and logistic regression.
 # Structure of the logistic-regression part follows the FYS-2021 slide decks
 # (05_LogisticRegression / 05_LogisticRegression+Accuracy).
-# Run locally with `marimo edit notebooks/01/introduction_logistic_regression.py`
+# Run locally with `marimo edit notebooks/01/02_regression.py`
 # or export to WASM for GitHub Pages (see .github/workflows/publish-slides.yml).
 #
-# NOTE on scoping: Marimo requires each global name to be owned by exactly one
-# cell. All cell-locals are underscore-prefixed. UI elements are created in one
-# cell (which shows only the intro text) and *read* in the following cell,
-# which displays the widget together with its figure via mo.vstack — this
-# keeps every interactive demo on a single slide.
+# NOTE on scoping: Marimo requires each global name to be owned by exactly
+# one cell. All cell-locals are underscore-prefixed. UI elements are created
+# in one cell (whose *output* is the intro text — the md must be the last
+# expression) and *read* in the following cell, which displays the widget
+# together with its figure via mo.vstack. Figures are rendered with
+# mo.image(BytesIO) — mo.as_html does not work in the Pyodide/WASM build.
 
 import marimo
 
 __generated_with = "0.17.6"
 app = marimo.App(
     width="medium",
-    layout_file="layouts/introduction_logistic_regression.slides.json",
+    layout_file="layouts/02_regression.slides.json",
 )
 
 
@@ -48,15 +49,15 @@ def _():
 def _(mo):
     mo.md(
         r"""
-        # Introduction to Machine Learning & Logistic Regression
+        # Linear & Logistic Regression
 
-        **Machine Learning with Python** — Lecture 1
+        **Machine Learning with Python** — Lecture 1, Session 2 (Oct 19)
 
         EUGLOH — *Problem Solving Using Open-Source Languages; R and Python*
 
         University of Novi Sad
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 33</div>
         """
     )
     return
@@ -66,16 +67,18 @@ def _(mo):
 def _(mo):
     mo.md(
         r"""
-        ## Practical information
+        ## Today's session
 
-        - Slides are Marimo notebooks, exercises are Jupyter notebooks — all in this repository
-        - Clone the repo and follow the setup in the `README.md` (`uv sync`, then `uv run jupyter lab`)
-        - Today's exercise: `notebooks/01/introduction_logistic_regression_exercise.ipynb`
-        - All exercises use `numpy`, `matplotlib` and `scikit-learn` — nothing else to install
+        - **Linear regression** — the linear model, least squares, closed form
+          and gradient descent
+        - **Logistic regression** — from regression to classification, sigmoid,
+          cross-entropy, implemented **by hand in numpy**
+        - Interactive demos: class separation, the decision threshold
+        - **Multi-class** classification via one-vs-rest / softmax
 
-        Questions are very welcome — ask early, ask often.
+        Session 2 of 4 today.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 33</div>
         """
     )
     return
@@ -85,23 +88,20 @@ def _(mo):
 def _(mo):
     mo.md(
         r"""
-        # Part 1 — What is machine learning?
+        # Part 1 — Linear regression
 
-        > *"A computer program is said to learn from experience E with respect to
-        > some class of tasks T and performance measure P, if its performance at
-        > tasks in T, as measured by P, improves with experience E."*
-        — Mitchell, 1997
+        ## The linear model
 
-        In one sentence:
+        Our first **supervised** model. With a single feature we fit a straight
+        line; with $d$ features, a **hyperplane**:
 
-        **Machine learning is the discipline of building systems that learn rules
-        from data, instead of being explicitly programmed.**
+        $$\hat{y} = w^\top x + b = w_1 x_1 + \dots + w_d x_d + b$$
 
-        - Traditional programming: *data + program → output*
-        - Machine learning: *data + output → program* — the learned **model** is
-          then applied to new, unseen data.
+        - $w$ — the **weights**: how much each feature moves the prediction
+        - $b$ — the **bias** (intercept)
+        - $\hat{y}$ is a **continuous number** (a price, a temperature, …)
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 33</div>
         """
     )
     return
@@ -109,150 +109,141 @@ def _(mo):
 
 @app.cell
 def _(mo):
-    mo.md(
-        r"""
-        ## Why machine learning?
+    import io as _io
 
-        - Problems that are **hard to specify** but easy to demonstrate:
-          spam detection, image recognition, machine translation
-        - Problems that **adapt over time**: recommender systems, fraud detection
-        - Problems at **scale**, where hand-written rules break down
-
-        ML is not magic — it is a tool that shines when the data is right and
-        the question is well-posed.
-
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 38</div>
-        """
-    )
-    return
-
-
-@app.cell
-def _(mo):
-    mo.md(
-        r"""
-        # Part 2 — Types of machine learning
-
-        | Type | What the algorithm sees | Goal |
-        |---|---|---|
-        | **Supervised** | inputs **+ labels** | predict the label of new inputs |
-        | **Unsupervised** | inputs only | discover structure (clusters, low-dimensional representations) |
-        | **Semi-supervised** | few labels + many unlabeled inputs | leverage both |
-        | **Self-supervised** | inputs only | create labels from the data itself (denoising, masked words) |
-        | **Reinforcement** | interactions + rewards | learn actions that maximise reward |
-
-        This course is mostly about **supervised learning**.
-
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 38</div>
-        """
-    )
-    return
-
-
-@app.cell
-def _(mo):
-    mo.md(
-        r"""
-        ## Supervised learning
-
-        Given a dataset of (input, target) pairs $(x_i, y_i)$, learn a function
-        $f(x) \approx y$.
-
-        - **Classification** — $y$ is a discrete label (spam / not spam, healthy / diseased)
-        - **Regression** — $y$ is a continuous number (price, temperature)
-
-        Algorithms in this course: **logistic regression** (today),
-        **decision trees & random forests** (lecture 2), **neural networks** (lecture 3).
-
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 38</div>
-        """
-    )
-    return
-
-
-@app.cell
-def _(mo):
-    mo.md(
-        r"""
-        ## Unsupervised, semi-supervised, self-supervised
-
-        - **Unsupervised:** only inputs. *Clustering* — group similar points;
-          *dimensionality reduction* — find a compact representation.
-        - **Semi-supervised:** a few labeled + many unlabeled points (labeling is
-          often expensive — think medical images). The unlabeled points reveal
-          the *shape* of the data, which constrains the decision boundary.
-        - **Self-supervised:** the data creates its own supervision — predict a
-          masked word, reconstruct a denoised image. The engine behind modern LLMs.
-        - **Reinforcement learning:** an agent acts, the environment rewards.
-          Out of scope for this course.
-
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 38</div>
-        """
-    )
-    return
-
-
-@app.cell
-def _(mo):
-    # The widget is created here; the *next* cell reads `.value` and displays
-    # the slider together with its figure (Marimo forbids reading a UI
-    # element's value in the cell that created it).
-    mo.md(
-        r"""
-        ## One dataset, three paradigms
-
-        The slider controls **how many points are labeled**:
-
-        - 100 % labeled → **supervised** classification
-        - a few labeled → **semi-supervised** learning
-        - none labeled → **unsupervised** learning (e.g. clustering)
-
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 38</div>
-        """
-    )
-    label_fraction = mo.ui.slider(
-        start=0.0, stop=1.0, step=0.05, value=0.1,
-        label="Fraction of labeled points", show_value=True, debounce=True,
-    )
-    return (label_fraction,)
-
-
-@app.cell
-def _(label_fraction, mo):
-    import numpy as _np
     import matplotlib.pyplot as _plt
-    from sklearn.datasets import make_moons as _make_moons
+    import numpy as _np
+    from sklearn.linear_model import LinearRegression as _LinReg
 
-    _X, _y = _make_moons(n_samples=150, noise=0.25, random_state=0)
+    _rng = _np.random.default_rng(0)
+    _x = _np.linspace(0, 10, 40)
+    _y = 2.0 + 1.5 * _x + _rng.normal(scale=2.5, size=_x.size)
+
+    _model = _LinReg().fit(_x.reshape(-1, 1), _y)
+    _xs = _np.linspace(-0.5, 10.5, 100)
+    _yh = _model.predict(_xs.reshape(-1, 1))
+    _pred = _model.predict(_x.reshape(-1, 1))
+
+    _fig, _ax = _plt.subplots(figsize=(7, 4))
+    _ax.scatter(_x, _y, color="#2563eb", s=28, label="data")
+    _ax.plot(_xs, _yh, color="#dc2626", lw=2, label="fitted line")
+    for _xi, _yi, _pi in zip(_x[::4], _y[::4], _pred[::4]):
+        _ax.plot([_xi, _xi], [_yi, _pi], color="gray", lw=1)
+    _ax.set_xlabel("feature $x$")
+    _ax.set_ylabel("target $y$")
+    _ax.set_title(
+        rf"$\hat{{y}} = {_model.coef_[0]:.2f}x {_model.intercept_:+.2f}$"
+        "  (grey = residuals)"
+    )
+    _ax.legend()
+    _buf = _io.BytesIO()
+    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
+    _plt.close(_fig)
+    _buf.seek(0)
+    mo.vstack(
+        [
+            mo.image(_buf, width="620px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 33</div>"""),
+        ]
+    )
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(
+        r"""
+        ## Choosing the line — the mean squared error
+
+        We want the line that is *closest* to the data. "Closest" means
+        minimising the **mean squared error** (MSE):
+
+        $$\mathcal{L}(w, b) = \frac{1}{n}\sum_{i=1}^{n} (\hat{y}_i - y_i)^2
+        = \frac{1}{n}\lVert Xw + b\mathbf{1} - y \rVert^2$$
+
+        - squaring is smooth and differentiable, and punishes large errors
+        - it is **convex** — one global minimum, no local traps
+
+        The vertical grey segments above are exactly the **residuals**
+        $\hat{y}_i - y_i$ we are squaring.
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 33</div>
+        """
+    )
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(
+        r"""
+        ## Two ways to find the minimum
+
+        **1. Closed form — the normal equations.** Set the gradient to zero and
+        solve:
+
+        $$w = (X^\top X)^{-1} X^\top y
+        \qquad (\text{centre the columns, or add a column of ones})$$
+
+        No iteration — a single matrix solve. `LinearRegression` uses the
+        pseudo-inverse/SVD rather than an explicit inverse (more stable when
+        $X^\top X$ is singular).
+
+        **2. Gradient descent.** For many features the inverse is expensive, so
+        we descend the gradient instead:
+
+        $$\nabla_w \mathcal{L} = \frac{2}{n} X^\top (Xw + b - y),
+        \qquad \nabla_b \mathcal{L} = \frac{2}{n} \sum_i (Xw + b - y)_i$$
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 33</div>
+        """
+    )
+    return
+
+
+@app.cell
+def _(mo):
+    import io as _io
+
+    import matplotlib.pyplot as _plt
+    import numpy as _np
+    from sklearn.linear_model import LinearRegression as _LinReg
+
+    _rng = _np.random.default_rng(1)
+    _X = _rng.normal(size=(120, 1))
+    _y = 3.0 * _X.ravel() + 1.0 + _rng.normal(scale=0.7, size=120)
+
+    _closed = _LinReg().fit(_X, _y)
+
+    _w, _b, _lr, _losses = _np.zeros(1), 0.0, 0.1, []
     _n = len(_y)
-    _k = int(round(label_fraction.value * _n))
-    _order = _np.random.default_rng(0).permutation(_n)
-    _labeled = _order[:_k]
+    for _ in range(200):
+        _pred = _X @ _w + _b
+        _losses.append(_np.mean((_pred - _y) ** 2))
+        _gw = (2 / _n) * _X.T @ (_pred - _y)
+        _gb = (2 / _n) * _np.sum(_pred - _y)
+        _w -= _lr * _gw
+        _b -= _lr * _gb
 
-    _fig, _ax = _plt.subplots(figsize=(6.5, 4.2))
-    _ax.scatter(_X[:, 0], _X[:, 1], color="#cbd5e1", s=30, label="unlabeled")
-    if _k > 0:
-        _ax.scatter(
-            _X[_labeled, 0], _X[_labeled, 1], c=_y[_labeled],
-            cmap="RdYlGn", vmin=-0.15, vmax=1.15, s=80,
-            edgecolor="k", linewidth=0.7, label="labeled",
-        )
-    if _k == 0:
-        _mode = "Unsupervised — no labels: look for structure"
-    elif _k < 0.5 * _n:
-        _mode = f"Semi-supervised — only {_k}/{_n} points labeled"
-    else:
-        _mode = "Supervised — every point has a label"
-    _ax.set_title(_mode)
-    _ax.set_xticks([])
-    _ax.set_yticks([])
-    _ax.legend(loc="upper right")
+    _fig, _axes = _plt.subplots(1, 2, figsize=(11, 4))
+    _xs = _np.linspace(_X.min() - 0.3, _X.max() + 0.3, 100).reshape(-1, 1)
+    _axes[0].scatter(_X, _y, color="#2563eb", s=20, alpha=0.7)
+    _axes[0].plot(_xs, _closed.predict(_xs), color="#dc2626", lw=2, label="closed form")
+    _axes[0].plot(_xs, _xs @ _w + _b, color="#16a34a", lw=2, ls="--", label="gradient descent")
+    _axes[0].set_title("Both methods find the same line")
+    _axes[0].legend()
+    _axes[1].plot(_losses, color="#2563eb")
+    _axes[1].set_xlabel("epoch")
+    _axes[1].set_ylabel("MSE")
+    _axes[1].set_title("Gradient descent converges")
+    _buf = _io.BytesIO()
+    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
     _plt.close(_fig)
+    _buf.seek(0)
     mo.vstack(
         [
-            label_fraction,
-            mo.as_html(_fig),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 38</div>"""),
+            mo.image(_buf, width="860px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 33</div>"""),
         ]
     )
     return
@@ -262,19 +253,20 @@ def _(label_fraction, mo):
 def _(mo):
     mo.md(
         r"""
-        ## The ML workflow
+        ## Evaluating a regression model
 
-        1. **Frame the problem** — what is the task, what counts as success?
-        2. **Collect & explore the data** — plots, summary statistics
-        3. **Preprocess** — missing values, encoding, scaling
-        4. **Split** — training / validation / test sets
-        5. **Choose & train a model** — fit to the training set
-        6. **Evaluate** — on held-out data, never on the training set
-        7. **Iterate**
+        - **R² (coefficient of determination)** — the fraction of the target
+          variance the model explains: $1$ is perfect, $0$ means "no better than
+          predicting the mean", and it *can go negative* on a bad model.
+        - **RMSE** — root mean squared error, in the same units as $y$, so its
+          magnitude is directly interpretable.
+        - **Residuals** — plot them! A pattern in the residuals means the
+          linear model is missing structure.
 
-        Most of the real work happens in steps 2–3.
+        Report every number on a **held-out test set**, never on the training
+        set. Below: the diabetes dataset (age, BMI, blood pressure, …).
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 33</div>
         """
     )
     return
@@ -282,55 +274,41 @@ def _(mo):
 
 @app.cell
 def _(mo):
-    mo.md(
-        r"""
-        ## Overfitting and underfitting
+    import io as _io
 
-        - **Underfitting:** the model is too simple — it misses the pattern (high *training* error).
-        - **Overfitting:** the model memorises noise — great on training data, poor on new data.
-
-        The cure: more data, simpler models, **regularisation** — and always
-        keeping a **held-out test set** to detect it.
-
-        Below: logistic regression on two moons with polynomial features of
-        increasing degree — watch the boundary wiggle.
-
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 38</div>
-        """
-    )
-    return
-
-
-@app.cell
-def _(mo):
     import matplotlib.pyplot as _plt
     import numpy as _np
-    from sklearn.datasets import make_moons as _make_moons
-    from sklearn.linear_model import LogisticRegression as _LR
-    from sklearn.pipeline import make_pipeline as _mkpipe
-    from sklearn.preprocessing import PolynomialFeatures as _Poly
-    from sklearn.preprocessing import StandardScaler as _Scaler
+    from sklearn.datasets import load_diabetes as _load_diabetes
+    from sklearn.linear_model import LinearRegression as _LinReg
+    from sklearn.metrics import mean_squared_error as _mse
+    from sklearn.metrics import r2_score as _r2
+    from sklearn.model_selection import train_test_split as _split
 
-    _X, _y = _make_moons(n_samples=200, noise=0.3, random_state=1)
-    _xx, _yy = _np.meshgrid(
-        _np.linspace(_X[:, 0].min() - 0.5, _X[:, 0].max() + 0.5, 250),
-        _np.linspace(_X[:, 1].min() - 0.5, _X[:, 1].max() + 0.5, 250),
+    _diab = _load_diabetes()
+    _Xtr, _Xte, _ytr, _yte = _split(
+        _diab.data, _diab.target, test_size=0.3, random_state=0
     )
-    _fig, _axes = _plt.subplots(1, 3, figsize=(12, 3.6), sharey=True)
-    for _ax, _deg in zip(_axes, [1, 3, 9]):
-        _pipe = _mkpipe(_Poly(degree=_deg), _Scaler(), _LR(max_iter=2000))
-        _pipe.fit(_X, _y)
-        _zz = _pipe.predict(_np.c_[_xx.ravel(), _yy.ravel()]).reshape(_xx.shape)
-        _ax.contourf(_xx, _yy, _zz, alpha=0.25, cmap="RdYlGn")
-        _ax.scatter(_X[_y == 0, 0], _X[_y == 0, 1], color="#dc2626", s=14)
-        _ax.scatter(_X[_y == 1, 0], _X[_y == 1, 1], color="#16a34a", s=14)
-        _ax.set_title(f"degree {_deg} · train acc {_pipe.score(_X, _y):.2f}")
-        _ax.set_aspect("equal")
+    _m = _LinReg().fit(_Xtr, _ytr)
+    _pred = _m.predict(_Xte)
+
+    _fig, _axes = _plt.subplots(1, 2, figsize=(11, 4.2))
+    _axes[0].scatter(_yte, _pred, color="#2563eb", s=22, alpha=0.7)
+    _lim = [_yte.min(), _yte.max()]
+    _axes[0].plot(_lim, _lim, color="gray", ls="--")
+    _axes[0].set_xlabel("true")
+    _axes[0].set_ylabel("predicted")
+    _axes[0].set_title(f"diabetes — test $R^2$ = {_r2(_yte, _pred):.2f}")
+    _axes[1].hist(_yte - _pred, bins=25, color="#dc2626", alpha=0.8)
+    _axes[1].set_xlabel("true − predicted")
+    _axes[1].set_title(f"residuals — RMSE = {_np.sqrt(_mse(_yte, _pred)):.1f}")
+    _buf = _io.BytesIO()
+    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
     _plt.close(_fig)
+    _buf.seek(0)
     mo.vstack(
         [
-            mo.as_html(_fig),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 38</div>"""),
+            mo.image(_buf, width="860px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 33</div>"""),
         ]
     )
     return
@@ -340,11 +318,21 @@ def _(mo):
 def _(mo):
     mo.md(
         r"""
-        ## The datasets of this course
+        ## Linear regression in scikit-learn
 
-        Everything runs offline — the datasets ship with scikit-learn.
+        ```python
+        from sklearn.linear_model import LinearRegression, SGDRegressor
+        model = LinearRegression().fit(X_train, y_train)   # closed form
+        model.score(X_test, y_test)                         # R²
+        ```
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 38</div>
+        - `LinearRegression` — exact least squares (closed form)
+        - `SGDRegressor` — gradient descent; scales to very large datasets
+        - **regularised** cousins: `Ridge` (L2 penalty) and `Lasso` (L1) trade a
+          little bias for a lot less variance — the same idea we will meet again
+          in logistic regression.
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 33</div>
         """
     )
     return
@@ -352,53 +340,20 @@ def _(mo):
 
 @app.cell
 def _(mo):
-    import matplotlib.pyplot as _plt
-    import numpy as _np
-    from sklearn.datasets import (
-        load_digits as _load_digits,
-        load_iris as _load_iris,
-        load_wine as _load_wine,
-        make_blobs as _make_blobs,
-        make_circles as _make_circles,
-        make_moons as _make_moons,
-    )
+    mo.md(
+        r"""
+        # Part 2 — Logistic regression
 
-    _fig, _axes = _plt.subplots(2, 3, figsize=(11, 6.2))
+        ## From regression to classification
 
-    _Xb, _yb = _make_blobs(n_samples=150, centers=[(-2, -2), (2, 2)], cluster_std=1.2, random_state=0)
-    _axes[0, 0].scatter(_Xb[:, 0], _Xb[:, 1], c=_yb, cmap="RdYlGn", s=14)
-    _axes[0, 0].set_title("Gaussian blobs (synthetic)")
+        Linear regression predicts a **number**. But many problems ask for a
+        **label** (spam / not spam, healthy / diseased).
 
-    _Xm, _ym = _make_moons(n_samples=150, noise=0.2, random_state=0)
-    _axes[0, 1].scatter(_Xm[:, 0], _Xm[:, 1], c=_ym, cmap="RdYlGn", s=14)
-    _axes[0, 1].set_title("Two moons (synthetic)")
+        Feed $0/1$ labels into a line and it happily predicts $-0.4$ or $1.4$ —
+        which is meaningless as a probability:
 
-    _Xc, _yc = _make_circles(n_samples=300, factor=0.4, noise=0.1, random_state=0)
-    _axes[0, 2].scatter(_Xc[:, 0], _Xc[:, 1], c=_yc, cmap="RdYlGn", s=14)
-    _axes[0, 2].set_title("Concentric circles (synthetic)")
-
-    _iris = _load_iris()
-    _axes[1, 0].scatter(_iris.data[:, 2], _iris.data[:, 3], c=_iris.target, cmap="RdYlGn", s=16)
-    _axes[1, 0].set_title("Iris — petals (3 species)")
-
-    _wine = _load_wine()
-    _axes[1, 1].scatter(_wine.data[:, 0], _wine.data[:, 6], c=_wine.target, cmap="RdYlGn", s=16)
-    _axes[1, 1].set_title("Wine — alcohol vs flavanoids")
-
-    _digits = _load_digits()
-    _axes[1, 2].imshow(_digits.images[0], cmap="gray_r")
-    _axes[1, 2].set_title("Digits — 8×8 pixel images")
-
-    for _ax in _axes.ravel():
-        _ax.set_xticks([])
-        _ax.set_yticks([])
-    _fig.tight_layout()
-    _plt.close(_fig)
-    mo.vstack(
-        [
-            mo.as_html(_fig),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 38</div>"""),
-        ]
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 33</div>
+        """
     )
     return
 
@@ -407,8 +362,6 @@ def _(mo):
 def _(mo):
     mo.md(
         r"""
-        # Part 3 — Logistic regression
-
         ## Recap: the linear model
 
         Linear regression predicts a **continuous** number with a linear
@@ -423,7 +376,7 @@ def _(mo):
 
         — this is **gradient descent**, and $\eta$ is the *learning rate*.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">15 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 33</div>
         """
     )
     return
@@ -431,6 +384,8 @@ def _(mo):
 
 @app.cell
 def _(mo):
+    import io as _io
+
     import matplotlib.pyplot as _plt
     import numpy as _np
     from sklearn.linear_model import LinearRegression as _LinReg
@@ -455,11 +410,14 @@ def _(mo):
     _ax.set_ylabel("label $y$")
     _ax.set_title("Labels are 0/1 — the line predicts −0.4 … 1.4. Not adapted!")
     _ax.legend(loc="center left")
+    _buf = _io.BytesIO()
+    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
     _plt.close(_fig)
+    _buf.seek(0)
     mo.vstack(
         [
-            mo.as_html(_fig),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">16 / 38</div>"""),
+            mo.image(_buf, width="620px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 33</div>"""),
         ]
     )
     return
@@ -480,7 +438,7 @@ def _(mo):
         It is smooth and differentiable everywhere (we will need the
         derivative for gradient descent).
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">17 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 33</div>
         """
     )
     return
@@ -488,6 +446,8 @@ def _(mo):
 
 @app.cell
 def _(mo):
+    import io as _io
+
     import matplotlib.pyplot as _plt
     import numpy as _np
 
@@ -502,11 +462,14 @@ def _(mo):
     _ax.set_ylabel("σ(z)")
     _ax.set_title("Bounded between 0 and 1, with a sharp transition")
     _ax.grid(alpha=0.3)
+    _buf = _io.BytesIO()
+    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
     _plt.close(_fig)
+    _buf.seek(0)
     mo.vstack(
         [
-            mo.as_html(_fig),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">18 / 38</div>"""),
+            mo.image(_buf, width="620px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">15 / 33</div>"""),
         ]
     )
     return
@@ -525,7 +488,7 @@ def _(mo):
         - far right: $\sigma \approx 1$ — confidently class 1
         - in between: a probability!
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">19 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">16 / 33</div>
         """
     )
     return
@@ -533,6 +496,8 @@ def _(mo):
 
 @app.cell
 def _(mo):
+    import io as _io
+
     import matplotlib.pyplot as _plt
     import numpy as _np
     from sklearn.linear_model import LinearRegression as _LinReg
@@ -559,11 +524,14 @@ def _(mo):
     for _ax in _axes:
         _ax.set_xlabel("feature $x$")
     _axes[0].set_ylabel("label / probability")
+    _buf = _io.BytesIO()
+    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
     _plt.close(_fig)
+    _buf.seek(0)
     mo.vstack(
         [
-            mo.as_html(_fig),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">20 / 38</div>"""),
+            mo.image(_buf, width="860px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">17 / 33</div>"""),
         ]
     )
     return
@@ -591,7 +559,7 @@ def _(mo):
         the classes; we do not fit the data (regression), we find the
         separation (classification).
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">21 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">18 / 33</div>
         """
     )
     return
@@ -617,7 +585,7 @@ def _(mo):
         This is the **cross-entropy** — convex in $w$, so gradient descent
         finds the global minimum.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">22 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">19 / 33</div>
         """
     )
     return
@@ -642,7 +610,7 @@ def _(mo):
 
         $$w \leftarrow w - \eta \, \nabla_w \mathcal{L} \quad \text{— gradient descent, repeated for some epochs}$$
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">23 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">20 / 33</div>
         """
     )
     return
@@ -664,16 +632,16 @@ def _(mo):
         we show the full dataset multiple times — each complete pass is one
         **epoch**.
 
-        Keep this picture — it is the seed of lecture 3 (neural networks).
+        Keep this picture — it is the seed of tomorrow's lecture on neural networks.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">24 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">21 / 33</div>
         """
     )
     return
 
 
 @app.cell
-def _():
+def _(mo):
     import numpy as _np
     from sklearn.datasets import make_blobs as _make_blobs
 
@@ -681,11 +649,6 @@ def _():
         n_samples=200, centers=[(-2.0, -2.0), (2.0, 2.0)],
         cluster_std=1.2, random_state=0,
     )
-    return blobs_X, blobs_y
-
-
-@app.cell
-def _(mo):
     mo.md(
         r"""
         ## Logistic regression by hand (numpy) — and in scikit-learn
@@ -700,14 +663,16 @@ def _(mo):
         ~15 lines in total. We train it on the two-blob dataset and compare
         with `sklearn.linear_model.LogisticRegression`.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">25 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">22 / 33</div>
         """
     )
-    return
+    return blobs_X, blobs_y
 
 
 @app.cell
 def _(blobs_X, blobs_y, mo):
+    import io as _io
+
     import matplotlib.pyplot as _plt
     import numpy as _np
 
@@ -753,11 +718,14 @@ def _(blobs_X, blobs_y, mo):
     _axes[1].set_title(f"Decision boundary (by hand, acc {acc_hand:.2f})")
     _axes[1].legend()
     _fig.colorbar(_cs, ax=_axes[1], label="p(class 1)")
+    _buf = _io.BytesIO()
+    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
     _plt.close(_fig)
+    _buf.seek(0)
     mo.vstack(
         [
-            mo.as_html(_fig),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">26 / 38</div>"""),
+            mo.image(_buf, width="860px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">23 / 33</div>"""),
         ]
     )
     return acc_hand, b_hand, fit_logistic_gd, w_hand
@@ -774,7 +742,7 @@ def _(acc_hand, b_hand, blobs_X, blobs_y, mo, w_hand):
     print(f"by hand:      w = {w_hand.round(3)}, b = {b_hand:+.3f}, accuracy = {acc_hand:.3f}")
     print("(sklearn's weights are slightly smaller — it applies L2 regularisation by default)")
     mo.md(
-        r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">27 / 38</div>"""
+        r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">24 / 33</div>"""
     )
     return (logreg_clf,)
 
@@ -799,7 +767,7 @@ def _(mo):
         - features are **linearly related to the log-odds**,
         - there are **no strong outliers**, and the **sample size is large**.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">28 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">25 / 33</div>
         """
     )
     return
@@ -807,6 +775,13 @@ def _(mo):
 
 @app.cell
 def _(mo):
+    # The widget is created here; the *next* cell reads `.value` and displays
+    # the slider together with its figure. The md must be the LAST expression
+    # so it becomes the cell's output.
+    sep_slider = mo.ui.slider(
+        start=0.5, stop=4.0, step=0.1, value=2.0,
+        label="Class separation", show_value=True, debounce=True,
+    )
     mo.md(
         r"""
         ## Interactive demo — class separation
@@ -814,18 +789,16 @@ def _(mo):
         The slider controls how far apart the two classes are. Watch the
         decision boundary and the accuracy react.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">29 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">26 / 33</div>
         """
-    )
-    sep_slider = mo.ui.slider(
-        start=0.5, stop=4.0, step=0.1, value=2.0,
-        label="Class separation", show_value=True, debounce=True,
     )
     return (sep_slider,)
 
 
 @app.cell
 def _(mo, sep_slider):
+    import io as _io
+
     import matplotlib.pyplot as _plt
     import numpy as _np
     from sklearn.linear_model import LogisticRegression as _LR
@@ -854,12 +827,15 @@ def _(mo, sep_slider):
     _ax.set_title(f"Training accuracy: {_train_acc:.3f}")
     _ax.legend()
     _ax.set_aspect("equal")
+    _buf = _io.BytesIO()
+    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
     _plt.close(_fig)
+    _buf.seek(0)
     mo.vstack(
         [
             sep_slider,
-            mo.as_html(_fig),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">30 / 38</div>"""),
+            mo.image(_buf, width="620px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">27 / 33</div>"""),
         ]
     )
     return
@@ -867,6 +843,13 @@ def _(mo, sep_slider):
 
 @app.cell
 def _(mo):
+    # The widget is created here; the *next* cell reads `.value` and displays
+    # the slider together with its figure. The md must be the LAST expression
+    # so it becomes the cell's output.
+    thr_slider = mo.ui.slider(
+        start=0.05, stop=0.95, step=0.05, value=0.5,
+        label="Decision threshold", show_value=True, debounce=True,
+    )
     mo.md(
         r"""
         ## Interactive demo — the decision threshold
@@ -875,18 +858,16 @@ def _(mo):
         and *we* choose where to cut. Move the threshold and watch which
         errors you trade: false positives (amber) vs false negatives (red).
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">31 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">28 / 33</div>
         """
-    )
-    thr_slider = mo.ui.slider(
-        start=0.05, stop=0.95, step=0.05, value=0.5,
-        label="Decision threshold", show_value=True, debounce=True,
     )
     return (thr_slider,)
 
 
 @app.cell
 def _(blobs_X, blobs_y, logreg_clf, mo, thr_slider):
+    import io as _io
+
     import matplotlib.pyplot as _plt
     import numpy as _np
 
@@ -910,12 +891,15 @@ def _(blobs_X, blobs_y, logreg_clf, mo, thr_slider):
     _ax.set_title(f"threshold = {_t:.2f} — which error do you prefer?")
     _ax.legend(loc="upper left", fontsize=8)
     _ax.set_aspect("equal")
+    _buf = _io.BytesIO()
+    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
     _plt.close(_fig)
+    _buf.seek(0)
     mo.vstack(
         [
             thr_slider,
-            mo.as_html(_fig),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">32 / 38</div>"""),
+            mo.image(_buf, width="620px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">29 / 33</div>"""),
         ]
     )
     return
@@ -936,7 +920,7 @@ def _(mo):
 
         scikit-learn's `LogisticRegression` handles this automatically.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">33 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">30 / 33</div>
         """
     )
     return
@@ -944,6 +928,8 @@ def _(mo):
 
 @app.cell
 def _(mo):
+    import io as _io
+
     import matplotlib.pyplot as _plt
     import numpy as _np
     from sklearn.datasets import load_iris as _load_iris
@@ -967,33 +953,15 @@ def _(mo):
     _ax.set_ylabel("petal width (cm)")
     _ax.set_title(f"Logistic regression on iris — accuracy {_clf.score(_X, _y):.2f}")
     _ax.legend()
+    _buf = _io.BytesIO()
+    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
     _plt.close(_fig)
+    _buf.seek(0)
     mo.vstack(
         [
-            mo.as_html(_fig),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">34 / 38</div>"""),
+            mo.image(_buf, width="620px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">31 / 33</div>"""),
         ]
-    )
-    return
-
-
-@app.cell
-def _(mo):
-    mo.md(
-        r"""
-        ## Evaluating a classifier (a taste)
-
-        - **Accuracy** — fraction of correct predictions. Fine when classes are balanced.
-        - **Confusion matrix** — TP / FP / FN / TN per class; shows *which*
-          classes get confused, and how the 0.5 threshold trades one error
-          type against the other (see the demo above).
-
-        We go deeper into metrics (precision, recall, F1, ROC/AUC) in the
-        exercises — including why accuracy can be outright **misleading** on
-        imbalanced data.
-
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">35 / 38</div>
-        """
     )
     return
 
@@ -1004,17 +972,18 @@ def _(mo):
         r"""
         ## Summary
 
-        - Machine learning = learning rules from data; **supervised**,
-          **unsupervised**, **semi-supervised** paradigms differ in how much
-          labeling you have.
-        - **Logistic regression** = linear model + sigmoid: it *separates*
-          rather than fits. Trained by minimising the **cross-entropy** with
-          **gradient descent** — no analytic solution, but a simple gradient.
-        - You implemented it **by hand in ~15 lines of numpy** — and it agrees
-          with scikit-learn.
-        - Logistic regression **is one neuron** — remember this for lecture 3.
+        - **Linear regression** predicts a number and minimises the **MSE** —
+          solvable in closed form (normal equations) or by **gradient descent**.
+        - **Logistic regression** = linear model + sigmoid, trained on the
+          **cross-entropy**; there is no closed form, but the gradient is simple.
+        - It is exactly **one neuron** — the seed of the neural networks.
+        - **Feature scaling** and **regularisation** are the practical levers;
+          `predict_proba` vs `predict` is the probability/label distinction.
+        - **Softmax / one-vs-rest** extend it to many classes.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">36 / 38</div>
+        Next session: **decision trees**.
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">32 / 33</div>
         """
     )
     return
@@ -1024,29 +993,11 @@ def _(mo):
 def _(mo):
     mo.md(
         r"""
-        ## Where to go next
+        # Thanks for this session!
 
-        - **Exercise:** `notebooks/01/introduction_logistic_regression_exercise.ipynb`
-          — implement logistic regression by hand, compare against sklearn,
-          then try it on the breast-cancer dataset (and discover the accuracy trap).
-        - **Lecture 2:** decision trees and random forests — our first
-          *non-linear* classifiers.
+        Questions? Next up: **decision trees**.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">37 / 38</div>
-        """
-    )
-    return
-
-
-@app.cell
-def _(mo):
-    mo.md(
-        r"""
-        # Thanks for today!
-
-        See you next week.
-
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">38 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">33 / 33</div>
         """
     )
     return

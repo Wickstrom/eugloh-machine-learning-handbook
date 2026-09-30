@@ -50,5 +50,8 @@ opencode.json
 # Raw course materials (large binary presentations)
 resources/
 
+# Course project (local-only, not pushed to GitHub)
+project/
+
 # Marimo local cache
 __marimo__/

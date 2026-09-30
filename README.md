@@ -15,34 +15,69 @@ within the [European University Alliance for Global Health (EUGLOH)](https://www
 
 ## 📑 Content
 
-1. **Introduction to machine learning & logistic regression**
-    - What is ML? Supervised, unsupervised, and semi-supervised learning
-    - The ML workflow, overfitting, train/validation/test splits
+Each day is split into **four sessions** (one Marimo deck per session), following
+the course schedule.
+
+### Day 1 — Oct 19
+
+1. **Session 1 — Introduction to machine learning** (09:00)
+    - What is ML? Supervised, unsupervised, semi- and self-supervised learning
+    - The ML workflow, over- and underfitting, train/validation/test splits
+    - The datasets used throughout the course
+    - Interactive demo: labeling paradigms (supervised → semi-supervised → unsupervised)
+
+    [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/01/01_introduction/index.html)
+
+2. **Session 2 — Linear & logistic regression** (10:00)
+    - Linear regression — MSE, the normal equations, and gradient descent
     - Logistic regression — sigmoid, cross-entropy, gradient descent,
       implemented **by hand in numpy** and compared against scikit-learn
-    - Interactive demos: labeling paradigms, class separation, decision threshold
+    - Multi-class with one-vs-rest / softmax
+    - Interactive demos: class separation, decision threshold
 
-    [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/01/introduction_logistic_regression/index.html)
-    [![Exercises](https://img.shields.io/badge/-Exercises-green?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/01/introduction_logistic_regression_exercise.ipynb)
+    [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/01/02_regression/index.html)
+    [![Exercises](https://img.shields.io/badge/-Exercises-green?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/01/introduction_regression_trees_forests_exercise.ipynb)
 
-2. **Decision trees and random forests**
-    - Impurity (Gini/entropy) and the CART algorithm — one split computed **by hand** and verified against scikit-learn
-    - Overfitting and depth control: `max_depth`, `min_samples_leaf`, cost-complexity pruning
-    - Bagging and random forests; feature importance
-    - Interactive demos: impurity curves, tree-depth slider, forest-size slider
+3. **Session 3 — Decision trees** (11:15)
+    - Impurity (Gini/entropy), CART, one split computed **by hand**
+    - Overfitting, pruning, complexity
+    - Interactive demos: impurity curves, tree depth
 
-    [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/02/decision_trees_random_forests/index.html)
-    [![Exercises](https://img.shields.io/badge/-Exercises-green?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/02/decision_trees_random_forests_exercise.ipynb)
+    [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/01/03_decision_trees/index.html)
 
-3. **Neural networks**
-    - Neurons, activation functions, the multi-layer perceptron
-    - Forward pass and backpropagation — an MLP **written from scratch in numpy**,
-      compared against `MLPClassifier`
-    - Capacity, feature scaling, early stopping; multi-class with softmax (digits demo)
+4. **Session 4 — Random forests & ensembles** (12:15)
+    - Bagging, boosting, feature importance
+    - Why trees dominate tabular machine learning
+    - Interactive demo: number of trees and depth
+
+    [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/01/04_random_forests/index.html)
+
+### Day 2 — Oct 20
+
+5. **Session 1 — Introduction to neural networks** (09:00)
+    - From linear to non-linear classifiers; a brief history of neural networks
+
+    [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/02/01_introduction/index.html)
+
+6. **Session 2 — The perceptron & multilayer networks** (10:00)
+    - The artificial neuron, the XOR problem, the big idea, and the MLP
+
+    [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/02/02_perceptron_mlp/index.html)
+
+7. **Session 3 — Forward/backward pass & optimization** (11:15)
+    - Forward pass, backpropagation, gradient descent and the learning rate
+    - An MLP **written from scratch in numpy**, compared against `MLPClassifier`
+
+    [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/02/03_training/index.html)
+    [![Exercises](https://img.shields.io/badge/-Exercises-green?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/02/neural_networks_exercise.ipynb)
+
+8. **Session 4 — Components & going beyond** (12:15)
+    - Components: activation functions, weight initialization, optimizers
+      (SGD/momentum/Adam), regularization, capacity
+    - Going beyond: softmax, convolutional networks, **transformers**, autoencoders
     - Interactive demo: hidden-layer-size and activation-function widgets
 
-    [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/03/neural_networks/index.html)
-    [![Exercises](https://img.shields.io/badge/-Exercises-green?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/03/neural_networks_exercise.ipynb)
+    [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/02/04_components_and_beyond/index.html)
 
 ## 💻 How to run the notebooks locally
 
@@ -83,7 +118,7 @@ We use [**uv**](https://docs.astral.sh/uv/) for fast, reproducible Python enviro
 5. To edit a Marimo notebook locally with live code, file watchers, and a variable explorer:
 
     ```bash
-    uv run marimo edit notebooks/01/introduction_logistic_regression.py
+    uv run marimo edit notebooks/01/01_introduction.py
     ```
 
 You only ever need `uv run` — it will use the `.venv` automatically, no need to
@@ -117,9 +152,8 @@ To edit a lecture locally with live code, file watchers, and a variable
 explorer:
 
 ```bash
-uv run marimo edit notebooks/01/introduction_logistic_regression.py
-uv run marimo edit notebooks/02/decision_trees_random_forests.py
-uv run marimo edit notebooks/03/neural_networks.py
+uv run marimo edit notebooks/01/01_introduction.py
+uv run marimo edit notebooks/02/01_introduction.py
 ```
 
 ### Keyboard shortcuts (inside a deck)

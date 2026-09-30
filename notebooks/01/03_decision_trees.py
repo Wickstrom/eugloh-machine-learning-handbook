@@ -8,25 +8,23 @@
 # ]
 # ///
 #
-# Lecture 2 — Decision Trees and Random Forests.
-# Structure follows the FYS-2021 "DT" slide deck (motivation → building
-# blocks → splitting criterion → CART → practical aspects → the power of
-# the crowd → applications).
-# Run locally with `marimo edit notebooks/02/decision_trees_random_forests.py`
+# Lecture 1 (Oct 19), Session 3 — Decision trees.
+# Run locally with `marimo edit notebooks/01/03_decision_trees.py`
 # or export to WASM for GitHub Pages (see .github/workflows/publish-slides.yml).
 #
 # NOTE on scoping: Marimo requires each global name to be owned by exactly
 # one cell. All cell-locals are underscore-prefixed. UI elements are created
-# in one cell (which shows only the intro text) and *read* in the following
-# cell, which displays the widget together with its figure via mo.vstack —
-# this keeps every interactive demo on a single slide.
+# in one cell (whose *output* is the intro text — the md must be the last
+# expression) and *read* in the following cell, which displays the widget
+# together with its figure via mo.vstack. Figures are rendered with
+# mo.image(BytesIO) — mo.as_html does not work in the Pyodide/WASM build.
 
 import marimo
 
 __generated_with = "0.17.6"
 app = marimo.App(
     width="medium",
-    layout_file="layouts/decision_trees_random_forests.slides.json",
+    layout_file="layouts/03_decision_trees.slides.json",
 )
 
 
@@ -49,15 +47,15 @@ def _():
 def _(mo):
     mo.md(
         r"""
-        # Decision Trees and Random Forests
+        # Decision Trees
 
-        **Machine Learning with Python** — Lecture 2
+        **Machine Learning with Python** — Lecture 1, Session 3 (Oct 19)
 
         EUGLOH — *Problem Solving Using Open-Source Languages; R and Python*
 
         University of Novi Sad
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 28</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 19</div>
         """
     )
     return
@@ -67,16 +65,17 @@ def _(mo):
 def _(mo):
     mo.md(
         r"""
-        ## Today's lecture
+        ## Today's session
 
         - **Motivation** — decisions everywhere; every good question reduces uncertainty
         - **Building blocks** — roots, nodes, branches, leaves
         - **The splitting criterion** — entropy and Gini impurity
         - **CART** — growing a tree greedily; a split computed **by hand**
         - **Practical aspects** — overfitting, pruning, complexity
-        - **The power of the crowd** — ensembles, random forests, boosting
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 28</div>
+        Session 3 of 4 today.
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 19</div>
         """
     )
     return
@@ -102,7 +101,7 @@ def _(mo):
         A decision tree formalises this: **a sequence of questions, asked in
         the order that reduces uncertainty fastest.**
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 28</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 19</div>
         """
     )
     return
@@ -110,6 +109,8 @@ def _(mo):
 
 @app.cell
 def _(mo):
+    import io as _io
+
     import matplotlib.pyplot as _plt
     import numpy as _np
     from sklearn.datasets import make_blobs as _make_blobs
@@ -129,11 +130,14 @@ def _(mo):
     _ax.set_title("Which questions would you ask to separate these?")
     _ax.legend()
     _ax.set_aspect("equal")
+    _buf = _io.BytesIO()
+    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
     _plt.close(_fig)
+    _buf.seek(0)
     mo.vstack(
         [
-            mo.as_html(_fig),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 28</div>"""),
+            mo.image(_buf, width="620px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 19</div>"""),
         ]
     )
     return tree_X, tree_y
@@ -160,7 +164,7 @@ def _(mo):
         (housing prices). Inference is a walk from root to leaf — fully
         **interpretable**: you can read the model as a flowchart.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 28</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 19</div>
         """
     )
     return
@@ -187,7 +191,7 @@ def _(mo):
         - Both are $0$ for a **pure** node (all one class) and maximal at $p = 0.5$
         - A good split makes the children *purer* than the parent
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 28</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 19</div>
         """
     )
     return
@@ -195,6 +199,10 @@ def _(mo):
 
 @app.cell
 def _(mo):
+    p_slider = mo.ui.slider(
+        start=0.01, stop=0.99, step=0.01, value=0.5,
+        label="Fraction of class 1 (p)", show_value=True, debounce=True,
+    )
     mo.md(
         r"""
         ## Interactive demo — impurity curves
@@ -202,18 +210,16 @@ def _(mo):
         Move the slider to change the class proportion $p$ in a node, and
         watch both impurity measures react. Where is the impurity maximal?
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 28</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 19</div>
         """
-    )
-    p_slider = mo.ui.slider(
-        start=0.01, stop=0.99, step=0.01, value=0.5,
-        label="Fraction of class 1 (p)", show_value=True, debounce=True,
     )
     return (p_slider,)
 
 
 @app.cell
 def _(mo, p_slider):
+    import io as _io
+
     import matplotlib.pyplot as _plt
     import numpy as _np
 
@@ -233,12 +239,15 @@ def _(mo, p_slider):
     _ax.set_title(f"p = {_p:.2f}  →  entropy = {_h:.3f},  Gini = {_g:.3f}")
     _ax.legend()
     _ax.grid(alpha=0.3)
+    _buf = _io.BytesIO()
+    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
     _plt.close(_fig)
+    _buf.seek(0)
     mo.vstack(
         [
             p_slider,
-            mo.as_html(_fig),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 28</div>"""),
+            mo.image(_buf, width="620px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 19</div>"""),
         ]
     )
     return
@@ -264,7 +273,7 @@ def _(mo):
 
         The result is a **binary tree**; a leaf predicts its majority class.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 28</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 19</div>
         """
     )
     return
@@ -286,7 +295,7 @@ def _(mo):
 
         Try it with pen and paper first — then let the code check you.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 28</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 19</div>
         """
     )
     return
@@ -313,7 +322,7 @@ def _(mo):
         _star = "  <- best" if _t == 3.5 else ""
         print(f"   x <= {_t}  |   {_gini(_L):.3f}     {_gini(_R):.3f}   |  {_w:.3f}{_star}")
     mo.md(
-        r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 28</div>"""
+        r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 19</div>"""
     )
     return
 
@@ -329,7 +338,7 @@ def _(mo):
     print(f"sklearn's root split: x <= {_stump.tree_.threshold[0]:.1f}")
     print("(agrees with the hand calculation — threshold 3.5)")
     mo.md(
-        r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 28</div>"""
+        r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 19</div>"""
     )
     return
 
@@ -348,7 +357,7 @@ def _(mo):
 
         Fitting is instant on small data — and the tree can be *drawn*.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 28</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 19</div>
         """
     )
     return
@@ -356,6 +365,8 @@ def _(mo):
 
 @app.cell
 def _(mo, tree_X, tree_y):
+    import io as _io
+
     import matplotlib.pyplot as _plt
     from sklearn.tree import DecisionTreeClassifier as _DTC
     from sklearn.tree import plot_tree as _plot_tree
@@ -365,7 +376,10 @@ def _(mo, tree_X, tree_y):
     _fig1, _ax = _plt.subplots(figsize=(10, 4.2))
     _plot_tree(_tree, feature_names=["$x_1$", "$x_2$"],
                class_names=["class 0", "class 1"], filled=True, ax=_ax)
+    _buf1 = _io.BytesIO()
+    _fig1.savefig(_buf1, format="png", dpi=150, bbox_inches="tight")
     _plt.close(_fig1)
+    _buf1.seek(0)
 
     import numpy as _np
     _xx, _yy = _np.meshgrid(
@@ -380,12 +394,15 @@ def _(mo, tree_X, tree_y):
     _ax2.scatter(tree_X[tree_y == 1, 0], tree_X[tree_y == 1, 1], color="#16a34a", s=20)
     _ax2.set_title("Depth-2 tree — axis-aligned cuts")
     _ax2.set_aspect("equal")
+    _buf2 = _io.BytesIO()
+    _fig2.savefig(_buf2, format="png", dpi=150, bbox_inches="tight")
     _plt.close(_fig2)
+    _buf2.seek(0)
     mo.vstack(
         [
-            mo.as_html(_fig1),
-            mo.as_html(_fig2),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 28</div>"""),
+            mo.image(_buf1, width="860px"),
+            mo.image(_buf2, width="520px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 19</div>"""),
         ]
     )
     return
@@ -393,6 +410,10 @@ def _(mo, tree_X, tree_y):
 
 @app.cell
 def _(mo):
+    depth_slider = mo.ui.slider(
+        start=1, stop=15, step=1, value=2,
+        label="max_depth", show_value=True, debounce=True,
+    )
     mo.md(
         r"""
         ## Practical aspects — the dark side: unlimited trees overfit
@@ -403,18 +424,16 @@ def _(mo):
         Watch the boundary below as `max_depth` grows: train accuracy climbs
         towards 1.0, but **test** accuracy peaks early and then decays.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">15 / 28</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">15 / 19</div>
         """
-    )
-    depth_slider = mo.ui.slider(
-        start=1, stop=15, step=1, value=2,
-        label="max_depth", show_value=True, debounce=True,
     )
     return (depth_slider,)
 
 
 @app.cell
 def _(depth_slider, mo):
+    import io as _io
+
     import matplotlib.pyplot as _plt
     import numpy as _np
     from sklearn.datasets import make_moons as _make_moons
@@ -440,12 +459,15 @@ def _(depth_slider, mo):
         f"train {_clf.score(_Xtr, _ytr):.2f} · test {_clf.score(_Xte, _yte):.2f}"
     )
     _ax.set_aspect("equal")
+    _buf = _io.BytesIO()
+    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
     _plt.close(_fig)
+    _buf.seek(0)
     mo.vstack(
         [
             depth_slider,
-            mo.as_html(_fig),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">16 / 28</div>"""),
+            mo.image(_buf, width="620px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">16 / 19</div>"""),
         ]
     )
     return
@@ -474,215 +496,7 @@ def _(mo):
         *(For regression trees the recipe is identical — split by variance
         reduction instead of Gini, and leaves predict the mean.)*
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">17 / 28</div>
-        """
-    )
-    return
-
-
-@app.cell
-def _(mo):
-    mo.md(
-        r"""
-        # Part 2 — The power of the crowd
-
-        - We know single decision trees can **overfit**.
-        - We could choose to **underfit** single decision trees (shallow stumps)…
-        - …and **combine many of them into an ensemble**.
-
-        A bunch of **weak learners** → one **strong learner**. This is a
-        surprisingly effective idea!
-
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">18 / 28</div>
-        """
-    )
-    return
-
-
-@app.cell
-def _(mo):
-    mo.md(
-        r"""
-        ## Random forests — bagging
-
-        **Random forest** = many decorrelated trees that **vote**:
-
-        1. **Bagging** — each tree is trained on a random *bootstrap* sample
-           of the data (sampled with replacement)
-        2. **Random feature subsets** — at each split, only a random subset of
-           features may be considered → the trees become *different*
-        3. **Aggregate** — majority vote (classification) or average (regression)
-
-        Averaging many decorrelated trees cancels their individual errors —
-        the forest is much more robust than any single tree.
-
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">19 / 28</div>
-        """
-    )
-    n_trees_slider = mo.ui.slider(
-        start=1, stop=100, step=1, value=25,
-        label="n_estimators", show_value=True, debounce=True,
-    )
-    forest_depth_slider = mo.ui.slider(
-        start=1, stop=12, step=1, value=5,
-        label="max_depth per tree", show_value=True, debounce=True,
-    )
-    return forest_depth_slider, n_trees_slider
-
-
-@app.cell
-def _(forest_depth_slider, mo, n_trees_slider):
-    import matplotlib.pyplot as _plt
-    import numpy as _np
-    from sklearn.datasets import make_moons as _make_moons
-    from sklearn.ensemble import RandomForestClassifier as _RFC
-    from sklearn.model_selection import train_test_split as _split
-
-    _X, _y = _make_moons(n_samples=300, noise=0.3, random_state=0)
-    _Xtr, _Xte, _ytr, _yte = _split(_X, _y, test_size=0.3, random_state=0, stratify=_y)
-    _clf = _RFC(
-        n_estimators=n_trees_slider.value,
-        max_depth=forest_depth_slider.value,
-        random_state=0,
-    ).fit(_Xtr, _ytr)
-
-    _xx, _yy = _np.meshgrid(
-        _np.linspace(_X[:, 0].min() - 0.5, _X[:, 0].max() + 0.5, 250),
-        _np.linspace(_X[:, 1].min() - 0.5, _X[:, 1].max() + 0.5, 250),
-    )
-    _Z = _clf.predict(_np.c_[_xx.ravel(), _yy.ravel()]).reshape(_xx.shape)
-
-    _fig, _ax = _plt.subplots(figsize=(5.6, 4.6))
-    _ax.contourf(_xx, _yy, _Z, alpha=0.25, cmap="RdYlGn")
-    _ax.scatter(_X[_y == 0, 0], _X[_y == 0, 1], color="#dc2626", s=16)
-    _ax.scatter(_X[_y == 1, 0], _X[_y == 1, 1], color="#16a34a", s=16)
-    _ax.set_title(
-        f"{n_trees_slider.value} trees, depth {forest_depth_slider.value} · "
-        f"train {_clf.score(_Xtr, _ytr):.2f} · test {_clf.score(_Xte, _yte):.2f}"
-    )
-    _ax.set_aspect("equal")
-    _plt.close(_fig)
-    mo.vstack(
-        [
-            mo.hstack([n_trees_slider, forest_depth_slider]),
-            mo.as_html(_fig),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">20 / 28</div>"""),
-        ]
-    )
-    return
-
-
-@app.cell
-def _(mo):
-    mo.md(
-        r"""
-        ## Boosting — the other way to combine trees
-
-        Bagging trains trees **in parallel**; **boosting** trains them
-        **in sequence**, each fixing the previous one's mistakes:
-
-        1. **Start simple** — train a weak model (a small tree)
-        2. **Focus on mistakes** — increase the weight of misclassified samples
-        3. **Train the next model** — fit another weak learner on the hard cases
-        4. **Repeat** — each learner corrects its predecessors
-        5. **Combine** — weighted vote (classification) / weighted sum (regression)
-
-        **XGBoost** (eXtreme Gradient Boosting) is the polished, industrial
-        version of this idea — possibly the most famous ML library of all
-        time, and a Kaggle legend. Trees/boosting dominate **tabular** data
-        leaderboards.
-
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">21 / 28</div>
-        """
-    )
-    return
-
-
-@app.cell
-def _(mo):
-    mo.md(
-        r"""
-        ## Applications
-
-        Trees and ensembles are the workhorses of **tabular** machine
-        learning — most real-world data lives in tables (Excel sheets).
-
-        Two Kaggle examples:
-
-        - **Otto recommender system** — predict e-commerce clicks, cart
-          additions and orders. *Winning solution:* a 3-layer weighted
-          ensemble of XGBoost, AdaBoost and a neural network.
-        - **Santander customer satisfaction** — anonymized features. *Winning
-          solution:* a 4-layer ensemble of XGBoost, AdaBoost, random forest
-          and a neural network.
-
-        Most data scientists reach for trees, boosting, ensembles and
-        forests — often they outperform neural networks on tabular problems.
-
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">22 / 28</div>
-        """
-    )
-    return
-
-
-@app.cell
-def _(mo):
-    mo.md(
-        r"""
-        ## What did the forest learn? Feature importance
-
-        sklearn averages how much each feature decreases impurity across all
-        trees — a rough but useful measure of which features matter.
-
-        TODO: mention permutation importance as a more reliable alternative.
-
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">23 / 28</div>
-        """
-    )
-    return
-
-
-@app.cell
-def _(mo):
-    import matplotlib.pyplot as _plt
-    import numpy as _np
-    from sklearn.datasets import load_wine as _load_wine
-    from sklearn.ensemble import RandomForestClassifier as _RFC
-
-    _wine = _load_wine()
-    _forest = _RFC(n_estimators=50, random_state=0).fit(_wine.data, _wine.target)
-    _imp = _forest.feature_importances_
-    _order = _np.argsort(_imp)
-
-    _fig, _ax = _plt.subplots(figsize=(7.5, 5.5))
-    _ax.barh(_np.array(_wine.feature_names)[_order], _imp[_order], color="#2563eb")
-    _ax.set_title("Random-forest feature importance (wine dataset)")
-    _ax.set_xlabel("importance")
-    _fig.tight_layout()
-    _plt.close(_fig)
-    mo.vstack(
-        [
-            mo.as_html(_fig),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">24 / 28</div>"""),
-        ]
-    )
-    return
-
-
-@app.cell
-def _(mo):
-    mo.md(
-        r"""
-        ## Strengths and weaknesses
-
-        | | |
-        |---|---|
-        | ✅ No scaling needed, handles mixed feature types | ❌ Single trees overfit easily |
-        | ✅ Interpretable (a single tree is a flowchart) | ❌ Forests lose the interpretability |
-        | ✅ Non-linear, capture interactions automatically | ❌ Boundaries are axis-aligned |
-        | ✅ Excellent on tabular data — often beat neural networks | ❌ Large forests = more memory, slower inference |
-
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">25 / 28</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">17 / 19</div>
         """
     )
     return
@@ -694,16 +508,16 @@ def _(mo):
         r"""
         ## Summary
 
-        - A decision tree asks greedy yes/no questions, chosen to minimise
-          **weighted Gini/entropy** — you computed one split **by hand** and
-          scikit-learn agreed exactly.
-        - Unlimited depth **overfits**; control it with `max_depth`,
-          `min_samples_leaf`, or cost-complexity pruning.
-        - **Random forests** = bagging + random feature subsets; **boosting**
-          (XGBoost) trains trees sequentially, each fixing the last one's errors.
-        - Ensembles of trees dominate **tabular** machine learning.
+        - **Decision trees** formalise a sequence of uncertainty-reducing
+          questions; roots, nodes, branches, leaves.
+        - A **good split** minimises **Gini impurity** (or entropy) — computed
+          greedily over every feature and threshold (**CART**).
+        - Trees are **interpretable** and need little preprocessing, but they
+          **overfit** if grown deep — control depth, or **prune**.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">26 / 28</div>
+        Next session: **random forests**.
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">18 / 19</div>
         """
     )
     return
@@ -713,28 +527,11 @@ def _(mo):
 def _(mo):
     mo.md(
         r"""
-        ## Where to go next
+        # Thanks for this session!
 
-        - **Exercise:** `notebooks/02/decision_trees_random_forests_exercise.ipynb`
-          — implement Gini impurity and best-split search by hand, verify
-          against sklearn, then benchmark trees vs forests on wine & breast cancer.
-        - **Lecture 3:** neural networks — smooth, fully non-linear boundaries.
+        Questions? Next up: **random forests and ensembles**.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">27 / 28</div>
-        """
-    )
-    return
-
-
-@app.cell
-def _(mo):
-    mo.md(
-        r"""
-        # Thanks for today!
-
-        See you next week.
-
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">28 / 28</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">19 / 19</div>
         """
     )
     return
