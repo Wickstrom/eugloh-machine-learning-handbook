@@ -411,10 +411,9 @@ def _(mo):
         r"""
         ## Where to go next
 
-        - **Exercise:** `notebooks/02/neural_networks_exercise.ipynb`
-          — implement a one-hidden-layer MLP by hand, compare against
-          `MLPClassifier`, then try it on diverse datasets (binary,
-          multi-class and regression).
+        - **Exercise:** `notebooks/02/03_training_{beginner,intermediate,advanced}.ipynb`
+          — implement the **forward and backward pass by hand**, train a small
+          MLP, and compare against `MLPClassifier`.
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 14</div>
         """

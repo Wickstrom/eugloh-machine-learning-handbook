@@ -49,7 +49,8 @@ jobs:
             dir=$(dirname "$nb")
             base=$(basename "$nb" .ipynb)
             case "$base" in
-              *_exercise) echo "Skipping $nb — exercise notebook"; continue ;;
+              *_exercise|*_beginner|*_intermediate|*_advanced)
+                echo "Skipping $nb — exercise notebook"; continue ;;
             esac
             if [ -f "$dir/$base.py" ]; then
               echo "Skipping $nb — Marimo counterpart at $dir/$base.py"

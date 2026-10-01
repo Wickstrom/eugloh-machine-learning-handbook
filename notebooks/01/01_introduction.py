@@ -89,7 +89,7 @@ def _(mo):
 
         - Slides are Marimo notebooks, exercises are Jupyter notebooks — all in this repository
         - Clone the repo and follow the setup in the `README.md` (`uv sync`, then `uv run jupyter lab`)
-        - Today's exercise: `notebooks/01/introduction_regression_trees_forests_exercise.ipynb`
+        - Today's exercises: `notebooks/01/01_introduction_{beginner,intermediate,advanced}.ipynb`
         - All exercises use `numpy`, `matplotlib` and `scikit-learn` — nothing else to install
 
         Questions are very welcome — ask early, ask often.

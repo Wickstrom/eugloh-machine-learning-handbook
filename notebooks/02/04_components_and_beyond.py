@@ -784,10 +784,9 @@ def _(mo):
         r"""
         ## Where to go next
 
-        - **Exercise:** `notebooks/02/neural_networks_exercise.ipynb`
-          — implement a one-hidden-layer MLP by hand, compare against
-          `MLPClassifier`, then try it on diverse datasets (binary,
-          multi-class and regression).
+        - **Exercise:** `notebooks/02/04_components_and_beyond_{beginner,intermediate,advanced}.ipynb`
+          — explore the digits data, compare activations/optimizers with
+          scikit-learn, and implement **SGD, momentum and Adam from scratch**.
         - This wraps the lecture series — the final project is an end-to-end
           ML pipeline on a dataset of your choice. Happy learning!
 

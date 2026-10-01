@@ -27,6 +27,9 @@ the course schedule.
     - Interactive demo: labeling paradigms (supervised → semi-supervised → unsupervised)
 
     [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/01/01_introduction/index.html)
+    [![Beginner](https://img.shields.io/badge/-Beginner-brightgreen?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/01/01_introduction_beginner.ipynb)
+    [![Intermediate](https://img.shields.io/badge/-Intermediate-yellow?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/01/01_introduction_intermediate.ipynb)
+    [![Advanced](https://img.shields.io/badge/-Advanced-red?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/01/01_introduction_advanced.ipynb)
 
 2. **Session 2 — Linear & logistic regression** (10:00)
     - Linear regression — MSE, the normal equations, and gradient descent
@@ -36,7 +39,9 @@ the course schedule.
     - Interactive demos: class separation, decision threshold
 
     [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/01/02_regression/index.html)
-    [![Exercises](https://img.shields.io/badge/-Exercises-green?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/01/introduction_regression_trees_forests_exercise.ipynb)
+    [![Beginner](https://img.shields.io/badge/-Beginner-brightgreen?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/01/02_regression_beginner.ipynb)
+    [![Intermediate](https://img.shields.io/badge/-Intermediate-yellow?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/01/02_regression_intermediate.ipynb)
+    [![Advanced](https://img.shields.io/badge/-Advanced-red?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/01/02_regression_advanced.ipynb)
 
 3. **Session 3 — Decision trees** (11:15)
     - Impurity (Gini/entropy), CART, one split computed **by hand**
@@ -44,6 +49,9 @@ the course schedule.
     - Interactive demos: impurity curves, tree depth
 
     [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/01/03_decision_trees/index.html)
+    [![Beginner](https://img.shields.io/badge/-Beginner-brightgreen?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/01/03_decision_trees_beginner.ipynb)
+    [![Intermediate](https://img.shields.io/badge/-Intermediate-yellow?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/01/03_decision_trees_intermediate.ipynb)
+    [![Advanced](https://img.shields.io/badge/-Advanced-red?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/01/03_decision_trees_advanced.ipynb)
 
 4. **Session 4 — Random forests & ensembles** (12:15)
     - Bagging, boosting, feature importance
@@ -51,6 +59,9 @@ the course schedule.
     - Interactive demo: number of trees and depth
 
     [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/01/04_random_forests/index.html)
+    [![Beginner](https://img.shields.io/badge/-Beginner-brightgreen?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/01/04_random_forests_beginner.ipynb)
+    [![Intermediate](https://img.shields.io/badge/-Intermediate-yellow?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/01/04_random_forests_intermediate.ipynb)
+    [![Advanced](https://img.shields.io/badge/-Advanced-red?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/01/04_random_forests_advanced.ipynb)
 
 ### Day 2 — Oct 20
 
@@ -58,18 +69,26 @@ the course schedule.
     - From linear to non-linear classifiers; a brief history of neural networks
 
     [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/02/01_introduction/index.html)
+    [![Beginner](https://img.shields.io/badge/-Beginner-brightgreen?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/02/01_introduction_beginner.ipynb)
+    [![Intermediate](https://img.shields.io/badge/-Intermediate-yellow?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/02/01_introduction_intermediate.ipynb)
+    [![Advanced](https://img.shields.io/badge/-Advanced-red?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/02/01_introduction_advanced.ipynb)
 
 6. **Session 2 — The perceptron & multilayer networks** (10:00)
     - The artificial neuron, the XOR problem, the big idea, and the MLP
 
     [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/02/02_perceptron_mlp/index.html)
+    [![Beginner](https://img.shields.io/badge/-Beginner-brightgreen?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/02/02_perceptron_mlp_beginner.ipynb)
+    [![Intermediate](https://img.shields.io/badge/-Intermediate-yellow?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/02/02_perceptron_mlp_intermediate.ipynb)
+    [![Advanced](https://img.shields.io/badge/-Advanced-red?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/02/02_perceptron_mlp_advanced.ipynb)
 
 7. **Session 3 — Forward/backward pass & optimization** (11:15)
     - Forward pass, backpropagation, gradient descent and the learning rate
     - An MLP **written from scratch in numpy**, compared against `MLPClassifier`
 
     [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/02/03_training/index.html)
-    [![Exercises](https://img.shields.io/badge/-Exercises-green?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/02/neural_networks_exercise.ipynb)
+    [![Beginner](https://img.shields.io/badge/-Beginner-brightgreen?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/02/03_training_beginner.ipynb)
+    [![Intermediate](https://img.shields.io/badge/-Intermediate-yellow?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/02/03_training_intermediate.ipynb)
+    [![Advanced](https://img.shields.io/badge/-Advanced-red?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/02/03_training_advanced.ipynb)
 
 8. **Session 4 — Components & going beyond** (12:15)
     - Components: activation functions, weight initialization, optimizers
@@ -78,6 +97,9 @@ the course schedule.
     - Interactive demo: hidden-layer-size and activation-function widgets
 
     [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/02/04_components_and_beyond/index.html)
+    [![Beginner](https://img.shields.io/badge/-Beginner-brightgreen?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/02/04_components_and_beyond_beginner.ipynb)
+    [![Intermediate](https://img.shields.io/badge/-Intermediate-yellow?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/02/04_components_and_beyond_intermediate.ipynb)
+    [![Advanced](https://img.shields.io/badge/-Advanced-red?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/02/04_components_and_beyond_advanced.ipynb)
 
 ## 💻 How to run the notebooks locally
 

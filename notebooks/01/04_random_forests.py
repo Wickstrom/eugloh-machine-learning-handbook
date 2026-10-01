@@ -306,9 +306,9 @@ def _(mo):
         r"""
         ## Where to go next
 
-        - **Exercise:** `notebooks/01/introduction_regression_trees_forests_exercise.ipynb`
-          — implement **linear and logistic regression by hand**, then apply
-          **trees and random forests** with scikit-learn.
+        - **Exercise:** `notebooks/01/04_random_forests_{beginner,intermediate,advanced}.ipynb`
+          — explore the data, apply **random forests** with scikit-learn, and
+          implement **bagging from scratch**.
         - **Tomorrow:** **neural networks** — smooth, fully non-linear
           boundaries, built from the single neuron you met today.
 
