@@ -89,20 +89,25 @@ def _(mo):
 
         ## Training: loss + backpropagation
 
-        Same recipe as logistic regression — cross-entropy loss, gradient
-        descent. The new skill is computing the gradient *through the
-        layers*: the **chain rule**, applied layer by layer from the output
-        back to the input — **backpropagation**:
+        The recipe is the same as for logistic regression — cross-entropy loss,
+        gradient descent. The new skill is computing the gradient *through* the
+        layers. We do it with the **chain rule**, working **backwards** from the
+        output to the input. This is **backpropagation**.
 
-        $$\delta_2 = \frac{\hat{p} - y}{n} \quad \text{(output error)}$$
+        - **Output layer.** It looks exactly like logistic regression: the
+          "error" is the predicted probability minus the true label,
+          $\hat{p} - y$.
+        - **Hidden layer.** We push that error back through the output weights,
+          then multiply by the derivative of the activation. (For $\tanh$ that
+          derivative is simply $1 - a^2$, where $a$ is the activation.)
+        - **Repeat.** Each layer's gradient is built from the *next* layer's
+          error, so every step is only local arithmetic.
 
-        $$\frac{\partial \mathcal{L}}{\partial W_2} = A_1^\top \delta_2, \qquad \frac{\partial \mathcal{L}}{\partial b_2} = \textstyle\sum_i \delta_{2,i}$$
+        In plain words: **blame flows backwards**. Each weight is told how much
+        it contributed to the final error, and is nudged to reduce it.
 
-        $$\delta_1 = (\delta_2 W_2^\top) \odot (1 - A_1^2) \quad \text{(through the tanh derivative)}$$
-
-        $$\frac{\partial \mathcal{L}}{\partial W_1} = X^\top \delta_1, \qquad \frac{\partial \mathcal{L}}{\partial b_1} = \textstyle\sum_i \delta_{1,i}$$
-
-        You will implement exactly these lines — by hand — below and in the exercise.
+        You will implement exactly these steps — by hand — below and in the
+        exercise.
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 14</div>
         """
@@ -144,7 +149,7 @@ def _(mo):
         Backpropagation gives us the **gradients**; **optimization** decides how
         to use them. The simplest rule is **gradient descent**:
 
-        $$w \leftarrow w - \eta \, \nabla_w \mathcal{L}$$
+        $$w \leftarrow w - \eta \, \frac{\partial \mathcal{L}}{\partial w}$$
 
         - $\eta$ is the **learning rate** — *the* single most important
           hyperparameter.
@@ -227,7 +232,10 @@ def _(mo):
         2 inputs → 16 hidden units (tanh) → 1 output (sigmoid), trained with
         full-batch gradient descent on the circles dataset (standardised).
 
-        TODO: walk through the forward pass, then the gradient lines.
+        A **forward pass** computes the predictions; a **backward pass**
+        computes every gradient; then gradient descent updates the weights.
+        All three are just matrix multiplications — so the whole implementation
+        is only a few lines.
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 14</div>
         """

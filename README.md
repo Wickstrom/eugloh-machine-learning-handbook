@@ -32,11 +32,14 @@ the course schedule.
     [![Advanced](https://img.shields.io/badge/-Advanced-red?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/01/01_introduction_advanced.ipynb)
 
 2. **Session 2 — Linear & logistic regression** (10:00)
-    - Linear regression — MSE, the normal equations, and gradient descent
+    - Linear regression — MSE, the closed-form fit, and gradient descent
+    - The 1801 story of **Piazzi, Ceres and Gauss** — least squares as one of
+      the first uses of learning from data
     - Logistic regression — sigmoid, cross-entropy, gradient descent,
       implemented **by hand in numpy** and compared against scikit-learn
     - Multi-class with one-vs-rest / softmax
-    - Interactive demos: class separation, decision threshold
+    - Interactive demos: watching the fit update as **new samples arrive**
+      (linear and logistic), class separation, decision threshold
 
     [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/01/02_regression/index.html)
     [![Beginner](https://img.shields.io/badge/-Beginner-brightgreen?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/01/02_regression_beginner.ipynb)

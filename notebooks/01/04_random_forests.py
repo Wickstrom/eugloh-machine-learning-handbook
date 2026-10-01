@@ -238,10 +238,19 @@ def _(mo):
         r"""
         ## What did the forest learn? Feature importance
 
-        sklearn averages how much each feature decreases impurity across all
-        trees — a rough but useful measure of which features matter.
+        scikit-learn measures how much each feature **decreased impurity**,
+        averaged over all the trees — a quick and useful ranking of which
+        features matter.
 
-        TODO: mention permutation importance as a more reliable alternative.
+        - **Impurity importance** (the default) can be misleading when features
+          have different types or are correlated with each other.
+        - **Permutation importance** is more reliable: shuffle the values of one
+          feature and see how far the accuracy drops. If shuffling barely
+          changes anything, that feature was not pulling its weight
+          (`sklearn.inspection.permutation_importance`).
+
+        In plain words: ask each column *"how much would the forest miss you if
+        we scrambled you?"*
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 12</div>
         """

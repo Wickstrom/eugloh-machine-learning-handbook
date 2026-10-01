@@ -87,10 +87,13 @@ def _(mo):
 
         ## The artificial neuron
 
-        A neuron computes a weighted sum, then applies a non-linear
-        **activation**:
+        A neuron first forms a **weighted sum** of its inputs, then squeezes the
+        result through a non-linear **activation**:
 
-        $$z = w^\top x + b, \qquad a = \phi(z)$$
+        $$z = w_1 x_1 + w_2 x_2 + \dots + b, \qquad a = \phi(z)$$
+
+        In plain words: multiply each input by its **weight**, add them up
+        (plus a **bias** $b$), then pass the total through a curve $\phi$.
 
         The **perceptron** is exactly this unit with a threshold/sigmoid
         activation. Recognise it? **Logistic regression is exactly one neuron**
@@ -167,17 +170,20 @@ def _(mo):
         r"""
         ## The multi-layer perceptron (MLP)
 
-        Layers of neurons: **input → hidden → output**. For one hidden layer
-        with $H$ units (shapes for $n$ samples, $d$ features):
+        Layers of neurons: **input → hidden → output**. For one hidden layer,
+        each hidden unit takes a weighted sum of the inputs and applies the
+        activation:
 
-        $$Z_1 = XW_1 + b_1 \;\; (n \times H), \qquad A_1 = \tanh(Z_1)$$
+        $$\text{hidden} = \tanh(W_1 x + b_1), \qquad
+        \hat{p} = \sigma(W_2 \cdot \text{hidden} + b_2)$$
 
-        $$Z_2 = A_1 W_2 + b_2 \;\; (n \times 1), \qquad \hat{p} = \sigma(Z_2)$$
+        Every layer simply feeds its output to the next, so the whole network
+        is a chain of weighted sums and activations.
 
-        Everything is **matrix multiplication** — the reason GPUs are so good
-        at this. (One hidden layer with enough units can approximate *any*
-        continuous function — but nobody tells you how many units: you learn
-        that from data.)
+        That chain is **matrix multiplication** — the reason GPUs are so good at
+        this. (One hidden layer with enough units can approximate *any*
+        continuous function — but nobody tells you how many units; you learn
+        that from the data.)
 
         The activation $\phi$ is a *component* we will study tomorrow — for now
         keep $\tanh$ in the hidden layer and $\sigma$ at the output.
