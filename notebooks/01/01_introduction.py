@@ -174,8 +174,14 @@ def _(mo):
         r"""
         ## Supervised learning
 
-        Given a dataset of (input, target) pairs $(x_i, y_i)$, learn a function
-        $f(x) \approx y$.
+        We are given a dataset of (input, target) pairs $(x_i, y_i)$ — the
+        **examples** — and we want a function that turns a new input into a good
+        prediction:
+
+        $$f(x) \approx y$$
+
+        In plain words: look at many examples, guess the rule that produced
+        them, and apply it to inputs you have never seen.
 
         - **Classification** — $y$ is a discrete label (spam / not spam, healthy / diseased)
         - **Regression** — $y$ is a continuous number (price, temperature)

@@ -57,7 +57,7 @@ def _(mo):
 
         University of Novi Sad
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 33</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 38</div>
         """
     )
     return
@@ -70,15 +70,17 @@ def _(mo):
         ## Today's session
 
         - **Linear regression** — the linear model, least squares, closed form
-          and gradient descent
+          and gradient descent — and the 1801 story of **Piazzi, Ceres and
+          Gauss**, one of the first fits to data
         - **Logistic regression** — from regression to classification, sigmoid,
           cross-entropy, implemented **by hand in numpy**
-        - Interactive demos: class separation, the decision threshold
+        - Interactive demos: watching the model update as **new samples
+          arrive**, class separation, the decision threshold
         - **Multi-class** classification via one-vs-rest / softmax
 
         Session 2 of 4 today.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 33</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 38</div>
         """
     )
     return
@@ -92,16 +94,50 @@ def _(mo):
 
         ## The linear model
 
-        Our first **supervised** model. With a single feature we fit a straight
-        line; with $d$ features, a **hyperplane**:
+        Our first **supervised** model. With **one feature** it is simply a
+        straight line:
 
-        $$\hat{y} = w^\top x + b = w_1 x_1 + \dots + w_d x_d + b$$
+        $$\hat{y} = w\,x + b$$
 
-        - $w$ — the **weights**: how much each feature moves the prediction
-        - $b$ — the **bias** (intercept)
-        - $\hat{y}$ is a **continuous number** (a price, a temperature, …)
+        - $w$ — the **weight** (the slope): how much the prediction changes
+          when $x$ goes up by 1
+        - $b$ — the **bias** (the intercept): the prediction when $x = 0$
+        - $\hat{y}$ ("y-hat") is our **prediction** — a continuous number
+          (a price, a temperature, …)
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 33</div>
+        With several features the same idea gives a **flat surface** (a
+        *hyperplane*). We keep the one-feature picture, because it is the
+        easiest to see.
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 38</div>
+        """
+    )
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(
+        r"""
+        ## The first great fit — Piazzi, Ceres and Gauss (1801)
+
+        - On **1 January 1801** Giuseppe Piazzi, an astronomer in Palermo,
+          spotted a faint moving point of light — a new body we now call the
+          dwarf planet **Ceres**.
+        - He tracked it for **41 nights**, then it vanished into the glare of
+          the Sun. Nobody could find it again.
+        - **Carl Friedrich Gauss**, then 24, took Piazzi's handful of
+          observations, fitted a model to them with the method of **least
+          squares**, and predicted where Ceres would reappear.
+        - Astronomers searched — and found Ceres almost exactly where Gauss had
+          said it would be.
+
+        This is often called one of the **first uses of learning from data**:
+        fit a model to the examples you have, then predict the ones you have
+        not seen. The tool was the same **least-squares line** we are about to
+        derive.
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 38</div>
         """
     )
     return
@@ -143,7 +179,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 33</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 38</div>"""),
         ]
     )
     return
@@ -155,19 +191,23 @@ def _(mo):
         r"""
         ## Choosing the line — the mean squared error
 
-        We want the line that is *closest* to the data. "Closest" means
-        minimising the **mean squared error** (MSE):
+        We want the line that is *closest* to the data. "Closest" means making
+        the errors small, and we measure them with the **mean squared error**
+        (MSE):
 
-        $$\mathcal{L}(w, b) = \frac{1}{n}\sum_{i=1}^{n} (\hat{y}_i - y_i)^2
-        = \frac{1}{n}\lVert Xw + b\mathbf{1} - y \rVert^2$$
+        $$\mathcal{L}(w, b) = \frac{1}{n}\sum_{i=1}^{n} (\hat{y}_i - y_i)^2$$
 
-        - squaring is smooth and differentiable, and punishes large errors
-        - it is **convex** — one global minimum, no local traps
+        In plain words: for each point take its vertical distance to the line
+        (the **residual** $\hat{y}_i - y_i$), **square** it, and **average**
+        over the $n$ points.
 
-        The vertical grey segments above are exactly the **residuals**
-        $\hat{y}_i - y_i$ we are squaring.
+        - squaring counts every error positively and punishes large errors much
+          more than small ones
+        - the squared error is **smooth** and **convex** — it has one lowest
+          point, so there are no local traps
+        - the grey segments in the figure above are exactly those residuals
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 33</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 38</div>
         """
     )
     return
@@ -177,25 +217,31 @@ def _(mo):
 def _(mo):
     mo.md(
         r"""
-        ## Two ways to find the minimum
+        ## Two ways to find the best line
 
-        **1. Closed form — the normal equations.** Set the gradient to zero and
-        solve:
+        **1. The closed form.** The MSE is a smooth bowl, so its lowest point
+        can be found with a formula. For one feature the best line is
 
-        $$w = (X^\top X)^{-1} X^\top y
-        \qquad (\text{centre the columns, or add a column of ones})$$
+        $$w = \frac{\sum_i (x_i - \bar{x})(y_i - \bar{y})}{\sum_i (x_i - \bar{x})^2},
+        \qquad b = \bar{y} - w\,\bar{x}$$
 
-        No iteration — a single matrix solve. `LinearRegression` uses the
-        pseudo-inverse/SVD rather than an explicit inverse (more stable when
-        $X^\top X$ is singular).
+        where $\bar{x}$ and $\bar{y}$ are the means. No iteration — one
+        calculation gives the best line. (With many features the same idea is
+        written with matrices and solved once; `LinearRegression` uses a
+        numerically safer version of it.)
 
-        **2. Gradient descent.** For many features the inverse is expensive, so
-        we descend the gradient instead:
+        **2. Gradient descent.** With very many features that formula is
+        expensive, so instead we *walk downhill* on the loss:
 
-        $$\nabla_w \mathcal{L} = \frac{2}{n} X^\top (Xw + b - y),
-        \qquad \nabla_b \mathcal{L} = \frac{2}{n} \sum_i (Xw + b - y)_i$$
+        $$w \leftarrow w - \eta \, \frac{\partial \mathcal{L}}{\partial w},
+        \qquad b \leftarrow b - \eta \, \frac{\partial \mathcal{L}}{\partial b}$$
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 33</div>
+        - $\partial \mathcal{L}/\partial w$ points in the direction the loss
+          grows; we step the **opposite** way
+        - $\eta$ is the **learning rate** — how large each step is
+        - repeat many times, and the line creeps towards the same answer
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 38</div>
         """
     )
     return
@@ -243,7 +289,79 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="860px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 33</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 38</div>"""),
+        ]
+    )
+    return
+
+
+@app.cell
+def _(mo):
+    import numpy as _np
+
+    _rng = _np.random.default_rng(7)
+    fit_x = _np.sort(_rng.uniform(0, 10, 30))
+    fit_y = 1.5 + 1.2 * fit_x + _rng.normal(scale=2.2, size=fit_x.size)
+    n_seen = mo.ui.slider(
+        start=2, stop=int(fit_x.size), step=1, value=4,
+        label="samples seen", show_value=True, debounce=True,
+    )
+    mo.md(
+        r"""
+        ## Interactive — fitting a line as the data arrives
+
+        We never get all the data at once. The slider reveals the first $k$
+        samples; the line is re-fitted from those $k$ points **alone**.
+
+        - with **few** points the line is shaky and its estimate jumps around
+        - as $k$ grows the line **settles down** towards the least-squares
+          answer for the full dataset
+        - nothing new to learn here — it is the same least-squares fit, just
+          computed on a growing prefix of the data
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 38</div>
+        """
+    )
+    return fit_x, fit_y, n_seen
+
+
+@app.cell
+def _(fit_x, fit_y, mo, n_seen):
+    import io as _io
+
+    import matplotlib.pyplot as _plt
+    import numpy as _np
+    from sklearn.linear_model import LinearRegression as _LinReg
+
+    _k = int(n_seen.value)
+    _full = _LinReg().fit(fit_x.reshape(-1, 1), fit_y)
+    _part = _LinReg().fit(fit_x[:_k].reshape(-1, 1), fit_y[:_k])
+    _xs = _np.linspace(-0.3, 10.3, 100).reshape(-1, 1)
+
+    _fig, _ax = _plt.subplots(figsize=(7, 4))
+    _ax.scatter(fit_x[_k:], fit_y[_k:], color="#cbd5e1", s=28, label="not yet seen")
+    _ax.scatter(fit_x[:_k], fit_y[:_k], color="#2563eb", s=34, label=f"seen ({_k})")
+    _ax.plot(_xs, _part.predict(_xs), color="#dc2626", lw=2.5,
+             label=f"fit on {_k} points")
+    _ax.plot(_xs, _full.predict(_xs), color="#16a34a", lw=1.6, ls="--",
+             label="fit on all points")
+    _mse_part = _np.mean((_part.predict(fit_x[:_k].reshape(-1, 1)) - fit_y[:_k]) ** 2)
+    _ax.set_xlabel("feature $x$")
+    _ax.set_ylabel("target $y$")
+    _ax.set_title(
+        f"{_k} samples → w = {_part.coef_[0]:.2f}, b = {_part.intercept_:+.2f}"
+        f"  (MSE {_mse_part:.2f})"
+    )
+    _ax.legend(loc="lower right", fontsize=8)
+    _buf = _io.BytesIO()
+    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
+    _plt.close(_fig)
+    _buf.seek(0)
+    mo.vstack(
+        [
+            n_seen,
+            mo.image(_buf, width="680px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 38</div>"""),
         ]
     )
     return
@@ -266,7 +384,7 @@ def _(mo):
         Report every number on a **held-out test set**, never on the training
         set. Below: the diabetes dataset (age, BMI, blood pressure, …).
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 33</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 38</div>
         """
     )
     return
@@ -308,7 +426,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="860px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 33</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 38</div>"""),
         ]
     )
     return
@@ -332,7 +450,7 @@ def _(mo):
           little bias for a lot less variance — the same idea we will meet again
           in logistic regression.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 33</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 38</div>
         """
     )
     return
@@ -352,7 +470,7 @@ def _(mo):
         Feed $0/1$ labels into a line and it happily predicts $-0.4$ or $1.4$ —
         which is meaningless as a probability:
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 33</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 38</div>
         """
     )
     return
@@ -364,19 +482,19 @@ def _(mo):
         r"""
         ## Recap: the linear model
 
-        Linear regression predicts a **continuous** number with a linear
-        function $\hat{y} = w^\top x + b$, fitted by minimising the **mean
-        squared error**
+        Linear regression predicts a **continuous** number with a straight line
+        $\hat{y} = w x + b$, fitted by making the **mean squared error** small:
 
         $$\mathcal{L}(w, b) = \frac{1}{n} \sum_i (\hat{y}_i - y_i)^2$$
 
-        Since the loss is differentiable, we can descend the gradient:
+        We improve the line step by step, nudging each parameter *against* the
+        direction in which the loss grows:
 
-        $$w \leftarrow w - \eta \, \nabla_w \mathcal{L}$$
+        $$w \leftarrow w - \eta \, \frac{\partial \mathcal{L}}{\partial w}$$
 
-        — this is **gradient descent**, and $\eta$ is the *learning rate*.
+        — this is **gradient descent**, and $\eta$ is the **learning rate**.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 33</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">15 / 38</div>
         """
     )
     return
@@ -417,7 +535,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 33</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">16 / 38</div>"""),
         ]
     )
     return
@@ -435,10 +553,15 @@ def _(mo):
 
         $$\sigma(z) = \frac{1}{1 + e^{-z}}$$
 
-        It is smooth and differentiable everywhere (we will need the
-        derivative for gradient descent).
+        In plain words: feed in **any** number $z$ and $\sigma$ bends it into
+        something between $0$ and $1$. A large positive $z$ gives almost $1$;
+        a large negative $z$ gives almost $0$; and $z = 0$ gives exactly
+        $0.5$.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 33</div>
+        It is smooth everywhere, which is what lets us train it with gradient
+        descent.
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">17 / 38</div>
         """
     )
     return
@@ -469,7 +592,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">15 / 33</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">18 / 38</div>"""),
         ]
     )
     return
@@ -488,7 +611,7 @@ def _(mo):
         - far right: $\sigma \approx 1$ — confidently class 1
         - in between: a probability!
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">16 / 33</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">19 / 38</div>
         """
     )
     return
@@ -531,7 +654,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="860px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">17 / 33</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">20 / 38</div>"""),
         ]
     )
     return
@@ -543,23 +666,23 @@ def _(mo):
         r"""
         ## The statistical view
 
-        Choose the encoding: sample in class 1 → $y = 1$, class 2 → $y = 0$.
-        The sigmoid output is read as the **probability of being in class 1
-        given x** — the label becomes a probability.
+        Encode the classes as numbers: class 1 → $y = 1$, class 2 → $y = 0$.
+        The sigmoid output is then read as the **probability of class 1** given
+        the input — the label becomes a probability.
 
-        One can also *derive* the sigmoid: assuming each class is Gaussian
-        with the **same variance**, the log-odds $\log \frac{p(y=1\mid x)}{p(y=0\mid x)}$
-        is **linear in x** — inverting it gives exactly the logistic function.
-        (If the variances differ, the quadratic terms do not cancel and
-        logistic regression may struggle.)
+        **Why a sigmoid?** If we picture the two classes as two **bell curves**
+        (Gaussians) with the *same spread*, the maths works out so that the
+        probability of class 1 is exactly a logistic function of a linear
+        score. (If the two bells have different spreads, a sigmoid no longer
+        fits perfectly.)
 
-        **Summary:** with the logit $\;z = w^\top x + b$, the model is
-        $\hat{p} = \sigma(z)$. The set $z = 0$ is a straight line (a
-        *hyperplane* in higher dimensions) — logistic regression **separates**
-        the classes; we do not fit the data (regression), we find the
-        separation (classification).
+        **Summary:** with the score $z = w x + b$, the model predicts
+        $\hat{p} = \sigma(z)$. The place where $z = 0$ — where the probability
+        is $0.5$ — is a straight line (a *hyperplane* in higher dimensions).
+        Logistic regression does not fit the data points; it finds the
+        **separation** between the classes.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">18 / 33</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">21 / 38</div>
         """
     )
     return
@@ -571,21 +694,22 @@ def _(mo):
         r"""
         ## Learning: the cross-entropy loss
 
-        Squared error + sigmoid is **not convex** — bad for gradient descent.
-        Instead, maximise the **likelihood** of the labels (assuming
-        independent samples):
+        Squared error together with the sigmoid gives a **bumpy** loss — bad
+        for gradient descent. So we use a loss built for probabilities instead.
 
-        $$P(\text{labels} \mid \text{model}) = \prod_i \hat{p}_i^{y_i} (1 - \hat{p}_i)^{1 - y_i}$$
-
-        Standard tricks: maximising $x$ or $\log x$ is equivalent → take the
-        log; add a minus sign to turn maximisation into minimisation:
+        **The idea.** We want the model to give **high probability to the true
+        label**. For sample $i$ that probability is $\hat{p}_i$ if $y_i = 1$,
+        and $1 - \hat{p}_i$ if $y_i = 0$. Multiplying these probabilities over
+        all samples — and then taking a logarithm, which turns "multiply" into
+        "add" — gives the average **cross-entropy**:
 
         $$\mathcal{L}(w, b) = -\frac{1}{n} \sum_{i=1}^{n} \left[ y_i \log \hat{p}_i + (1 - y_i) \log (1 - \hat{p}_i) \right]$$
 
-        This is the **cross-entropy** — convex in $w$, so gradient descent
-        finds the global minimum.
+        - each term is small when the prediction matches the true label
+        - this loss is **convex**, so gradient descent finds the single global
+          minimum
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">19 / 33</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">22 / 38</div>
         """
     )
     return
@@ -597,20 +721,25 @@ def _(mo):
         r"""
         ## Minimising the cross-entropy
 
-        Setting the derivative to zero (as for linear regression) **fails**:
-        there is **no analytic solution** for $w$. But the gradient has a
-        beautifully simple form:
+        Setting the derivative to zero (as we did for linear regression) does
+        **not** give a formula for $w$ — there is **no closed-form solution**.
+        But the gradient is remarkably simple:
 
-        $$\nabla_w \mathcal{L} = \frac{1}{n} X^\top (\hat{p} - y), \qquad \nabla_b \mathcal{L} = \frac{1}{n} \sum_i (\hat{p}_i - y_i)$$
+        $$\frac{\partial \mathcal{L}}{\partial w} = \frac{1}{n}\sum_i (\hat{p}_i - y_i)\, x_i,
+        \qquad \frac{\partial \mathcal{L}}{\partial b} = \frac{1}{n}\sum_i (\hat{p}_i - y_i)$$
 
-        - Remark: the gradient is **small when the predictions are good** —
-          learning slows down automatically.
-        - Remark: this is almost the same gradient as for linear regression,
-          with $\hat{p}$ in place of $\hat{y}$.
+        - the "error" here is just $\hat{p}_i - y_i$: predicted probability
+          minus true label
+        - the gradient is **small when the predictions are good** — learning
+          slows down on its own
+        - it is almost the same rule as for linear regression, with $\hat{p}$
+          in place of $\hat{y}$
 
-        $$w \leftarrow w - \eta \, \nabla_w \mathcal{L} \quad \text{— gradient descent, repeated for some epochs}$$
+        Repeated many times (each full pass over the data is an **epoch**):
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">20 / 33</div>
+        $$w \leftarrow w - \eta \, \frac{\partial \mathcal{L}}{\partial w}$$
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">23 / 38</div>
         """
     )
     return
@@ -625,7 +754,7 @@ def _(mo):
         A **neuron** computes a weighted sum and applies a non-linear
         activation $\phi$:
 
-        $$z = w^\top x + b, \qquad \hat{p} = \phi(z) \quad \text{with } \phi = \sigma$$
+        $$z = w x + b, \qquad \hat{p} = \phi(z) \quad \text{with } \phi = \sigma$$
 
         Logistic regression **is** exactly one neuron with a sigmoid
         activation. Training is parametrised by a **learning rate** $\eta$;
@@ -634,7 +763,7 @@ def _(mo):
 
         Keep this picture — it is the seed of tomorrow's lecture on neural networks.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">21 / 33</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">24 / 38</div>
         """
     )
     return
@@ -663,7 +792,7 @@ def _(mo):
         ~15 lines in total. We train it on the two-blob dataset and compare
         with `sklearn.linear_model.LogisticRegression`.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">22 / 33</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">25 / 38</div>
         """
     )
     return blobs_X, blobs_y
@@ -725,7 +854,7 @@ def _(blobs_X, blobs_y, mo):
     mo.vstack(
         [
             mo.image(_buf, width="860px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">23 / 33</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">26 / 38</div>"""),
         ]
     )
     return acc_hand, b_hand, fit_logistic_gd, w_hand
@@ -742,9 +871,95 @@ def _(acc_hand, b_hand, blobs_X, blobs_y, mo, w_hand):
     print(f"by hand:      w = {w_hand.round(3)}, b = {b_hand:+.3f}, accuracy = {acc_hand:.3f}")
     print("(sklearn's weights are slightly smaller — it applies L2 regularisation by default)")
     mo.md(
-        r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">24 / 33</div>"""
+        r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">27 / 38</div>"""
     )
     return (logreg_clf,)
+
+
+@app.cell
+def _(mo):
+    import numpy as _np
+
+    _rng = _np.random.default_rng(3)
+    _Xa = _rng.normal(loc=[-2.0, -2.0], scale=1.0, size=(20, 2))
+    _Xb = _rng.normal(loc=[2.0, 2.0], scale=1.0, size=(20, 2))
+    incL_X = _np.empty((40, 2))
+    incL_y = _np.empty(40, dtype=int)
+    for _i in range(20):  # interleave the classes so every prefix has both
+        incL_X[2 * _i] = _Xa[_i]
+        incL_y[2 * _i] = 0
+        incL_X[2 * _i + 1] = _Xb[_i]
+        incL_y[2 * _i + 1] = 1
+    logit_seen = mo.ui.slider(
+        start=4, stop=40, step=2, value=8,
+        label="samples seen", show_value=True, debounce=True,
+    )
+    mo.md(
+        r"""
+        ## Interactive — the boundary as the data arrives
+
+        The same story, now for classification. The slider reveals the first
+        $k$ samples and we re-fit the logistic model on those $k$ points
+        alone.
+
+        - early on, one or two points can tilt the **decision boundary** a lot
+        - as $k$ grows the boundary **stabilises** and the true separation
+          emerges
+        - the boundary is where the model is exactly $50/50$ ($z = 0$)
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">28 / 38</div>
+        """
+    )
+    return incL_X, incL_y, logit_seen
+
+
+@app.cell
+def _(incL_X, incL_y, logit_seen, mo):
+    import io as _io
+
+    import matplotlib.pyplot as _plt
+    import numpy as _np
+    from sklearn.linear_model import LogisticRegression as _LR
+
+    _k = int(logit_seen.value)
+    _Xk, _yk = incL_X[:_k], incL_y[:_k]
+    _clf = _LR().fit(_Xk, _yk)
+    _w, _b = _clf.coef_[0], _clf.intercept_[0]
+
+    _xx, _yy = _np.meshgrid(_np.linspace(-6, 6, 220), _np.linspace(-6, 6, 220))
+    _Z = _clf.predict(_np.c_[_xx.ravel(), _yy.ravel()]).reshape(_xx.shape)
+
+    _fig, _ax = _plt.subplots(figsize=(6.0, 5.0))
+    _ax.contourf(_xx, _yy, _Z, alpha=0.2, cmap="RdYlGn")
+    _xs_line = _np.linspace(-6, 6, 100)
+    if abs(_w[1]) > 1e-9:
+        _ax.plot(_xs_line, -(_w[0] * _xs_line + _b) / _w[1],
+                 color="#111827", lw=2.2, label="decision boundary")
+    _ax.scatter(incL_X[_k:, 0], incL_X[_k:, 1], color="#cbd5e1", s=26,
+                label="not yet seen")
+    _ax.scatter(_Xk[_yk == 0, 0], _Xk[_yk == 0, 1], color="#dc2626", s=34,
+                label="seen, class 0")
+    _ax.scatter(_Xk[_yk == 1, 0], _Xk[_yk == 1, 1], color="#16a34a", s=34,
+                label="seen, class 1")
+    _ax.set_xlim(-6, 6)
+    _ax.set_ylim(-6, 6)
+    _ax.set_xlabel("$x_1$")
+    _ax.set_ylabel("$x_2$")
+    _ax.set_title(f"{_k} samples → accuracy {_clf.score(_Xk, _yk):.2f}")
+    _ax.legend(loc="upper left", fontsize=8)
+    _ax.set_aspect("equal")
+    _buf = _io.BytesIO()
+    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
+    _plt.close(_fig)
+    _buf.seek(0)
+    mo.vstack(
+        [
+            logit_seen,
+            mo.image(_buf, width="600px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">29 / 38</div>"""),
+        ]
+    )
+    return
 
 
 @app.cell
@@ -767,7 +982,7 @@ def _(mo):
         - features are **linearly related to the log-odds**,
         - there are **no strong outliers**, and the **sample size is large**.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">25 / 33</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">30 / 38</div>
         """
     )
     return
@@ -789,7 +1004,7 @@ def _(mo):
         The slider controls how far apart the two classes are. Watch the
         decision boundary and the accuracy react.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">26 / 33</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">31 / 38</div>
         """
     )
     return (sep_slider,)
@@ -835,7 +1050,7 @@ def _(mo, sep_slider):
         [
             sep_slider,
             mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">27 / 33</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">32 / 38</div>"""),
         ]
     )
     return
@@ -858,7 +1073,7 @@ def _(mo):
         and *we* choose where to cut. Move the threshold and watch which
         errors you trade: false positives (amber) vs false negatives (red).
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">28 / 33</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">33 / 38</div>
         """
     )
     return (thr_slider,)
@@ -899,7 +1114,7 @@ def _(blobs_X, blobs_y, logreg_clf, mo, thr_slider):
         [
             thr_slider,
             mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">29 / 33</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">34 / 38</div>"""),
         ]
     )
     return
@@ -920,7 +1135,7 @@ def _(mo):
 
         scikit-learn's `LogisticRegression` handles this automatically.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">30 / 33</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">35 / 38</div>
         """
     )
     return
@@ -960,7 +1175,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">31 / 33</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">36 / 38</div>"""),
         ]
     )
     return
@@ -973,17 +1188,21 @@ def _(mo):
         ## Summary
 
         - **Linear regression** predicts a number and minimises the **MSE** —
-          solvable in closed form (normal equations) or by **gradient descent**.
+          solvable in closed form, or by **gradient descent**. (Gauss fitted
+          least squares to Piazzi's Ceres observations back in 1801.)
         - **Logistic regression** = linear model + sigmoid, trained on the
           **cross-entropy**; there is no closed form, but the gradient is simple.
-        - It is exactly **one neuron** — the seed of the neural networks.
+        - Both models can be watched **improving as more samples arrive** — the
+          estimate stabilises as the data grows.
+        - Logistic regression is exactly **one neuron** — the seed of the neural
+          networks.
         - **Feature scaling** and **regularisation** are the practical levers;
           `predict_proba` vs `predict` is the probability/label distinction.
         - **Softmax / one-vs-rest** extend it to many classes.
 
         Next session: **decision trees**.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">32 / 33</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">37 / 38</div>
         """
     )
     return
@@ -997,7 +1216,7 @@ def _(mo):
 
         Questions? Next up: **decision trees**.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">33 / 33</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">38 / 38</div>
         """
     )
     return

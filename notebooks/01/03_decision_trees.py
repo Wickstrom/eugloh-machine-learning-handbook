@@ -176,20 +176,26 @@ def _(mo):
         r"""
         ## The splitting criterion
 
-        What is a *good* question? One that **reduces uncertainty** — so we
-        need to measure uncertainty. For a node where a fraction $p$ of
-        samples belong to class 1:
+        What makes a question *good*? One that **reduces uncertainty** — so
+        first we need a way to measure how mixed up a group of samples is.
+        Suppose a fraction $p$ of the samples in a node belong to class 1.
 
-        **Entropy** (the information-theoretic choice)
-
-        $$H(p) = -p \log_2 p - (1-p) \log_2 (1-p)$$
-
-        **Gini impurity** (sklearn's default — more popular in practice)
+        **Gini impurity** (scikit-learn's default, and the one we will use):
 
         $$G(p) = 2\,p\,(1-p)$$
 
-        - Both are $0$ for a **pure** node (all one class) and maximal at $p = 0.5$
-        - A good split makes the children *purer* than the parent
+        **Entropy** (the information-theory version — same idea, a different
+        curve):
+
+        $$H(p) = -p \log_2 p - (1-p) \log_2 (1-p)$$
+
+        - both are $0$ when the node is **pure** (all one class)
+        - both are **largest** when the node is an even $50/50$ mix ($p = 0.5$)
+        - a good split makes the two children *purer* than the parent
+
+        In plain words: one number that answers *"how mixed is this group?"* —
+        $0$ means perfectly pure, larger means more mixed. (The $\log_2$ is just
+        a logarithm; you never compute it by hand.)
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 19</div>
         """
@@ -262,10 +268,13 @@ def _(mo):
         **C**lassification **A**nd **R**egression **T**rees:
 
         1. Start with **all training samples at the root**
-        2. At each node, try every feature and every candidate threshold and
-           compute the **weighted impurity** of the two children:
+        2. At each node, try every feature and every candidate threshold. For
+           each candidate, compute how impure its two children would be, as a
+           **weighted average**:
 
-        $$G(\text{split at } t) = \frac{n_L}{n} G(\text{left}) + \frac{n_R}{n} G(\text{right})$$
+        $$\text{impurity of a split} = \frac{n_L}{n}\,G(\text{left}) + \frac{n_R}{n}\,G(\text{right})$$
+
+        where $n_L$ and $n_R$ are the numbers of samples going left and right.
 
         3. Pick the split with the **lowest** weighted impurity (greedy!)
         4. Recurse on each child — until a **stopping condition**
@@ -484,7 +493,7 @@ def _(mo):
         | Minimal preprocessing needed | Sensitive to small feature changes |
         | Great for most data types | **Greedy** — no global optimum |
         | Interpretable (a flowchart) | **Overfits** when grown deep |
-        | Fast prediction | Training complexity $O(m \cdot n \log n)$ |
+        | Fast prediction | Training cost $O(m \cdot n \log n)$ — grows gently with data size |
 
         **Controlling growth:**
         - Limit it — `max_depth`, `min_samples_leaf`, `min_samples_split`

@@ -155,10 +155,19 @@ def _(mo):
           signal, no learning.
         - **Too large** → activations blow up → **exploding** signal, saturated
           non-linearities.
-        - The fix is to scale the initial weights by the layer's **fan-in**:
+        - The fix is to scale the random initial weights by the layer's
+          **fan-in** (how many inputs it receives). A common choice for ReLU
+          layers, called **He initialisation**, sets the standard deviation to
 
-        $$\text{Xavier: } \sigma = \sqrt{\frac{2}{n_{\text{in}} + n_{\text{out}}}},
-        \qquad \text{He: } \sigma = \sqrt{\frac{2}{n_{\text{in}}}} \;\;(\text{for ReLU})$$
+        $$\sigma = \sqrt{\frac{2}{n_{\text{in}}}}$$
+
+        where $n_{\text{in}}$ is the number of inputs. (**Xavier**
+        initialisation is a similar formula, $\sqrt{2/(n_{\text{in}}+n_{\text{out}})}$,
+        often used with $\tanh$.)
+
+        In plain words: when a neuron has **many inputs**, start its weights
+        **small**, so the signal neither fades away nor blows up as it travels
+        through the layers.
 
         scikit-learn does this for you; in PyTorch it is `nn.init.xavier_uniform_`
         / `nn.init.kaiming_normal_`.
@@ -226,13 +235,14 @@ def _(mo):
 
         - **SGD** — estimate the gradient on a **mini-batch** instead of the
           whole dataset: noisier, but far cheaper per step.
-        - **Momentum** — keep a running **velocity** so the optimizer builds up
-          speed along consistent directions and damps oscillations:
-          $$v \leftarrow \beta v - \eta \nabla \mathcal{L}, \qquad w \leftarrow w + v$$
-        - **Adam** — keep per-parameter **moving averages** of the gradient and
-          its square, then scale the step by them. Robust to learning-rate
-          choice and the default in practice:
-          $$w \leftarrow w - \eta \, \frac{\hat{m}}{\sqrt{\hat{v}} + \epsilon}$$
+        - **Momentum** — remember the previous step and carry some of it forward,
+          like a ball rolling downhill that picks up speed along a consistent
+          direction: $v \leftarrow \beta v - \eta\,\nabla\mathcal{L}$, then
+          $w \leftarrow w + v$.
+        - **Adam** — the default in practice. It keeps a running average of the
+          gradient and of how large the gradient has been, and uses them to
+          scale each step. This adapts the learning rate **per weight**, so it is
+          forgiving of a badly chosen $\eta$.
 
         In `MLPClassifier`: `solver="sgd"` (with `momentum=...`) or
         `solver="adam"`.
@@ -514,14 +524,18 @@ def _(mo):
 
         ## Multi-class: softmax output
 
-        With $K$ classes, the last layer has $K$ neurons and the **softmax**
-        turns them into a probability distribution:
+        With $K$ classes, the last layer has $K$ neurons. **Softmax** turns their
+        raw scores into a probability distribution:
 
         $$\hat{p}_k = \frac{e^{z_k}}{\sum_{j=1}^{K} e^{z_j}}, \qquad \sum_k \hat{p}_k = 1$$
 
-        The loss is the multi-class cross-entropy — sklearn handles all of
-        this internally (`MLPClassifier` automatically uses softmax +
-        cross-entropy for multi-class targets).
+        In plain words: exponentiate each score (to make them positive), then
+        divide by the total — so the $K$ outputs become probabilities that add
+        up to 1.
+
+        The loss is the multi-class cross-entropy — sklearn handles all of this
+        internally (`MLPClassifier` automatically uses softmax + cross-entropy
+        for multi-class targets).
 
         Demo: 8×8 handwritten digits (1797 samples, 10 classes).
 
