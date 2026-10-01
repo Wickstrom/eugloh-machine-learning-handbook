@@ -57,7 +57,7 @@ def _(mo):
 
         University of Novi Sad
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 35</div>
         """
     )
     return
@@ -80,7 +80,7 @@ def _(mo):
 
         Session 2 of 4 today.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 35</div>
         """
     )
     return
@@ -109,7 +109,7 @@ def _(mo):
         *hyperplane*). We keep the one-feature picture, because it is the
         easiest to see.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 35</div>
         """
     )
     return
@@ -137,7 +137,7 @@ def _(mo):
         not seen. The tool was the same **least-squares line** we are about to
         derive.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 35</div>
         """
     )
     return
@@ -179,7 +179,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 38</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 35</div>"""),
         ]
     )
     return
@@ -207,7 +207,7 @@ def _(mo):
           point, so there are no local traps
         - the grey segments in the figure above are exactly those residuals
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 35</div>
         """
     )
     return
@@ -241,7 +241,7 @@ def _(mo):
         - $\eta$ is the **learning rate** — how large each step is
         - repeat many times, and the line creeps towards the same answer
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 35</div>
         """
     )
     return
@@ -289,7 +289,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="860px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 38</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 35</div>"""),
         ]
     )
     return
@@ -319,7 +319,7 @@ def _(mo):
         - nothing new to learn here — it is the same least-squares fit, just
           computed on a growing prefix of the data
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 35</div>
         """
     )
     return fit_x, fit_y, n_seen
@@ -361,7 +361,7 @@ def _(fit_x, fit_y, mo, n_seen):
         [
             n_seen,
             mo.image(_buf, width="680px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 38</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 35</div>"""),
         ]
     )
     return
@@ -378,13 +378,11 @@ def _(mo):
           predicting the mean", and it *can go negative* on a bad model.
         - **RMSE** — root mean squared error, in the same units as $y$, so its
           magnitude is directly interpretable.
-        - **Residuals** — plot them! A pattern in the residuals means the
-          linear model is missing structure.
 
         Report every number on a **held-out test set**, never on the training
         set. Below: the diabetes dataset (age, BMI, blood pressure, …).
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 35</div>
         """
     )
     return
@@ -409,16 +407,27 @@ def _(mo):
     _m = _LinReg().fit(_Xtr, _ytr)
     _pred = _m.predict(_Xte)
 
+    _rmse_model = _np.sqrt(_mse(_yte, _pred))
+    _rmse_base = _np.sqrt(_mse(_yte, _np.full_like(_yte, _yte.mean())))
+
     _fig, _axes = _plt.subplots(1, 2, figsize=(11, 4.2))
     _axes[0].scatter(_yte, _pred, color="#2563eb", s=22, alpha=0.7)
     _lim = [_yte.min(), _yte.max()]
     _axes[0].plot(_lim, _lim, color="gray", ls="--")
-    _axes[0].set_xlabel("true")
-    _axes[0].set_ylabel("predicted")
-    _axes[0].set_title(f"diabetes — test $R^2$ = {_r2(_yte, _pred):.2f}")
-    _axes[1].hist(_yte - _pred, bins=25, color="#dc2626", alpha=0.8)
-    _axes[1].set_xlabel("true − predicted")
-    _axes[1].set_title(f"residuals — RMSE = {_np.sqrt(_mse(_yte, _pred)):.1f}")
+    _axes[0].set_xlabel("true value")
+    _axes[0].set_ylabel("predicted value")
+    _axes[0].set_title(
+        f"closer to the dashed line = better (test $R^2$ = {_r2(_yte, _pred):.2f})"
+    )
+    _axes[1].bar(
+        ["predict the mean\n(baseline)", "our model"],
+        [_rmse_base, _rmse_model],
+        color=["#94a3b8", "#16a34a"],
+    )
+    _axes[1].set_ylabel("RMSE (same units as the target)")
+    _axes[1].set_title("lower is better")
+    for _i, _v in enumerate([_rmse_base, _rmse_model]):
+        _axes[1].text(_i, _v, f"{_v:.0f}", ha="center", va="bottom")
     _buf = _io.BytesIO()
     _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
     _plt.close(_fig)
@@ -426,7 +435,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="860px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 38</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 35</div>"""),
         ]
     )
     return
@@ -450,7 +459,7 @@ def _(mo):
           little bias for a lot less variance — the same idea we will meet again
           in logistic regression.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 35</div>
         """
     )
     return
@@ -470,7 +479,7 @@ def _(mo):
         Feed $0/1$ labels into a line and it happily predicts $-0.4$ or $1.4$ —
         which is meaningless as a probability:
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 35</div>
         """
     )
     return
@@ -494,7 +503,7 @@ def _(mo):
 
         — this is **gradient descent**, and $\eta$ is the **learning rate**.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">15 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">15 / 35</div>
         """
     )
     return
@@ -535,7 +544,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">16 / 38</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">16 / 35</div>"""),
         ]
     )
     return
@@ -561,7 +570,7 @@ def _(mo):
         It is smooth everywhere, which is what lets us train it with gradient
         descent.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">17 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">17 / 35</div>
         """
     )
     return
@@ -592,7 +601,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">18 / 38</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">18 / 35</div>"""),
         ]
     )
     return
@@ -611,7 +620,7 @@ def _(mo):
         - far right: $\sigma \approx 1$ — confidently class 1
         - in between: a probability!
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">19 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">19 / 35</div>
         """
     )
     return
@@ -654,7 +663,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="860px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">20 / 38</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">20 / 35</div>"""),
         ]
     )
     return
@@ -668,21 +677,19 @@ def _(mo):
 
         Encode the classes as numbers: class 1 → $y = 1$, class 2 → $y = 0$.
         The sigmoid output is then read as the **probability of class 1** given
-        the input — the label becomes a probability.
+        the input.
 
-        **Why a sigmoid?** If we picture the two classes as two **bell curves**
-        (Gaussians) with the *same spread*, the maths works out so that the
-        probability of class 1 is exactly a logistic function of a linear
-        score. (If the two bells have different spreads, a sigmoid no longer
-        fits perfectly.)
+        **Why a sigmoid?** Picture the two classes as two **bell curves**
+        (Gaussians) with the *same spread*. The probability of class 1 then
+        works out to be exactly a logistic function of a linear score.
 
-        **Summary:** with the score $z = w x + b$, the model predicts
-        $\hat{p} = \sigma(z)$. The place where $z = 0$ — where the probability
-        is $0.5$ — is a straight line (a *hyperplane* in higher dimensions).
-        Logistic regression does not fit the data points; it finds the
+        **Summary:** the model predicts $\hat{p} = \sigma(z)$ with
+        $z = w x + b$. At $z = 0$ the probability is $0.5$ — that is the
+        **decision boundary**, a straight line (a *hyperplane* in higher
+        dimensions). Logistic regression does not fit the points; it finds the
         **separation** between the classes.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">21 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">21 / 35</div>
         """
     )
     return
@@ -694,22 +701,17 @@ def _(mo):
         r"""
         ## Learning: the cross-entropy loss
 
-        Squared error together with the sigmoid gives a **bumpy** loss — bad
-        for gradient descent. So we use a loss built for probabilities instead.
-
-        **The idea.** We want the model to give **high probability to the true
-        label**. For sample $i$ that probability is $\hat{p}_i$ if $y_i = 1$,
-        and $1 - \hat{p}_i$ if $y_i = 0$. Multiplying these probabilities over
-        all samples — and then taking a logarithm, which turns "multiply" into
-        "add" — gives the average **cross-entropy**:
+        We want the model to give a **high probability to the true label**, and
+        to pay a price when it is confidently wrong. The **cross-entropy**
+        does exactly that:
 
         $$\mathcal{L}(w, b) = -\frac{1}{n} \sum_{i=1}^{n} \left[ y_i \log \hat{p}_i + (1 - y_i) \log (1 - \hat{p}_i) \right]$$
 
-        - each term is small when the prediction matches the true label
-        - this loss is **convex**, so gradient descent finds the single global
-          minimum
+        - small when the prediction matches the true label, large when it is
+          confidently wrong
+        - **convex** — gradient descent finds the single global minimum
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">22 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">22 / 35</div>
         """
     )
     return
@@ -739,7 +741,7 @@ def _(mo):
 
         $$w \leftarrow w - \eta \, \frac{\partial \mathcal{L}}{\partial w}$$
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">23 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">23 / 35</div>
         """
     )
     return
@@ -763,7 +765,7 @@ def _(mo):
 
         Keep this picture — it is the seed of tomorrow's lecture on neural networks.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">24 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">24 / 35</div>
         """
     )
     return
@@ -774,9 +776,33 @@ def _(mo):
     import numpy as _np
     from sklearn.datasets import make_blobs as _make_blobs
 
+    def fit_logistic_gd(X, y, lr=0.5, n_iter=500):
+        """Train binary logistic regression with full-batch gradient descent."""
+        n, d = X.shape
+        w = _np.zeros(d)
+        b = 0.0
+        losses = []
+        for _ in range(n_iter):
+            p = 1.0 / (1.0 + _np.exp(-(X @ w + b)))
+            losses.append(
+                -_np.mean(y * _np.log(p + 1e-12) + (1 - y) * _np.log(1 - p + 1e-12))
+            )
+            w -= lr * (X.T @ (p - y)) / n
+            b -= lr * _np.mean(p - y)
+        return w, b, losses
+
     blobs_X, blobs_y = _make_blobs(
         n_samples=200, centers=[(-2.0, -2.0), (2.0, 2.0)],
         cluster_std=1.2, random_state=0,
+    )
+    w_hand, b_hand, losses_hand = fit_logistic_gd(blobs_X, blobs_y, n_iter=500)
+    acc_hand = _np.mean(
+        (1.0 / (1.0 + _np.exp(-(blobs_X @ w_hand + b_hand))) >= 0.5) == blobs_y
+    )
+
+    train_slider = mo.ui.slider(
+        start=1, stop=100, step=1, value=5,
+        label="epochs of training", show_value=True, debounce=True,
     )
     mo.md(
         r"""
@@ -789,62 +815,57 @@ def _(mo):
             b -= lr * np.mean(p - y)
         ```
 
-        ~15 lines in total. We train it on the two-blob dataset and compare
-        with `sklearn.linear_model.LogisticRegression`.
+        ~15 lines in total. We train it on the two-blob dataset — and on the
+        next slide you can **scrub through the training**, one bit at a time.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">25 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">25 / 35</div>
         """
     )
-    return blobs_X, blobs_y
+    return (
+        acc_hand,
+        b_hand,
+        blobs_X,
+        blobs_y,
+        fit_logistic_gd,
+        losses_hand,
+        train_slider,
+        w_hand,
+    )
 
 
 @app.cell
-def _(blobs_X, blobs_y, mo):
+def _(blobs_X, blobs_y, fit_logistic_gd, mo, train_slider):
     import io as _io
 
     import matplotlib.pyplot as _plt
     import numpy as _np
 
-    def _sigmoid(z):
-        return 1.0 / (1.0 + _np.exp(-z))
-
-    def fit_logistic_gd(X, y, lr=0.5, n_iter=500):
-        """Train binary logistic regression with full-batch gradient descent."""
-        n, d = X.shape
-        w = _np.zeros(d)
-        b = 0.0
-        losses = []
-        for _ in range(n_iter):
-            p = _sigmoid(X @ w + b)
-            losses.append(
-                -_np.mean(y * _np.log(p + 1e-12) + (1 - y) * _np.log(1 - p + 1e-12))
-            )
-            w -= lr * (X.T @ (p - y)) / n
-            b -= lr * _np.mean(p - y)
-        return w, b, losses
-
-    w_hand, b_hand, losses_hand = fit_logistic_gd(blobs_X, blobs_y)
-    acc_hand = _np.mean((_sigmoid(blobs_X @ w_hand + b_hand) >= 0.5) == blobs_y)
-    print(f"by hand: w = {w_hand.round(3)}, b = {b_hand:+.3f}, accuracy = {acc_hand:.3f}")
+    _n_iter = int(train_slider.value)
+    _w, _b, _losses = fit_logistic_gd(blobs_X, blobs_y, n_iter=_n_iter)
+    _prob = 1.0 / (1.0 + _np.exp(-(blobs_X @ _w + _b)))
+    _acc = _np.mean((_prob >= 0.5) == blobs_y)
 
     _xx, _yy = _np.meshgrid(
         _np.linspace(blobs_X[:, 0].min() - 1, blobs_X[:, 0].max() + 1, 250),
         _np.linspace(blobs_X[:, 1].min() - 1, blobs_X[:, 1].max() + 1, 250),
     )
-    _pp = _sigmoid(
-        _np.c_[_xx.ravel(), _yy.ravel()] @ w_hand + b_hand
+    _pp = (
+        1.0 / (1.0 + _np.exp(-(_np.c_[_xx.ravel(), _yy.ravel()] @ _w + _b)))
     ).reshape(_xx.shape)
 
     _fig, _axes = _plt.subplots(1, 2, figsize=(11, 4))
-    _axes[0].plot(losses_hand, color="#2563eb")
+    _axes[0].plot(_losses, color="#2563eb")
     _axes[0].set_xlabel("epoch")
-    _axes[0].set_title("Cross-entropy during training")
+    _axes[0].set_ylabel("cross-entropy")
+    _axes[0].set_xlim(0, 100)
+    _axes[0].set_ylim(0, 0.75)
+    _axes[0].set_title(f"loss after {_n_iter} epochs")
     _cs = _axes[1].contourf(_xx, _yy, _pp, levels=20, cmap="RdYlGn", alpha=0.7)
     _axes[1].scatter(blobs_X[blobs_y == 0, 0], blobs_X[blobs_y == 0, 1],
                      color="#dc2626", s=16, label="class 0")
     _axes[1].scatter(blobs_X[blobs_y == 1, 0], blobs_X[blobs_y == 1, 1],
                      color="#16a34a", s=16, label="class 1")
-    _axes[1].set_title(f"Decision boundary (by hand, acc {acc_hand:.2f})")
+    _axes[1].set_title(f"boundary after {_n_iter} epochs (accuracy {_acc:.2f})")
     _axes[1].legend()
     _fig.colorbar(_cs, ax=_axes[1], label="p(class 1)")
     _buf = _io.BytesIO()
@@ -853,11 +874,15 @@ def _(blobs_X, blobs_y, mo):
     _buf.seek(0)
     mo.vstack(
         [
+            mo.md(
+                r"""**Scrub through training** — watch the loss fall and the boundary rotate into place."""
+            ),
+            train_slider,
             mo.image(_buf, width="860px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">26 / 38</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">26 / 35</div>"""),
         ]
     )
-    return acc_hand, b_hand, fit_logistic_gd, w_hand
+    return
 
 
 @app.cell
@@ -871,7 +896,7 @@ def _(acc_hand, b_hand, blobs_X, blobs_y, mo, w_hand):
     print(f"by hand:      w = {w_hand.round(3)}, b = {b_hand:+.3f}, accuracy = {acc_hand:.3f}")
     print("(sklearn's weights are slightly smaller — it applies L2 regularisation by default)")
     mo.md(
-        r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">27 / 38</div>"""
+        r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">27 / 35</div>"""
     )
     return (logreg_clf,)
 
@@ -907,7 +932,7 @@ def _(mo):
           emerges
         - the boundary is where the model is exactly $50/50$ ($z = 0$)
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">28 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">28 / 35</div>
         """
     )
     return incL_X, incL_y, logit_seen
@@ -956,7 +981,7 @@ def _(incL_X, incL_y, logit_seen, mo):
         [
             logit_seen,
             mo.image(_buf, width="600px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">29 / 38</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">29 / 35</div>"""),
         ]
     )
     return
@@ -979,10 +1004,9 @@ def _(mo):
 
         - observations are **independent**,
         - the target is **binary** (otherwise: softmax),
-        - features are **linearly related to the log-odds**,
         - there are **no strong outliers**, and the **sample size is large**.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">30 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">30 / 35</div>
         """
     )
     return
@@ -1004,7 +1028,7 @@ def _(mo):
         The slider controls how far apart the two classes are. Watch the
         decision boundary and the accuracy react.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">31 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">31 / 35</div>
         """
     )
     return (sep_slider,)
@@ -1050,71 +1074,7 @@ def _(mo, sep_slider):
         [
             sep_slider,
             mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">32 / 38</div>"""),
-        ]
-    )
-    return
-
-
-@app.cell
-def _(mo):
-    # The widget is created here; the *next* cell reads `.value` and displays
-    # the slider together with its figure. The md must be the LAST expression
-    # so it becomes the cell's output.
-    thr_slider = mo.ui.slider(
-        start=0.05, stop=0.95, step=0.05, value=0.5,
-        label="Decision threshold", show_value=True, debounce=True,
-    )
-    mo.md(
-        r"""
-        ## Interactive demo — the decision threshold
-
-        A classifier is more than "class A or B": it outputs a **probability**,
-        and *we* choose where to cut. Move the threshold and watch which
-        errors you trade: false positives (amber) vs false negatives (red).
-
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">33 / 38</div>
-        """
-    )
-    return (thr_slider,)
-
-
-@app.cell
-def _(blobs_X, blobs_y, logreg_clf, mo, thr_slider):
-    import io as _io
-
-    import matplotlib.pyplot as _plt
-    import numpy as _np
-
-    _p = logreg_clf.predict_proba(blobs_X)[:, 1]
-    _t = thr_slider.value
-    _pred = (_p >= _t).astype(int)
-
-    _tp = int(((_pred == 1) & (blobs_y == 1)).sum())
-    _tn = int(((_pred == 0) & (blobs_y == 0)).sum())
-    _fp = int(((_pred == 1) & (blobs_y == 0)).sum())
-    _fn = int(((_pred == 0) & (blobs_y == 1)).sum())
-
-    _fig, _ax = _plt.subplots(figsize=(5.8, 4.6))
-    for _mask, _color, _label in [
-        ((_pred == 1) & (blobs_y == 1), "#16a34a", f"true positives ({_tp})"),
-        ((_pred == 0) & (blobs_y == 0), "#94a3b8", f"true negatives ({_tn})"),
-        ((_pred == 1) & (blobs_y == 0), "#f59e0b", f"false positives ({_fp})"),
-        ((_pred == 0) & (blobs_y == 1), "#dc2626", f"false negatives ({_fn})"),
-    ]:
-        _ax.scatter(blobs_X[_mask, 0], blobs_X[_mask, 1], color=_color, s=28, label=_label)
-    _ax.set_title(f"threshold = {_t:.2f} — which error do you prefer?")
-    _ax.legend(loc="upper left", fontsize=8)
-    _ax.set_aspect("equal")
-    _buf = _io.BytesIO()
-    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
-    _plt.close(_fig)
-    _buf.seek(0)
-    mo.vstack(
-        [
-            thr_slider,
-            mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">34 / 38</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">32 / 35</div>"""),
         ]
     )
     return
@@ -1135,7 +1095,7 @@ def _(mo):
 
         scikit-learn's `LogisticRegression` handles this automatically.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">35 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">33 / 35</div>
         """
     )
     return
@@ -1153,29 +1113,56 @@ def _(mo):
     _iris = _load_iris()
     _X = _iris.data[:, 2:4]  # petal length & width
     _y = _iris.target
-    _clf = _LR(max_iter=1000).fit(_X, _y)
+    _names = list(_iris.target_names)
+
+    # One-vs-rest: a separate binary "this class vs all the others" model.
+    _ovr = [
+        _LR(max_iter=1000).fit(_X, (_y == _k).astype(int))
+        for _k in range(len(_names))
+    ]
 
     _x0, _x1 = _X[:, 0].min() - 0.5, _X[:, 0].max() + 0.5
     _y0, _y1 = _X[:, 1].min() - 0.5, _X[:, 1].max() + 0.5
     _xx, _yy = _np.meshgrid(_np.linspace(_x0, _x1, 300), _np.linspace(_y0, _y1, 300))
-    _Z = _clf.predict(_np.c_[_xx.ravel(), _yy.ravel()]).reshape(_xx.shape)
+    _grid = _np.c_[_xx.ravel(), _yy.ravel()]
+    _probs = _np.column_stack([_m.predict_proba(_grid)[:, 1] for _m in _ovr])
+    _final = _np.argmax(_probs, axis=1).reshape(_xx.shape)
 
-    _fig, _ax = _plt.subplots(figsize=(5.8, 4.6))
-    _ax.contourf(_xx, _yy, _Z, alpha=0.25, cmap="RdYlGn")
-    for _k, _name in enumerate(_iris.target_names):
-        _ax.scatter(_X[_y == _k, 0], _X[_y == _k, 1], s=22, label=_name)
-    _ax.set_xlabel("petal length (cm)")
-    _ax.set_ylabel("petal width (cm)")
-    _ax.set_title(f"Logistic regression on iris — accuracy {_clf.score(_X, _y):.2f}")
-    _ax.legend()
+    _fig, _axes = _plt.subplots(1, 4, figsize=(16, 4.0))
+    _xs = _np.linspace(_x0, _x1, 100)
+    for _k in range(len(_names)):
+        _ax = _axes[_k]
+        _w, _b = _ovr[_k].coef_[0], _ovr[_k].intercept_[0]
+        _ax.scatter(_X[_y == _k, 0], _X[_y == _k, 1], color="#16a34a", s=20,
+                    label=_names[_k])
+        _ax.scatter(_X[_y != _k, 0], _X[_y != _k, 1], color="#cbd5e1", s=14,
+                    label="rest")
+        if abs(_w[1]) > 1e-9:
+            _ax.plot(_xs, -(_w[0] * _xs + _b) / _w[1], color="#111827", lw=2)
+        _ax.set_title(f"{_names[_k]} vs rest")
+        _ax.set_xlabel("petal length")
+        _ax.set_aspect("equal")
+        _ax.legend(fontsize=7, loc="upper left")
+
+    _axes[3].contourf(_xx, _yy, _final, alpha=0.25, cmap="RdYlGn")
+    for _k in range(len(_names)):
+        _axes[3].scatter(_X[_y == _k, 0], _X[_y == _k, 1], s=20, label=_names[_k])
+    _axes[3].set_title("final: most confident class")
+    _axes[3].set_xlabel("petal length")
+    _axes[3].set_aspect("equal")
+    _axes[3].legend(fontsize=7, loc="upper left")
+
     _buf = _io.BytesIO()
     _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
     _plt.close(_fig)
     _buf.seek(0)
     mo.vstack(
         [
-            mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">36 / 38</div>"""),
+            mo.md(
+                r"""Three separate **class vs rest** lines, then the region each one wins."""
+            ),
+            mo.image(_buf, width="980px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">34 / 35</div>"""),
         ]
     )
     return
@@ -1202,21 +1189,7 @@ def _(mo):
 
         Next session: **decision trees**.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">37 / 38</div>
-        """
-    )
-    return
-
-
-@app.cell
-def _(mo):
-    mo.md(
-        r"""
-        # Thanks for this session!
-
-        Questions? Next up: **decision trees**.
-
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">38 / 38</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">35 / 35</div>
         """
     )
     return

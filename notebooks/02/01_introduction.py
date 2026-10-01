@@ -54,7 +54,7 @@ def _(mo):
 
         University of Novi Sad
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 7</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 6</div>
         """
     )
     return
@@ -74,7 +74,7 @@ def _(mo):
 
         Session 1 of 4 today.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 7</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 6</div>
         """
     )
     return
@@ -95,7 +95,7 @@ def _(mo):
         Our focus now shifts to **non-linear classifiers** — and we start
         with the most influential one: the neural network.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 7</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 6</div>
         """
     )
     return
@@ -137,7 +137,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 7</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 6</div>"""),
         ]
     )
     return nn_X, nn_Xs, nn_y
@@ -157,7 +157,7 @@ def _(mo):
         - **AlexNet** (2012) — GPUs + ImageNet → the deep-learning revolution
         - **Transformers / LLMs** (2017–) — the same ideas, at scale
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 7</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 6</div>
         """
     )
     return
@@ -180,21 +180,7 @@ def _(mo):
 
         Next session: the **perceptron and multilayer networks**.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 7</div>
-        """
-    )
-    return
-
-
-@app.cell
-def _(mo):
-    mo.md(
-        r"""
-        # Thanks for this session!
-
-        Questions? Next up: the **perceptron and multilayer networks**.
-
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 7</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 6</div>
         """
     )
     return

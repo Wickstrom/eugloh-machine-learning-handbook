@@ -55,7 +55,7 @@ def _(mo):
 
         University of Novi Sad
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 19</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 18</div>
         """
     )
     return
@@ -75,7 +75,7 @@ def _(mo):
 
         Session 3 of 4 today.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 19</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 18</div>
         """
     )
     return
@@ -101,7 +101,7 @@ def _(mo):
         A decision tree formalises this: **a sequence of questions, asked in
         the order that reduces uncertainty fastest.**
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 19</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 18</div>
         """
     )
     return
@@ -137,7 +137,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 19</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 18</div>"""),
         ]
     )
     return tree_X, tree_y
@@ -164,7 +164,7 @@ def _(mo):
         (housing prices). Inference is a walk from root to leaf — fully
         **interpretable**: you can read the model as a flowchart.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 19</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 18</div>
         """
     )
     return
@@ -197,7 +197,7 @@ def _(mo):
         $0$ means perfectly pure, larger means more mixed. (The $\log_2$ is just
         a logarithm; you never compute it by hand.)
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 19</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 18</div>
         """
     )
     return
@@ -216,7 +216,7 @@ def _(mo):
         Move the slider to change the class proportion $p$ in a node, and
         watch both impurity measures react. Where is the impurity maximal?
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 19</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 18</div>
         """
     )
     return (p_slider,)
@@ -253,7 +253,7 @@ def _(mo, p_slider):
         [
             p_slider,
             mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 19</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 18</div>"""),
         ]
     )
     return
@@ -282,7 +282,7 @@ def _(mo):
 
         The result is a **binary tree**; a leaf predicts its majority class.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 19</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 18</div>
         """
     )
     return
@@ -304,7 +304,7 @@ def _(mo):
 
         Try it with pen and paper first — then let the code check you.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 19</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 18</div>
         """
     )
     return
@@ -331,7 +331,7 @@ def _(mo):
         _star = "  <- best" if _t == 3.5 else ""
         print(f"   x <= {_t}  |   {_gini(_L):.3f}     {_gini(_R):.3f}   |  {_w:.3f}{_star}")
     mo.md(
-        r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 19</div>"""
+        r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 18</div>"""
     )
     return
 
@@ -347,7 +347,7 @@ def _(mo):
     print(f"sklearn's root split: x <= {_stump.tree_.threshold[0]:.1f}")
     print("(agrees with the hand calculation — threshold 3.5)")
     mo.md(
-        r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 19</div>"""
+        r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 18</div>"""
     )
     return
 
@@ -366,7 +366,7 @@ def _(mo):
 
         Fitting is instant on small data — and the tree can be *drawn*.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 19</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 18</div>
         """
     )
     return
@@ -411,7 +411,7 @@ def _(mo, tree_X, tree_y):
         [
             mo.image(_buf1, width="860px"),
             mo.image(_buf2, width="520px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 19</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 18</div>"""),
         ]
     )
     return
@@ -433,7 +433,7 @@ def _(mo):
         Watch the boundary below as `max_depth` grows: train accuracy climbs
         towards 1.0, but **test** accuracy peaks early and then decays.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">15 / 19</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">15 / 18</div>
         """
     )
     return (depth_slider,)
@@ -476,7 +476,7 @@ def _(depth_slider, mo):
         [
             depth_slider,
             mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">16 / 19</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">16 / 18</div>"""),
         ]
     )
     return
@@ -505,7 +505,7 @@ def _(mo):
         *(For regression trees the recipe is identical — split by variance
         reduction instead of Gini, and leaves predict the mean.)*
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">17 / 19</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">17 / 18</div>
         """
     )
     return
@@ -526,21 +526,7 @@ def _(mo):
 
         Next session: **random forests**.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">18 / 19</div>
-        """
-    )
-    return
-
-
-@app.cell
-def _(mo):
-    mo.md(
-        r"""
-        # Thanks for this session!
-
-        Questions? Next up: **random forests and ensembles**.
-
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">19 / 19</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">18 / 18</div>
         """
     )
     return

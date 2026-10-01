@@ -55,7 +55,7 @@ def _(mo):
 
         University of Novi Sad
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 12</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 11</div>
         """
     )
     return
@@ -76,7 +76,7 @@ def _(mo):
 
         Session 4 of 4 today — thanks for a great day!
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 12</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 11</div>
         """
     )
     return
@@ -95,7 +95,7 @@ def _(mo):
         A bunch of **weak learners** → one **strong learner**. This is a
         surprisingly effective idea!
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 12</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 11</div>
         """
     )
     return
@@ -126,7 +126,7 @@ def _(mo):
         Averaging many decorrelated trees cancels their individual errors —
         the forest is much more robust than any single tree.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 12</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 11</div>
         """
     )
     return forest_depth_slider, n_trees_slider
@@ -173,7 +173,7 @@ def _(forest_depth_slider, mo, n_trees_slider):
         [
             mo.hstack([n_trees_slider, forest_depth_slider]),
             mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 12</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 11</div>"""),
         ]
     )
     return
@@ -199,7 +199,7 @@ def _(mo):
         time, and a Kaggle legend. Trees/boosting dominate **tabular** data
         leaderboards.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 12</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 11</div>
         """
     )
     return
@@ -226,7 +226,7 @@ def _(mo):
         Most data scientists reach for trees, boosting, ensembles and
         forests — often they outperform neural networks on tabular problems.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 12</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 11</div>
         """
     )
     return
@@ -252,7 +252,7 @@ def _(mo):
         In plain words: ask each column *"how much would the forest miss you if
         we scrambled you?"*
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 12</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 11</div>
         """
     )
     return
@@ -284,7 +284,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="860px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 12</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 11</div>"""),
         ]
     )
     return
@@ -303,7 +303,7 @@ def _(mo):
         - Forests dominate **tabular** machine learning, and their
           **feature importance** is a useful (if rough) diagnostic.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 12</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 11</div>
         """
     )
     return
@@ -321,21 +321,7 @@ def _(mo):
         - **Tomorrow:** **neural networks** — smooth, fully non-linear
           boundaries, built from the single neuron you met today.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 12</div>
-        """
-    )
-    return
-
-
-@app.cell
-def _(mo):
-    mo.md(
-        r"""
-        # Thanks for today!
-
-        See you tomorrow for **neural networks**.
-
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 12</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 11</div>
         """
     )
     return

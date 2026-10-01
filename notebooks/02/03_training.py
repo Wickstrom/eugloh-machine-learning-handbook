@@ -56,7 +56,7 @@ def _(mo):
 
         University of Novi Sad
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 14</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 12</div>
         """
     )
     return
@@ -75,7 +75,7 @@ def _(mo):
 
         Session 3 of 4 today.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 14</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 12</div>
         """
     )
     return
@@ -109,7 +109,7 @@ def _(mo):
         You will implement exactly these steps — by hand — below and in the
         exercise.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 14</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 12</div>
         """
     )
     return
@@ -134,7 +134,7 @@ def _(mo):
         - There is only **one loop** — the epochs; everything inside is
           **matrix multiplication**
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 14</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 12</div>
         """
     )
     return
@@ -163,7 +163,7 @@ def _(mo):
         More sophisticated **optimizers** (momentum, Adam, …) build on this
         idea; we will meet them in the next session.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 14</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 12</div>
         """
     )
     return
@@ -209,7 +209,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="880px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 14</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 12</div>"""),
         ]
     )
     return
@@ -237,7 +237,7 @@ def _(mo):
         All three are just matrix multiplications — so the whole implementation
         is only a few lines.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 14</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 12</div>
         """
     )
     return nn_Xs, nn_y
@@ -321,7 +321,7 @@ def _(b1h, b2h, mo, nn_Xs, nn_acc, nn_losses, nn_y, W1h, W2h):
     mo.vstack(
         [
             mo.image(_buf, width="860px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 14</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 12</div>"""),
         ]
     )
     return
@@ -343,7 +343,7 @@ def _(mo):
         tracks its loss curve, and supports early stopping. Same network, same
         data — a more robust optimizer under the hood.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 14</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 12</div>
         """
     )
     return
@@ -384,7 +384,7 @@ def _(mo, nn_Xs, nn_y):
     mo.vstack(
         [
             mo.image(_buf, width="860px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 14</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 12</div>"""),
         ]
     )
     return
@@ -407,7 +407,7 @@ def _(mo):
         Next session: the **components** — activation functions, optimizers and
         weight initialization — and where neural networks go next.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 14</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 12</div>
         """
     )
     return
@@ -423,21 +423,7 @@ def _(mo):
           — implement the **forward and backward pass by hand**, train a small
           MLP, and compare against `MLPClassifier`.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 14</div>
-        """
-    )
-    return
-
-
-@app.cell
-def _(mo):
-    mo.md(
-        r"""
-        # Thanks for this session!
-
-        Questions? Next up: **components and going beyond**.
-
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 14</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 12</div>
         """
     )
     return
