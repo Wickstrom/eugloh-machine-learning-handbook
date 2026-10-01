@@ -92,8 +92,6 @@ def _(mo):
         - Today's exercises: `notebooks/01/01_introduction_{beginner,intermediate,advanced}.ipynb`
         - All exercises use `numpy`, `matplotlib` and `scikit-learn` — nothing else to install
 
-        Questions are very welcome — ask early, ask often.
-
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 17</div>
         """
     )
@@ -251,7 +249,7 @@ def _(label_fraction, mo):
     import numpy as _np
     from sklearn.datasets import make_moons as _make_moons
 
-    _X, _y = _make_moons(n_samples=150, noise=0.25, random_state=0)
+    _X, _y = _make_moons(n_samples=150, noise=0.1, random_state=0)
     _n = len(_y)
     _k = int(round(label_fraction.value * _n))
     _order = _np.random.default_rng(0).permutation(_n)
@@ -303,8 +301,6 @@ def _(mo):
         6. **Evaluate** — on held-out data, never on the training set
         7. **Iterate**
 
-        Most of the real work happens in steps 2–3.
-
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 17</div>
         """
     )
@@ -334,39 +330,65 @@ def _(mo):
 
 @app.cell
 def _(mo):
+    import numpy as _np
+    from sklearn.datasets import make_moons as _make_moons
+
+    moon_X, moon_y = _make_moons(n_samples=200, noise=0.3, random_state=1)
+    degree_slider = mo.ui.slider(
+        start=1, stop=9, step=1, value=1,
+        label="polynomial degree", show_value=True, debounce=True,
+    )
+    mo.md(
+        r"""
+        ## Interactive demo — model complexity
+
+        Slide the **degree** from 1 to 9 to change how flexible the model is.
+
+        - degree 1 → a straight line: **underfitting**
+        - a few degrees → a smooth curve that follows the shape well
+        - degree 9 → a wiggly boundary: **overfitting**
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 17</div>
+        """
+    )
+    return degree_slider, moon_X, moon_y
+
+
+@app.cell
+def _(degree_slider, mo, moon_X, moon_y):
     import io as _io
 
     import matplotlib.pyplot as _plt
     import numpy as _np
-    from sklearn.datasets import make_moons as _make_moons
     from sklearn.linear_model import LogisticRegression as _LR
     from sklearn.pipeline import make_pipeline as _mkpipe
     from sklearn.preprocessing import PolynomialFeatures as _Poly
     from sklearn.preprocessing import StandardScaler as _Scaler
 
-    _X, _y = _make_moons(n_samples=200, noise=0.3, random_state=1)
+    _deg = int(degree_slider.value)
     _xx, _yy = _np.meshgrid(
-        _np.linspace(_X[:, 0].min() - 0.5, _X[:, 0].max() + 0.5, 250),
-        _np.linspace(_X[:, 1].min() - 0.5, _X[:, 1].max() + 0.5, 250),
+        _np.linspace(moon_X[:, 0].min() - 0.5, moon_X[:, 0].max() + 0.5, 250),
+        _np.linspace(moon_X[:, 1].min() - 0.5, moon_X[:, 1].max() + 0.5, 250),
     )
-    _fig, _axes = _plt.subplots(1, 3, figsize=(12, 3.6), sharey=True)
-    for _ax, _deg in zip(_axes, [1, 3, 9]):
-        _pipe = _mkpipe(_Poly(degree=_deg), _Scaler(), _LR(max_iter=2000))
-        _pipe.fit(_X, _y)
-        _zz = _pipe.predict(_np.c_[_xx.ravel(), _yy.ravel()]).reshape(_xx.shape)
-        _ax.contourf(_xx, _yy, _zz, alpha=0.25, cmap="RdYlGn")
-        _ax.scatter(_X[_y == 0, 0], _X[_y == 0, 1], color="#dc2626", s=14)
-        _ax.scatter(_X[_y == 1, 0], _X[_y == 1, 1], color="#16a34a", s=14)
-        _ax.set_title(f"degree {_deg} · train acc {_pipe.score(_X, _y):.2f}")
-        _ax.set_aspect("equal")
+    _pipe = _mkpipe(_Poly(degree=_deg), _Scaler(), _LR(max_iter=2000))
+    _pipe.fit(moon_X, moon_y)
+    _zz = _pipe.predict(_np.c_[_xx.ravel(), _yy.ravel()]).reshape(_xx.shape)
+
+    _fig, _ax = _plt.subplots(figsize=(5.6, 4.6))
+    _ax.contourf(_xx, _yy, _zz, alpha=0.25, cmap="RdYlGn")
+    _ax.scatter(moon_X[moon_y == 0, 0], moon_X[moon_y == 0, 1], color="#dc2626", s=16)
+    _ax.scatter(moon_X[moon_y == 1, 0], moon_X[moon_y == 1, 1], color="#16a34a", s=16)
+    _ax.set_title(f"degree {_deg} · train accuracy {_pipe.score(moon_X, moon_y):.2f}")
+    _ax.set_aspect("equal")
     _buf = _io.BytesIO()
     _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
     _plt.close(_fig)
     _buf.seek(0)
     mo.vstack(
         [
-            mo.image(_buf, width="860px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 17</div>"""),
+            degree_slider,
+            mo.image(_buf, width="620px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 17</div>"""),
         ]
     )
     return
@@ -386,7 +408,7 @@ def _(mo):
         - **Digits** — 1797 handwritten 8×8 images, 10 classes
         - **Diabetes** — 442 patients, 10 features, a continuous target (regression)
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 17</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">15 / 17</div>
         """
     )
     return
@@ -444,7 +466,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="860px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">15 / 17</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">16 / 17</div>"""),
         ]
     )
     return
@@ -466,20 +488,6 @@ def _(mo):
           are the two failure modes every model balances.
 
         Next session: **linear and logistic regression**.
-
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">16 / 17</div>
-        """
-    )
-    return
-
-
-@app.cell
-def _(mo):
-    mo.md(
-        r"""
-        # Thanks for this session!
-
-        Questions? Next up: **linear and logistic regression**.
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">17 / 17</div>
         """
