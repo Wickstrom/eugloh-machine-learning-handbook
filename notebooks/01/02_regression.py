@@ -75,7 +75,8 @@ def _(mo):
         - **Logistic regression** — from regression to classification, sigmoid,
           cross-entropy, implemented **by hand in numpy**
         - Interactive demos: watching the model update as **new samples
-          arrive**, class separation, the decision threshold
+          arrive**, scrubbing through **gradient descent**, and tuning the
+          **regularisation strength $C$**
         - **Multi-class** classification via one-vs-rest / softmax
 
         Session 2 of 4 today.
@@ -1017,63 +1018,94 @@ def _(mo):
     # The widget is created here; the *next* cell reads `.value` and displays
     # the slider together with its figure. The md must be the LAST expression
     # so it becomes the cell's output.
-    sep_slider = mo.ui.slider(
-        start=0.5, stop=4.0, step=0.1, value=2.0,
-        label="Class separation", show_value=True, debounce=True,
+    logc_slider = mo.ui.slider(
+        start=-3.0, stop=3.0, step=0.5, value=0.0,
+        label="log10(C) — larger C = weaker regularisation",
+        show_value=True, debounce=True,
     )
     mo.md(
         r"""
-        ## Interactive demo — class separation
+        ## Interactive demo — regularisation strength $C$
 
-        The slider controls how far apart the two classes are. Watch the
-        decision boundary and the accuracy react.
+        sklearn's `LogisticRegression` applies an L2 penalty with strength
+        $\lambda$, exposed as **$C = 1/\lambda$**. The two classes overlap and
+        two distant points (black rings) tempt the model to bend. Move the
+        slider:
+
+        - **small $C$** (strong penalty) shrinks the weights towards zero — the
+          model **underfits** and ignores the outliers;
+        - **large $C$** (weak penalty) lets the model chase every point,
+          producing a **sharp, over-confident** boundary.
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">31 / 35</div>
         """
     )
-    return (sep_slider,)
+    return (logc_slider,)
 
 
 @app.cell
-def _(mo, sep_slider):
+def _(logc_slider, mo):
     import io as _io
 
     import matplotlib.pyplot as _plt
     import numpy as _np
     from sklearn.linear_model import LogisticRegression as _LR
-    from sklearn.metrics import accuracy_score as _acc
 
-    _rng = _np.random.default_rng(42)
-    _sep = sep_slider.value
-    _Xp = _rng.normal(loc=[_sep, _sep], scale=[1.0, 1.0], size=(80, 2))
-    _Xn = _rng.normal(loc=[-_sep, -_sep], scale=[1.0, 1.0], size=(80, 2))
-    _Xd = _np.vstack([_Xp, _Xn])
-    _yd = _np.concatenate([_np.ones(80), _np.zeros(80)])
-    _clf = _LR().fit(_Xd, _yd)
-    _train_acc = _acc(_yd, _clf.predict(_Xd))
+    _rng = _np.random.default_rng(1)
+    _n = 12
+    _X0 = _rng.normal(loc=(-1.5, -1.5), scale=0.7, size=(_n, 2))
+    _X1 = _rng.normal(loc=(1.5, 1.5), scale=0.7, size=(_n, 2))
+    _out = _np.array([[5.0, -4.5], [4.6, -5.0]])
+    _X = _np.vstack([_X0, _X1, _out])
+    _y = _np.concatenate([_np.zeros(_n), _np.ones(_n), _np.ones(len(_out))])
 
-    _x0, _x1 = _Xd[:, 0].min() - 1, _Xd[:, 0].max() + 1
-    _y0, _y1 = _Xd[:, 1].min() - 1, _Xd[:, 1].max() + 1
-    _xx, _yy = _np.meshgrid(_np.linspace(_x0, _x1, 200), _np.linspace(_y0, _y1, 200))
-    _Z = _clf.predict(_np.c_[_xx.ravel(), _yy.ravel()]).reshape(_xx.shape)
+    _C = 10.0 ** float(logc_slider.value)
+    _clf = _LR(C=_C, max_iter=2000).fit(_X, _y)
+    _wnorm = _np.linalg.norm(_clf.coef_)
 
-    _fig, _ax = _plt.subplots(figsize=(5.6, 4.6))
-    _ax.contourf(_xx, _yy, _Z, alpha=0.2, cmap="RdYlGn")
-    _ax.scatter(_Xd[_yd == 1, 0], _Xd[_yd == 1, 1], color="#16a34a", alpha=0.7, label="class 1")
-    _ax.scatter(_Xd[_yd == 0, 0], _Xd[_yd == 0, 1], color="#dc2626", alpha=0.7, label="class 0")
-    _ax.set_xlabel("$x_1$")
-    _ax.set_ylabel("$x_2$")
-    _ax.set_title(f"Training accuracy: {_train_acc:.3f}")
-    _ax.legend()
-    _ax.set_aspect("equal")
+    _x0, _x1 = _X[:, 0].min() - 0.8, _X[:, 0].max() + 0.8
+    _y0, _y1 = _X[:, 1].min() - 0.8, _X[:, 1].max() + 0.8
+    _xx, _yy = _np.meshgrid(_np.linspace(_x0, _x1, 250), _np.linspace(_y0, _y1, 250))
+    _pp = _clf.predict_proba(
+        _np.c_[_xx.ravel(), _yy.ravel()]
+    )[:, 1].reshape(_xx.shape)
+
+    # Weight magnitude as a function of C — the L2 penalty in action.
+    _cs = _np.logspace(-3, 3, 40)
+    _ws = [
+        _np.linalg.norm(_LR(C=_c, max_iter=2000).fit(_X, _y).coef_)
+        for _c in _cs
+    ]
+
+    _fig, _axes = _plt.subplots(1, 2, figsize=(11.5, 4.6))
+    _axes[0].contourf(_xx, _yy, _pp, levels=20, cmap="RdYlGn", alpha=0.7,
+                      vmin=0, vmax=1)
+    _axes[0].scatter(_X0[:, 0], _X0[:, 1], color="#dc2626", s=22, label="class 0")
+    _axes[0].scatter(_X1[:, 0], _X1[:, 1], color="#16a34a", s=22, label="class 1")
+    _axes[0].scatter(_out[:, 0], _out[:, 1], facecolors="none", edgecolors="k",
+                     s=90, label="outliers")
+    _axes[0].set_title(
+        f"C = {_C:.3g}  —  accuracy {_clf.score(_X, _y):.2f},  ‖w‖ = {_wnorm:.1f}"
+    )
+    _axes[0].set_xlabel("$x_1$")
+    _axes[0].set_ylabel("$x_2$")
+    _axes[0].set_aspect("equal")
+    _axes[0].legend(fontsize=8, loc="upper left")
+
+    _axes[1].semilogx(_cs, _ws, color="#2563eb")
+    _axes[1].scatter([_C], [_wnorm], color="#dc2626", zorder=5)
+    _axes[1].set_xlabel("C = 1/λ (log scale)")
+    _axes[1].set_ylabel("‖w‖")
+    _axes[1].set_title("strong penalty (small C) shrinks the weights")
+
     _buf = _io.BytesIO()
     _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
     _plt.close(_fig)
     _buf.seek(0)
     mo.vstack(
         [
-            sep_slider,
-            mo.image(_buf, width="620px"),
+            logc_slider,
+            mo.image(_buf, width="920px"),
             mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">32 / 35</div>"""),
         ]
     )
@@ -1128,29 +1160,47 @@ def _(mo):
     _probs = _np.column_stack([_m.predict_proba(_grid)[:, 1] for _m in _ovr])
     _final = _np.argmax(_probs, axis=1).reshape(_xx.shape)
 
-    _fig, _axes = _plt.subplots(1, 4, figsize=(16, 4.0))
+    # A 2x2 grid (rather than one long strip) keeps every panel large enough
+    # to read. All four panels share the same axes, so the three "vs rest"
+    # boundaries are directly comparable.
+    _fig, _axes = _plt.subplots(2, 2, figsize=(11.5, 6.2))
+    _axes = _axes.ravel()
     _xs = _np.linspace(_x0, _x1, 100)
     for _k in range(len(_names)):
         _ax = _axes[_k]
-        _w, _b = _ovr[_k].coef_[0], _ovr[_k].intercept_[0]
-        _ax.scatter(_X[_y == _k, 0], _X[_y == _k, 1], color="#16a34a", s=20,
+        _m = _ovr[_k]
+        _w, _b = _m.coef_[0], _m.intercept_[0]
+        # Shade the half-plane this classifier calls "the class" vs "rest".
+        _mask = _m.predict(_grid).reshape(_xx.shape)
+        _ax.contourf(_xx, _yy, _mask, levels=[-0.5, 0.5, 1.5],
+                     colors=["#e2e8f0", "#86efac"], alpha=0.55)
+        _ax.scatter(_X[_y != _k, 0], _X[_y != _k, 1], color="#64748b", s=22,
+                    alpha=0.7, label="rest")
+        _ax.scatter(_X[_y == _k, 0], _X[_y == _k, 1], color="#16a34a", s=26,
                     label=_names[_k])
-        _ax.scatter(_X[_y != _k, 0], _X[_y != _k, 1], color="#cbd5e1", s=14,
-                    label="rest")
         if abs(_w[1]) > 1e-9:
-            _ax.plot(_xs, -(_w[0] * _xs + _b) / _w[1], color="#111827", lw=2)
-        _ax.set_title(f"{_names[_k]} vs rest")
-        _ax.set_xlabel("petal length")
+            _ax.plot(_xs, -(_w[0] * _xs + _b) / _w[1], color="#111827", lw=2.2)
+        _acc_k = _m.score(_X, (_y == _k).astype(int))
+        _ax.set_title(f"{_names[_k]} vs rest — binary accuracy {_acc_k:.2f}")
+        _ax.set_xlim(_x0, _x1)
+        _ax.set_ylim(_y0, _y1)
         _ax.set_aspect("equal")
-        _ax.legend(fontsize=7, loc="upper left")
+        _ax.legend(fontsize=8, loc="upper left")
+        if _k >= 2:
+            _ax.set_xlabel("petal length (cm)")
+        if _k % 2 == 0:
+            _ax.set_ylabel("petal width (cm)")
 
-    _axes[3].contourf(_xx, _yy, _final, alpha=0.25, cmap="RdYlGn")
+    _axes[3].contourf(_xx, _yy, _final, alpha=0.30, cmap="RdYlGn")
     for _k in range(len(_names)):
-        _axes[3].scatter(_X[_y == _k, 0], _X[_y == _k, 1], s=20, label=_names[_k])
+        _axes[3].scatter(_X[_y == _k, 0], _X[_y == _k, 1], s=26,
+                         label=_names[_k])
     _axes[3].set_title("final: most confident class")
-    _axes[3].set_xlabel("petal length")
+    _axes[3].set_xlim(_x0, _x1)
+    _axes[3].set_ylim(_y0, _y1)
     _axes[3].set_aspect("equal")
-    _axes[3].legend(fontsize=7, loc="upper left")
+    _axes[3].legend(fontsize=8, loc="upper left")
+    _axes[3].set_xlabel("petal length (cm)")
 
     _buf = _io.BytesIO()
     _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
@@ -1159,9 +1209,15 @@ def _(mo):
     mo.vstack(
         [
             mo.md(
-                r"""Three separate **class vs rest** lines, then the region each one wins."""
+                r"""Each panel trains a **separate** binary classifier for
+                *that class vs everything else* (green = the region it calls
+                "the class"). Setosa and virginica separate cleanly, but the
+                middle class **versicolor is not linearly separable** from the
+                rest: its best straight line still misclassifies ~40% of the
+                data. The last panel keeps whichever classifier is most
+                confident."""
             ),
-            mo.image(_buf, width="980px"),
+            mo.image(_buf, width="920px"),
             mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">34 / 35</div>"""),
         ]
     )

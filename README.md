@@ -39,7 +39,8 @@ the course schedule.
       implemented **by hand in numpy** and compared against scikit-learn
     - Multi-class with one-vs-rest / softmax
     - Interactive demos: watching the fit update as **new samples arrive**
-      (linear and logistic), class separation, decision threshold
+      (linear and logistic), scrubbing through gradient descent, and tuning
+      the **regularisation strength $C$**
 
     [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/01/02_regression/index.html)
     [![Beginner](https://img.shields.io/badge/-Beginner-brightgreen?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/01/02_regression_beginner.ipynb)
