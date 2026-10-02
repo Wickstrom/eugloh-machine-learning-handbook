@@ -49,8 +49,10 @@ the course schedule.
 
 3. **Session 3 — Decision trees** (11:15)
     - Impurity (Gini/entropy), CART, one split computed **by hand**
+    - Interpretability — reading a tree as rules, and where it breaks down
     - Overfitting, pruning, complexity
-    - Interactive demos: impurity curves, tree depth
+    - Interactive demos: choosing a split (weighted impurity vs threshold),
+      tree depth with and without label noise
 
     [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/01/03_decision_trees/index.html)
     [![Beginner](https://img.shields.io/badge/-Beginner-brightgreen?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/01/03_decision_trees_beginner.ipynb)

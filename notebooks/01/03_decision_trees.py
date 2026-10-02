@@ -55,7 +55,7 @@ def _(mo):
 
         University of Novi Sad
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 18</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 22</div>
         """
     )
     return
@@ -71,11 +71,12 @@ def _(mo):
         - **Building blocks** — roots, nodes, branches, leaves
         - **The splitting criterion** — entropy and Gini impurity
         - **CART** — growing a tree greedily; a split computed **by hand**
+        - **Interpretability** — reading a tree as rules, and where it breaks down
         - **Practical aspects** — overfitting, pruning, complexity
 
         Session 3 of 4 today.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 18</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 22</div>
         """
     )
     return
@@ -101,7 +102,7 @@ def _(mo):
         A decision tree formalises this: **a sequence of questions, asked in
         the order that reduces uncertainty fastest.**
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 18</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 22</div>
         """
     )
     return
@@ -137,10 +138,50 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 18</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 22</div>"""),
         ]
     )
     return tree_X, tree_y
+
+
+@app.cell
+def _(mo, tree_X, tree_y):
+    import io as _io
+
+    import matplotlib.pyplot as _plt
+    from sklearn.tree import DecisionTreeClassifier as _DTC
+    from sklearn.tree import plot_tree as _plot_tree
+
+    _tree = _DTC(max_depth=2, random_state=0).fit(tree_X, tree_y)
+
+    _fig, _ax = _plt.subplots(figsize=(10, 4.4))
+    _plot_tree(_tree, feature_names=["$x_1$", "$x_2$"],
+               class_names=["class 0", "class 1"], filled=True, rounded=True,
+               impurity=False, fontsize=11, ax=_ax)
+    for _txt in _ax.texts:  # drop the "samples"/"value" clutter
+        _txt.set_text("\n".join(
+            _ln for _ln in _txt.get_text().split("\n")
+            if not _ln.startswith(("samples", "value"))
+        ))
+    _buf = _io.BytesIO()
+    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
+    _plt.close(_fig)
+    _buf.seek(0)
+    mo.vstack(
+        [
+            mo.md(
+                r"""Fitted to **slide 4's data**, here is the tree it grows.
+                The first question is the **root**; every box that asks a
+                question is a **node**; **branches** carry the yes/no answer;
+                and each final box is a **leaf** that predicts its majority
+                class. Inference = start at the root, answer the questions,
+                read the leaf."""
+            ),
+            mo.image(_buf, width="880px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 22</div>"""),
+        ]
+    )
+    return
 
 
 @app.cell
@@ -164,7 +205,7 @@ def _(mo):
         (housing prices). Inference is a walk from root to leaf — fully
         **interpretable**: you can read the model as a flowchart.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 18</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 22</div>
         """
     )
     return
@@ -197,63 +238,105 @@ def _(mo):
         $0$ means perfectly pure, larger means more mixed. (The $\log_2$ is just
         a logarithm; you never compute it by hand.)
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 18</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 22</div>
         """
     )
     return
 
 
 @app.cell
-def _(mo):
-    p_slider = mo.ui.slider(
-        start=0.01, stop=0.99, step=0.01, value=0.5,
-        label="Fraction of class 1 (p)", show_value=True, debounce=True,
+def _(mo, tree_X):
+    split_slider = mo.ui.slider(
+        start=float(tree_X[:, 0].min()), stop=float(tree_X[:, 0].max()),
+        step=0.05, value=0.0,
+        label="Split threshold on $x_1$", show_value=True, debounce=True,
     )
     mo.md(
         r"""
-        ## Interactive demo — impurity curves
+        ## Interactive demo — how good is a split?
 
-        Move the slider to change the class proportion $p$ in a node, and
-        watch both impurity measures react. Where is the impurity maximal?
+        CART grows a tree by trying many splits and keeping the ones that
+        leave the children **purest**. Here is slide 4's data: the slider
+        moves a single cut along $x_1$. The right panel evaluates *every*
+        candidate cut — the **weighted impurity** of the two children. The
+        lowest point is the split CART would pick.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 18</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 22</div>
         """
     )
-    return (p_slider,)
+    return (split_slider,)
 
 
 @app.cell
-def _(mo, p_slider):
+def _(mo, split_slider, tree_X, tree_y):
     import io as _io
 
     import matplotlib.pyplot as _plt
     import numpy as _np
 
-    _p = p_slider.value
-    _ps = _np.linspace(0.001, 0.999, 400)
-    _entropy = -_ps * _np.log2(_ps) - (1 - _ps) * _np.log2(1 - _ps)
-    _gini = 2 * _ps * (1 - _ps)
-    _h = -_p * _np.log2(_p) - (1 - _p) * _np.log2(1 - _p)
-    _g = 2 * _p * (1 - _p)
+    def _gini(labels):
+        if len(labels) == 0:
+            return 0.0
+        _q = _np.mean(labels)
+        return 2 * _q * (1 - _q)
 
-    _fig, _ax = _plt.subplots(figsize=(6.6, 4))
-    _ax.plot(_ps, _entropy, color="#2563eb", lw=2, label="entropy")
-    _ax.plot(_ps, _gini, color="#dc2626", lw=2, label="Gini")
-    _ax.axvline(_p, color="gray", ls="--", lw=1)
-    _ax.scatter([_p, _p], [_h, _g], color=["#2563eb", "#dc2626"], zorder=5)
-    _ax.set_xlabel("p")
-    _ax.set_title(f"p = {_p:.2f}  →  entropy = {_h:.3f},  Gini = {_g:.3f}")
-    _ax.legend()
-    _ax.grid(alpha=0.3)
+    def _entropy(labels):
+        if len(labels) == 0:
+            return 0.0
+        _q = _np.mean(labels)
+        if _q in (0.0, 1.0):
+            return 0.0
+        return -_q * _np.log2(_q) - (1 - _q) * _np.log2(1 - _q)
+
+    _x1 = tree_X[:, 0]
+    _ts = _np.linspace(_x1.min(), _x1.max(), 220)
+    _wg = _np.empty(_ts.size)
+    _we = _np.empty(_ts.size)
+    for _i, _t in enumerate(_ts):
+        _L, _R = tree_y[_x1 <= _t], tree_y[_x1 > _t]
+        _wg[_i] = (len(_L) * _gini(_L) + len(_R) * _gini(_R)) / len(tree_y)
+        _we[_i] = (len(_L) * _entropy(_L) + len(_R) * _entropy(_R)) / len(tree_y)
+
+    _tcur = split_slider.value
+    _left = tree_y[_x1 <= _tcur]
+    _right = tree_y[_x1 > _tcur]
+    _gcur = (len(_left) * _gini(_left) + len(_right) * _gini(_right)) / len(tree_y)
+    _tbest = _ts[int(_np.argmin(_wg))]
+
+    _fig, _axes = _plt.subplots(1, 2, figsize=(12, 4.6))
+    _axes[0].scatter(tree_X[tree_y == 0, 0], tree_X[tree_y == 0, 1],
+                     color="#dc2626", s=22, label="class 0")
+    _axes[0].scatter(tree_X[tree_y == 1, 0], tree_X[tree_y == 1, 1],
+                     color="#16a34a", s=22, label="class 1")
+    _axes[0].axvline(_tcur, color="#111827", lw=2.4)
+    _axes[0].axvspan(_x1.min() - 0.3, _tcur, color="#111827", alpha=0.05)
+    _axes[0].set_title(f"cut: $x_1 \\leq {_tcur:.2f}$")
+    _axes[0].set_xlabel("$x_1$")
+    _axes[0].set_ylabel("$x_2$")
+    _axes[0].legend()
+    _axes[0].set_aspect("equal")
+
+    _axes[1].plot(_ts, _wg, color="#2563eb", lw=2, label="weighted Gini")
+    _axes[1].plot(_ts, _we, color="#dc2626", lw=2, label="weighted entropy")
+    _axes[1].axvline(_tcur, color="gray", ls="--")
+    _axes[1].scatter([_tcur], [_gcur], color="#111827", zorder=5)
+    _axes[1].scatter([_tbest], [_wg.min()], color="#16a34a", marker="*", s=150,
+                     zorder=6, label=f"best: $x_1 \\leq {_tbest:.2f}$")
+    _axes[1].set_xlabel("threshold on $x_1$")
+    _axes[1].set_ylabel("weighted impurity")
+    _axes[1].set_title(f"current split — weighted Gini {_gcur:.3f}")
+    _axes[1].legend(fontsize=8)
+    _axes[1].grid(alpha=0.3)
+
     _buf = _io.BytesIO()
     _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
     _plt.close(_fig)
     _buf.seek(0)
     mo.vstack(
         [
-            p_slider,
-            mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 18</div>"""),
+            split_slider,
+            mo.image(_buf, width="920px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 22</div>"""),
         ]
     )
     return
@@ -282,7 +365,7 @@ def _(mo):
 
         The result is a **binary tree**; a leaf predicts its majority class.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 18</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 22</div>
         """
     )
     return
@@ -304,7 +387,7 @@ def _(mo):
 
         Try it with pen and paper first — then let the code check you.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 18</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 22</div>
         """
     )
     return
@@ -312,6 +395,9 @@ def _(mo):
 
 @app.cell
 def _(mo):
+    import io as _io
+
+    import matplotlib.pyplot as _plt
     import numpy as _np
 
     _x = _np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
@@ -320,18 +406,47 @@ def _(mo):
     def _gini(labels):
         if len(labels) == 0:
             return 0.0
-        p = _np.mean(labels)
-        return 1.0 - p**2 - (1 - p) ** 2
+        _p = _np.mean(labels)
+        return 1.0 - _p**2 - (1 - _p) ** 2
 
-    print("threshold |  G(left)  G(right) | weighted")
-    print("----------+--------------------+---------")
-    for _t in [1.5, 2.5, 3.5, 4.5, 5.5]:
+    _ts = [1.5, 2.5, 3.5, 4.5, 5.5]
+    _rows = []
+    _ws = []
+    for _t in _ts:
         _L, _R = _y[_x <= _t], _y[_x > _t]
-        _w = (len(_L) * _gini(_L) + len(_R) * _gini(_R)) / len(_y)
-        _star = "  <- best" if _t == 3.5 else ""
-        print(f"   x <= {_t}  |   {_gini(_L):.3f}     {_gini(_R):.3f}   |  {_w:.3f}{_star}")
-    mo.md(
-        r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 18</div>"""
+        _gl, _gr = _gini(_L), _gini(_R)
+        _w = (len(_L) * _gl + len(_R) * _gr) / len(_y)
+        _ws.append(_w)
+        _rows.append((_t, _gl, _gr, _w))
+    _best = _ts[int(_np.argmin(_ws))]
+
+    _lines = ["| split | G(left) | G(right) | weighted |",
+              "|---|---|---|---|"]
+    for _t, _gl, _gr, _w in _rows:
+        _tag = " ← best" if _t == _best else ""
+        _lines.append(
+            f"| $x \\leq {_t}$ | {_gl:.3f} | {_gr:.3f} | **{_w:.3f}**{_tag} |"
+        )
+    _table = "\n".join(_lines)
+
+    _fig, _ax = _plt.subplots(figsize=(7.2, 3.8))
+    _colors = ["#16a34a" if _t == _best else "#94a3b8" for _t in _ts]
+    _ax.bar([str(_t) for _t in _ts], _ws, color=_colors)
+    _ax.set_xlabel("threshold $t$")
+    _ax.set_ylabel("weighted Gini")
+    _ax.set_title(f"lower is better — best split: $x \\leq {_best}$")
+    for _i, _w in enumerate(_ws):
+        _ax.text(_i, _w, f"{_w:.3f}", ha="center", va="bottom", fontsize=8)
+    _buf = _io.BytesIO()
+    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
+    _plt.close(_fig)
+    _buf.seek(0)
+    mo.vstack(
+        [
+            mo.md(_table),
+            mo.image(_buf, width="560px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 22</div>"""),
+        ]
     )
     return
 
@@ -344,10 +459,24 @@ def _(mo):
     _x = _np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]).reshape(-1, 1)
     _y = _np.array([0, 0, 0, 1, 0, 1])
     _stump = _DTC(max_depth=1, random_state=0).fit(_x, _y)
-    print(f"sklearn's root split: x <= {_stump.tree_.threshold[0]:.1f}")
-    print("(agrees with the hand calculation — threshold 3.5)")
+    _thr = _stump.tree_.threshold[0]
     mo.md(
-        r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 18</div>"""
+        rf"""
+        ## The same split, from scikit-learn
+
+        ```python
+        from sklearn.tree import DecisionTreeClassifier
+        stump = DecisionTreeClassifier(max_depth=1).fit(x, y)
+        stump.tree_.threshold[0]   # -> {_thr:.1f}
+        ```
+
+        sklearn's root question is **$x \leq {_thr:.1f}$** — exactly the
+        threshold our hand calculation selected. The algorithm tried every
+        candidate and kept the one with the lowest weighted Gini, just as we
+        did.
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 22</div>
+        """
     )
     return
 
@@ -366,7 +495,7 @@ def _(mo):
 
         Fitting is instant on small data — and the tree can be *drawn*.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 18</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 22</div>
         """
     )
     return
@@ -377,41 +506,215 @@ def _(mo, tree_X, tree_y):
     import io as _io
 
     import matplotlib.pyplot as _plt
+    import numpy as _np
     from sklearn.tree import DecisionTreeClassifier as _DTC
     from sklearn.tree import plot_tree as _plot_tree
 
-    _tree = _DTC(max_depth=2, random_state=0).fit(tree_X, tree_y)
+    _tree = _DTC(max_depth=1, random_state=0).fit(tree_X, tree_y)
 
-    _fig1, _ax = _plt.subplots(figsize=(10, 4.2))
+    _fig, _axes = _plt.subplots(
+        1, 2, figsize=(13.5, 4.6), gridspec_kw={"width_ratios": [1.35, 1]}
+    )
     _plot_tree(_tree, feature_names=["$x_1$", "$x_2$"],
-               class_names=["class 0", "class 1"], filled=True, ax=_ax)
-    _buf1 = _io.BytesIO()
-    _fig1.savefig(_buf1, format="png", dpi=150, bbox_inches="tight")
-    _plt.close(_fig1)
-    _buf1.seek(0)
-
-    import numpy as _np
+               class_names=["class 0", "class 1"], filled=True, rounded=True,
+               impurity=False, fontsize=10, ax=_axes[0])
+    for _txt in _axes[0].texts:  # drop the "samples"/"value" clutter
+        _txt.set_text("\n".join(
+            _ln for _ln in _txt.get_text().split("\n")
+            if not _ln.startswith(("samples", "value"))
+        ))
     _xx, _yy = _np.meshgrid(
         _np.linspace(tree_X[:, 0].min() - 1, tree_X[:, 0].max() + 1, 250),
         _np.linspace(tree_X[:, 1].min() - 1, tree_X[:, 1].max() + 1, 250),
     )
     _Z = _tree.predict(_np.c_[_xx.ravel(), _yy.ravel()]).reshape(_xx.shape)
-
-    _fig2, _ax2 = _plt.subplots(figsize=(5.2, 4.2))
-    _ax2.contourf(_xx, _yy, _Z, alpha=0.25, cmap="RdYlGn")
-    _ax2.scatter(tree_X[tree_y == 0, 0], tree_X[tree_y == 0, 1], color="#dc2626", s=20)
-    _ax2.scatter(tree_X[tree_y == 1, 0], tree_X[tree_y == 1, 1], color="#16a34a", s=20)
-    _ax2.set_title("Depth-2 tree — axis-aligned cuts")
-    _ax2.set_aspect("equal")
-    _buf2 = _io.BytesIO()
-    _fig2.savefig(_buf2, format="png", dpi=150, bbox_inches="tight")
-    _plt.close(_fig2)
-    _buf2.seek(0)
+    _axes[1].contourf(_xx, _yy, _Z, alpha=0.25, cmap="RdYlGn")
+    _axes[1].scatter(tree_X[tree_y == 0, 0], tree_X[tree_y == 0, 1],
+                     color="#dc2626", s=20, label="class 0")
+    _axes[1].scatter(tree_X[tree_y == 1, 0], tree_X[tree_y == 1, 1],
+                     color="#16a34a", s=20, label="class 1")
+    _axes[1].set_title("one question → one cut")
+    _axes[1].set_aspect("equal")
+    _axes[1].legend(fontsize=8)
+    _buf = _io.BytesIO()
+    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
+    _plt.close(_fig)
+    _buf.seek(0)
     mo.vstack(
         [
-            mo.image(_buf1, width="860px"),
-            mo.image(_buf2, width="520px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 18</div>"""),
+            mo.md(r"""**Level 1.** The tree asks a *single* question, so it can
+            make exactly **one axis-aligned cut** — the plane is split into
+            two rectangles."""),
+            mo.image(_buf, width="900px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">15 / 22</div>"""),
+        ]
+    )
+    return
+
+
+@app.cell
+def _(mo, tree_X, tree_y):
+    import io as _io
+
+    import matplotlib.pyplot as _plt
+    import numpy as _np
+    from sklearn.tree import DecisionTreeClassifier as _DTC
+    from sklearn.tree import plot_tree as _plot_tree
+
+    _tree = _DTC(max_depth=2, random_state=0).fit(tree_X, tree_y)
+
+    _fig, _axes = _plt.subplots(
+        1, 2, figsize=(13.5, 4.6), gridspec_kw={"width_ratios": [1.35, 1]}
+    )
+    _plot_tree(_tree, feature_names=["$x_1$", "$x_2$"],
+               class_names=["class 0", "class 1"], filled=True, rounded=True,
+               impurity=False, fontsize=10, ax=_axes[0])
+    for _txt in _axes[0].texts:  # drop the "samples"/"value" clutter
+        _txt.set_text("\n".join(
+            _ln for _ln in _txt.get_text().split("\n")
+            if not _ln.startswith(("samples", "value"))
+        ))
+    _xx, _yy = _np.meshgrid(
+        _np.linspace(tree_X[:, 0].min() - 1, tree_X[:, 0].max() + 1, 250),
+        _np.linspace(tree_X[:, 1].min() - 1, tree_X[:, 1].max() + 1, 250),
+    )
+    _Z = _tree.predict(_np.c_[_xx.ravel(), _yy.ravel()]).reshape(_xx.shape)
+    _axes[1].contourf(_xx, _yy, _Z, alpha=0.25, cmap="RdYlGn")
+    _axes[1].scatter(tree_X[tree_y == 0, 0], tree_X[tree_y == 0, 1],
+                     color="#dc2626", s=20, label="class 0")
+    _axes[1].scatter(tree_X[tree_y == 1, 0], tree_X[tree_y == 1, 1],
+                     color="#16a34a", s=20, label="class 1")
+    _axes[1].set_title("each leaf asks again → 4 regions")
+    _axes[1].set_aspect("equal")
+    _axes[1].legend(fontsize=8)
+    _buf = _io.BytesIO()
+    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
+    _plt.close(_fig)
+    _buf.seek(0)
+    mo.vstack(
+        [
+            mo.md(r"""**Level 2.** Each leaf from level 1 may ask *another*
+            question, carving its region further. Depth 2 gives up to four
+            rectangles — notice every boundary is still **axis-aligned**."""),
+            mo.image(_buf, width="900px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">16 / 22</div>"""),
+        ]
+    )
+    return
+
+
+@app.cell
+def _(mo):
+    import io as _io
+
+    import matplotlib.pyplot as _plt
+    import numpy as _np
+    from sklearn.datasets import load_iris as _load_iris
+    from sklearn.tree import DecisionTreeClassifier as _DTC
+    from sklearn.tree import plot_tree as _plot_tree
+
+    _iris = _load_iris()
+    _X = _iris.data[:, 2:4]  # petal length & width
+    _y = _iris.target
+    _names = ["petal length (cm)", "petal width (cm)"]
+    _classes = list(_iris.target_names)
+
+    _tree = _DTC(max_depth=2, random_state=0).fit(_X, _y)
+
+    _fig, _axes = _plt.subplots(1, 2, figsize=(12.5, 4.6))
+    _plot_tree(_tree, feature_names=_names, class_names=_classes, filled=True,
+               rounded=True, impurity=False, fontsize=11, ax=_axes[0])
+    for _txt in _axes[0].texts:  # drop the "samples"/"value" clutter
+        _txt.set_text("\n".join(
+            _ln for _ln in _txt.get_text().split("\n")
+            if not _ln.startswith(("samples", "value"))
+        ))
+    _xx, _yy = _np.meshgrid(
+        _np.linspace(_X[:, 0].min() - 0.3, _X[:, 0].max() + 0.3, 250),
+        _np.linspace(_X[:, 1].min() - 0.3, _X[:, 1].max() + 0.3, 250),
+    )
+    _Z = _tree.predict(_np.c_[_xx.ravel(), _yy.ravel()]).reshape(_xx.shape)
+    _axes[1].contourf(_xx, _yy, _Z, alpha=0.25, cmap="RdYlGn")
+    for _k in range(len(_classes)):
+        _axes[1].scatter(_X[_y == _k, 0], _X[_y == _k, 1], s=22,
+                         label=_classes[_k])
+    _axes[1].set_xlabel(_names[0])
+    _axes[1].set_ylabel(_names[1])
+    _axes[1].set_title("depth 2 — three readable rules")
+    _axes[1].legend(fontsize=8)
+    _buf = _io.BytesIO()
+    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
+    _plt.close(_fig)
+    _buf.seek(0)
+    mo.vstack(
+        [
+            mo.md(
+                r"""**Interpretability.** On iris (petal length & width) a
+                shallow tree reads like a field guide — three questions, no
+                code:
+
+                - petal width $\leq 0.80$ → **setosa**
+                - $0.80 <$ petal width $\leq 1.75$ → **versicolor**
+                - petal width $> 1.75$ → **virginica**"""
+            ),
+            mo.image(_buf, width="920px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">17 / 22</div>"""),
+        ]
+    )
+    return
+
+
+@app.cell
+def _(mo):
+    import io as _io
+
+    import matplotlib.pyplot as _plt
+    import numpy as _np
+    from sklearn.datasets import make_classification as _make_classification
+    from sklearn.tree import DecisionTreeClassifier as _DTC
+
+    _X, _y = _make_classification(
+        n_samples=200, n_features=2, n_informative=2, n_redundant=0,
+        n_clusters_per_class=1, class_sep=1.3, flip_y=0.15, random_state=7,
+    )
+    _xx, _yy = _np.meshgrid(
+        _np.linspace(_X[:, 0].min() - 0.7, _X[:, 0].max() + 0.7, 300),
+        _np.linspace(_X[:, 1].min() - 0.7, _X[:, 1].max() + 0.7, 300),
+    )
+    _fig, _axes = _plt.subplots(1, 3, figsize=(16, 4.8))
+    for _ax, _d in zip(_axes, [1, 3, None]):
+        _t = _DTC(max_depth=_d, random_state=0).fit(_X, _y)
+        _Z = _t.predict(_np.c_[_xx.ravel(), _yy.ravel()]).reshape(_xx.shape)
+        _ax.contourf(_xx, _yy, _Z, alpha=0.22, cmap="RdYlGn")
+        _ax.scatter(_X[_y == 0, 0], _X[_y == 0, 1], color="#dc2626", s=16,
+                    label="class 0")
+        _ax.scatter(_X[_y == 1, 0], _X[_y == 1, 1], color="#16a34a", s=16,
+                    label="class 1")
+        _label = "unlimited" if _d is None else f"depth {_d}"
+        _ax.set_title(f"{_label} — {_t.get_n_leaves()} leaves, "
+                      f"train {_t.score(_X, _y):.2f}")
+        _ax.set_aspect("equal")
+        _ax.legend(fontsize=8, loc="lower left")
+    _buf = _io.BytesIO()
+    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
+    _plt.close(_fig)
+    _buf.seek(0)
+    _full = _DTC(random_state=0).fit(_X, _y)
+    _single = int(_np.sum(_full.tree_.n_node_samples == 1))
+    mo.vstack(
+        [
+            mo.md(
+                rf"""**Where it breaks down.** Same data, deeper trees. The
+                unlimited tree reaches **100% training accuracy** with
+                {_full.get_n_leaves()} leaves (and {_single} of them hold a
+                single sample). Its boundary is full of **thin slivers** — it
+                splits the *same* feature again and again at almost identical
+                values (e.g. $x_1 \leq -1.35$ followed by $x_1 \leq -1.37$)
+                just to fence off noisy points. Those "rules" fit the noise,
+                not the signal."""
+            ),
+            mo.image(_buf, width="980px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">18 / 22</div>"""),
         ]
     )
     return
@@ -423,6 +726,9 @@ def _(mo):
         start=1, stop=15, step=1, value=2,
         label="max_depth", show_value=True, debounce=True,
     )
+    noise_switch = mo.ui.switch(
+        label="mistake 15% of the training labels", value=False
+    )
     mo.md(
         r"""
         ## Practical aspects — the dark side: unlimited trees overfit
@@ -430,17 +736,22 @@ def _(mo):
         Keep splitting and every training point gets its own rectangle — the
         tree **memorises noise** and will not generalise.
 
-        Watch the boundary below as `max_depth` grows: train accuracy climbs
-        towards 1.0, but **test** accuracy peaks early and then decays.
+        **Why the boundary can look deceptively stable.** Deeper trees only
+        *refine* the partition with ever-smaller, **axis-aligned rectangles**.
+        When the true boundary is smooth and the labels are clean, those
+        rectangles simply hug the same curve — the picture barely changes and
+        test accuracy plateaus. Overfitting needs something to memorise: flip
+        the switch to inject **label noise** and watch the test curve peak and
+        then fall as the tree fences off individual mistakes.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">15 / 18</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">19 / 22</div>
         """
     )
-    return (depth_slider,)
+    return depth_slider, noise_switch
 
 
 @app.cell
-def _(depth_slider, mo):
+def _(depth_slider, mo, noise_switch):
     import io as _io
 
     import matplotlib.pyplot as _plt
@@ -450,8 +761,21 @@ def _(depth_slider, mo):
     from sklearn.tree import DecisionTreeClassifier as _DTC
 
     _X, _y = _make_moons(n_samples=300, noise=0.3, random_state=0)
-    _Xtr, _Xte, _ytr, _yte = _split(_X, _y, test_size=0.3, random_state=0, stratify=_y)
-    _clf = _DTC(max_depth=depth_slider.value, random_state=0).fit(_Xtr, _ytr)
+    _Xtr, _Xte, _ytr, _yte = _split(
+        _X, _y, test_size=0.3, random_state=0, stratify=_y
+    )
+
+    # Optionally corrupt the training labels so the tree has noise to memorise.
+    _rng = _np.random.default_rng(0)
+    _ytr_fit = _ytr.copy()
+    _flip = 0.15 if noise_switch.value else 0.0
+    _mis = _np.zeros(len(_ytr_fit), dtype=bool)
+    if _flip:
+        _mis = _rng.random(len(_ytr_fit)) < _flip
+        _ytr_fit[_mis] = 1 - _ytr_fit[_mis]
+
+    _depth = int(depth_slider.value)
+    _clf = _DTC(max_depth=_depth, random_state=0).fit(_Xtr, _ytr_fit)
 
     _xx, _yy = _np.meshgrid(
         _np.linspace(_X[:, 0].min() - 0.5, _X[:, 0].max() + 0.5, 250),
@@ -459,15 +783,41 @@ def _(depth_slider, mo):
     )
     _Z = _clf.predict(_np.c_[_xx.ravel(), _yy.ravel()]).reshape(_xx.shape)
 
-    _fig, _ax = _plt.subplots(figsize=(5.6, 4.6))
-    _ax.contourf(_xx, _yy, _Z, alpha=0.25, cmap="RdYlGn")
-    _ax.scatter(_X[_y == 0, 0], _X[_y == 0, 1], color="#dc2626", s=16)
-    _ax.scatter(_X[_y == 1, 0], _X[_y == 1, 1], color="#16a34a", s=16)
-    _ax.set_title(
-        f"max_depth = {depth_slider.value} · "
-        f"train {_clf.score(_Xtr, _ytr):.2f} · test {_clf.score(_Xte, _yte):.2f}"
+    # Train/test accuracy as a function of depth (same noisy labels).
+    _depths = _np.arange(1, 21)
+    _train = []
+    _test = []
+    for _d in _depths:
+        _t = _DTC(max_depth=int(_d), random_state=0).fit(_Xtr, _ytr_fit)
+        _train.append(_t.score(_Xtr, _ytr_fit))
+        _test.append(_t.score(_Xte, _yte))
+
+    _fig, _axes = _plt.subplots(1, 2, figsize=(12.5, 4.8))
+    _axes[0].contourf(_xx, _yy, _Z, alpha=0.25, cmap="RdYlGn")
+    _axes[0].scatter(_Xtr[_ytr_fit == 0, 0], _Xtr[_ytr_fit == 0, 1],
+                     color="#dc2626", s=16, label="class 0 (train)")
+    _axes[0].scatter(_Xtr[_ytr_fit == 1, 0], _Xtr[_ytr_fit == 1, 1],
+                     color="#16a34a", s=16, label="class 1 (train)")
+    if _mis.any():
+        _axes[0].scatter(_Xtr[_mis, 0], _Xtr[_mis, 1], facecolors="none",
+                         edgecolors="k", s=70, label="mislabeled")
+    _axes[0].set_title(
+        f"max_depth = {_depth} · train {_clf.score(_Xtr, _ytr_fit):.2f} · "
+        f"test {_clf.score(_Xte, _yte):.2f}"
     )
-    _ax.set_aspect("equal")
+    _axes[0].set_aspect("equal")
+    _axes[0].legend(fontsize=7, loc="lower left")
+
+    _axes[1].plot(_depths, _train, "o-", color="#2563eb", label="train")
+    _axes[1].plot(_depths, _test, "s-", color="#f59e0b", label="test")
+    _axes[1].axvline(_depth, color="gray", ls="--")
+    _axes[1].set_xlabel("max_depth")
+    _axes[1].set_ylabel("accuracy")
+    _axes[1].set_ylim(0.5, 1.02)
+    _axes[1].set_title(f"label noise = {_flip:.0%}")
+    _axes[1].legend()
+    _axes[1].grid(alpha=0.3)
+
     _buf = _io.BytesIO()
     _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
     _plt.close(_fig)
@@ -475,8 +825,9 @@ def _(depth_slider, mo):
     mo.vstack(
         [
             depth_slider,
-            mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">16 / 18</div>"""),
+            noise_switch,
+            mo.image(_buf, width="920px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">20 / 22</div>"""),
         ]
     )
     return
@@ -505,7 +856,7 @@ def _(mo):
         *(For regression trees the recipe is identical — split by variance
         reduction instead of Gini, and leaves predict the mean.)*
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">17 / 18</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">21 / 22</div>
         """
     )
     return
@@ -521,12 +872,13 @@ def _(mo):
           questions; roots, nodes, branches, leaves.
         - A **good split** minimises **Gini impurity** (or entropy) — computed
           greedily over every feature and threshold (**CART**).
-        - Trees are **interpretable** and need little preprocessing, but they
-          **overfit** if grown deep — control depth, or **prune**.
+        - Trees are **interpretable** and need little preprocessing — a shallow
+          tree reads as rules — but grown deep they invent **conflicting
+          splits** and **overfit**; control depth, or **prune**.
 
         Next session: **random forests**.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">18 / 18</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">22 / 22</div>
         """
     )
     return
