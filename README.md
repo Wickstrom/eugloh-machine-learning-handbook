@@ -75,15 +75,18 @@ the course schedule.
 ### Day 2 — Oct 20
 
 5. **Session 1 — Introduction to neural networks** (09:00)
-    - From linear to non-linear classifiers; a brief history of neural networks
+    - From linear to non-linear classifiers; the **artificial neuron** and
+      **activation functions**; the **XOR problem**; a brief history
 
     [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/02/01_introduction/index.html)
     [![Beginner](https://img.shields.io/badge/-Beginner-brightgreen?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/02/01_introduction_beginner.ipynb)
     [![Intermediate](https://img.shields.io/badge/-Intermediate-yellow?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/02/01_introduction_intermediate.ipynb)
     [![Advanced](https://img.shields.io/badge/-Advanced-red?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/02/01_introduction_advanced.ipynb)
 
-6. **Session 2 — The perceptron & multilayer networks** (10:00)
-    - The artificial neuron, the XOR problem, the big idea, and the MLP
+6. **Session 2 — Multilayer networks** (10:00)
+    - The big idea, what a **hidden layer** does to the data, the **forward
+      pass**, and the **MLP**
+    - Interactive demo: move an input through the network and watch it become separable
 
     [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/02/02_perceptron_mlp/index.html)
     [![Beginner](https://img.shields.io/badge/-Beginner-brightgreen?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/02/02_perceptron_mlp_beginner.ipynb)
@@ -100,8 +103,10 @@ the course schedule.
     [![Advanced](https://img.shields.io/badge/-Advanced-red?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/02/03_training_advanced.ipynb)
 
 8. **Session 4 — Components & going beyond** (12:15)
-    - Components: activation functions, weight initialization, optimizers
-      (SGD/momentum/Adam), regularization, capacity
+    - Components: weight initialization, optimizers (SGD/momentum/Adam),
+      regularization, capacity
+    - Training in practice: reading the curves, **feature scaling**, and the
+      common **failure modes**
     - Going beyond: softmax, convolutional networks, **transformers**, autoencoders
     - Interactive demo: hidden-layer-size and activation-function widgets
 

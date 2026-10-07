@@ -9,9 +9,10 @@
 # ]
 # ///
 #
-# Lecture 2 (Oct 20), Session 4 — Components (activation functions, optimizers,
-# weight initialization, regularization, capacity) and going beyond (multi-class
-# softmax, convolutional networks, transformers, autoencoders).
+# Lecture 2 (Oct 20), Session 4 — Components (weight initialization, optimizers,
+# regularization, capacity), training in practice (debugging), and going beyond
+# (multi-class softmax, convolutional networks, transformers, autoencoders).
+# Activation functions are introduced in Session 1.
 # Run locally with `marimo edit notebooks/02/04_components_and_beyond.py`
 # or export to WASM for GitHub Pages (see .github/workflows/publish-slides.yml).
 #
@@ -57,7 +58,7 @@ def _(mo):
 
         University of Novi Sad
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 24</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 26</div>
         """
     )
     return
@@ -70,10 +71,12 @@ def _(mo):
         ## Today's session
 
         **Components of a neural network**
-        - **Activation functions** — the non-linearity
         - **Weight initialization** — why it matters
         - **Optimizers** — SGD, momentum, Adam
         - **Regularization** and **capacity** — the bias–variance levers
+
+        **Training in practice**
+        - Reading the curves, feature scaling, and the **common failure modes**
 
         **Going beyond**
         - Multi-class with **softmax**, **convolutional networks**,
@@ -81,7 +84,7 @@ def _(mo):
 
         Session 4 of 4 today — this wraps the lecture series.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 24</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 26</div>
         """
     )
     return
@@ -93,58 +96,6 @@ def _(mo):
         r"""
         # Part 1 — Components
 
-        ## Activation functions
-
-        | function | formula | range | notes |
-        |---|---|---|---|
-        | sigmoid | $\sigma(z) = 1/(1+e^{-z})$ | $(0,1)$ | probability-like; saturates → vanishing gradients |
-        | tanh | $\tanh(z)$ | $(-1,1)$ | zero-centred; hidden-layer classic |
-        | ReLU | $\max(0, z)$ | $[0,\infty)$ | cheap, no saturation for $z>0$ — today's default |
-        | softmax | $e^{z_k}/\sum_j e^{z_j}$ | $(0,1)$, sums to 1 | output layer for multi-class |
-
-        The non-linearity is the whole point: compose enough of them and the
-        network can approximate **any** smooth function.
-
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 24</div>
-        """
-    )
-    return
-
-
-@app.cell
-def _(mo):
-    import io as _io
-
-    import matplotlib.pyplot as _plt
-    import numpy as _np
-
-    _z = _np.linspace(-4, 4, 300)
-    _fig, _ax = _plt.subplots(figsize=(7, 3.6))
-    _ax.plot(_z, 1 / (1 + _np.exp(-_z)), lw=2, label="sigmoid", color="#2563eb")
-    _ax.plot(_z, _np.tanh(_z), lw=2, label="tanh", color="#16a34a")
-    _ax.plot(_z, _np.maximum(0, _z), lw=2, label="ReLU", color="#dc2626")
-    _ax.axhline(0, color="gray", lw=0.5)
-    _ax.axvline(0, color="gray", lw=0.5)
-    _ax.set_title("Activation functions")
-    _ax.legend()
-    _ax.grid(alpha=0.3)
-    _buf = _io.BytesIO()
-    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
-    _plt.close(_fig)
-    _buf.seek(0)
-    mo.vstack(
-        [
-            mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 24</div>"""),
-        ]
-    )
-    return
-
-
-@app.cell
-def _(mo):
-    mo.md(
-        r"""
         ## Weight initialization
 
         You cannot start all weights at zero — every neuron would be identical
@@ -172,7 +123,7 @@ def _(mo):
         scikit-learn does this for you; in PyTorch it is `nn.init.xavier_uniform_`
         / `nn.init.kaiming_normal_`.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 24</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 26</div>
         """
     )
     return
@@ -218,7 +169,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="700px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 24</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 26</div>"""),
         ]
     )
     return
@@ -247,7 +198,7 @@ def _(mo):
         In `MLPClassifier`: `solver="sgd"` (with `momentum=...`) or
         `solver="adam"`.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 24</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 26</div>
         """
     )
     return
@@ -294,7 +245,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="700px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 24</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 26</div>"""),
         ]
     )
     return
@@ -321,7 +272,7 @@ def _(mo):
         Regularization trades a little **training** accuracy for a lot of
         **test** accuracy.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 24</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 26</div>
         """
     )
     return
@@ -369,7 +320,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 24</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 26</div>"""),
         ]
     )
     return
@@ -389,7 +340,7 @@ def _(mo):
         Watch the gap between **train and validation** accuracy, and reach for
         **early stopping** when it opens.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 24</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 26</div>
         """
     )
     return
@@ -437,7 +388,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="900px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 24</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 26</div>"""),
         ]
     )
     return
@@ -461,7 +412,7 @@ def _(mo):
         overfit more. Switch the activation function and see how training
         changes. (One hidden unit cannot even bend the boundary!)
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 24</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 26</div>
         """
     )
     return act_dropdown, hidden_slider
@@ -510,7 +461,7 @@ def _(act_dropdown, hidden_slider, mo):
         [
             mo.hstack([hidden_slider, act_dropdown]),
             mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 24</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 26</div>"""),
         ]
     )
     return
@@ -520,7 +471,131 @@ def _(act_dropdown, hidden_slider, mo):
 def _(mo):
     mo.md(
         r"""
-        # Part 2 — Going beyond
+        # Part 2 — Training in practice
+
+        ## Training in practice — a workflow
+
+        Getting a network to train is a **craft**, not just a formula. The
+        reliable recipe:
+
+        1. **Split first** — train / validation / test. Never tune on the test set.
+        2. **Scale the inputs** — networks are very sensitive to feature scales.
+        3. **Start small** — a tiny network, and a baseline (`LogisticRegression`).
+        4. **Watch both curves** — training loss *and* validation loss.
+        5. **Change one thing at a time** — learning rate, width, regularization.
+        6. Only then **scale up** — more data, more depth, more epochs.
+
+        In plain words: make it work on a small version first, then make it bigger.
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 26</div>
+        """
+    )
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(
+        r"""
+        ## Check the inputs first
+
+        Two settings cause most "it won't train" problems, and both are visible
+        in the loss curve:
+
+        - **Feature scaling.** If one input has a much larger range than another,
+          the loss surface is badly stretched and gradient descent struggles —
+          **standardising** each feature fixes it.
+        - **Learning rate.** Too small → the loss crawls. Too large → it
+          oscillates or **diverges**.
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 26</div>
+        """
+    )
+    return
+
+
+@app.cell
+def _(mo):
+    import io as _io
+
+    import matplotlib.pyplot as _plt
+    import numpy as _np
+    from sklearn.datasets import make_moons as _make_moons
+    from sklearn.model_selection import train_test_split as _split
+    from sklearn.neural_network import MLPClassifier as _MLP
+    from sklearn.preprocessing import StandardScaler as _Scaler
+
+    _X, _y = _make_moons(n_samples=400, noise=0.3, random_state=0)
+    _Xtr, _Xte, _ytr, _yte = _split(_X, _y, test_size=0.3, random_state=0, stratify=_y)
+    _Xbad = _Xtr * _np.array([100.0, 1.0])          # one feature on a huge scale
+    _Xgood = _Scaler().fit_transform(_Xtr)
+
+    _fig, _axes = _plt.subplots(1, 2, figsize=(12, 4.2))
+
+    for _name, _data, _c in [
+        ("unscaled (one feature 100×)", _Xbad, "#dc2626"),
+        ("standardised", _Xgood, "#16a34a"),
+    ]:
+        _m = _MLP(hidden_layer_sizes=(32,), solver="sgd", learning_rate_init=0.05,
+                  max_iter=300, random_state=0).fit(_data, _ytr)
+        _axes[0].plot(_m.loss_curve_, color=_c, label=_name)
+    _axes[0].set_xlabel("iteration")
+    _axes[0].set_ylabel("loss")
+    _axes[0].set_title("Feature scaling changes everything")
+    _axes[0].legend(fontsize=8)
+    _axes[0].grid(alpha=0.3)
+
+    for _lr, _c in [(0.001, "#2563eb"), (0.05, "#16a34a"), (1.0, "#dc2626")]:
+        _m = _MLP(hidden_layer_sizes=(32,), solver="sgd", learning_rate_init=_lr,
+                  max_iter=300, random_state=0).fit(_Xgood, _ytr)
+        _axes[1].plot(_m.loss_curve_, color=_c, label=f"lr = {_lr}")
+    _axes[1].set_xlabel("iteration")
+    _axes[1].set_ylabel("loss")
+    _axes[1].set_title("Learning rate: too small / good / too large")
+    _axes[1].legend(fontsize=8)
+    _axes[1].grid(alpha=0.3)
+    _fig.tight_layout()
+    _buf = _io.BytesIO()
+    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
+    _plt.close(_fig)
+    _buf.seek(0)
+    mo.vstack(
+        [
+            mo.image(_buf, width="880px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">15 / 26</div>"""),
+        ]
+    )
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(
+        r"""
+        ## Common failure modes & fixes
+
+        | symptom | likely cause | fix |
+        |---|---|---|
+        | loss barely moves | learning rate too small, unscaled features | raise `learning_rate_init`, standardise |
+        | loss explodes / `NaN` | learning rate too large | lower it ~10×, standardise |
+        | train great, validation poor | **overfitting** | more data, weight decay (`alpha`), dropout, early stopping |
+        | both train and validation poor | **underfitting** | bigger network, train longer, better features |
+        | accuracy stuck at the majority class | class imbalance | class weights, resampling, a better metric |
+
+        Change **one thing at a time**, and keep the **validation set** as your
+        judge — never the test set.
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">16 / 26</div>
+        """
+    )
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(
+        r"""
+        # Part 3 — Going beyond
 
         ## Multi-class: softmax output
 
@@ -539,7 +614,7 @@ def _(mo):
 
         Demo: 8×8 handwritten digits (1797 samples, 10 classes).
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">15 / 24</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">17 / 26</div>
         """
     )
     return
@@ -579,7 +654,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="860px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">16 / 24</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">18 / 26</div>"""),
         ]
     )
     return
@@ -604,7 +679,7 @@ def _(mo):
         The training recipe is unchanged — still backpropagation + gradient
         descent. Below: a digit and an edge-detecting convolution.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">17 / 24</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">19 / 26</div>
         """
     )
     return
@@ -642,7 +717,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="820px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">18 / 24</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">20 / 26</div>"""),
         ]
     )
     return
@@ -670,7 +745,7 @@ def _(mo):
         **BERT, GPT and modern LLMs**, and increasingly vision
         (ViT) and time series.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">19 / 24</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">21 / 26</div>
         """
     )
     return
@@ -697,7 +772,7 @@ def _(mo):
         Below: a 64 → 32 → **8** → 32 → 64 autoencoder on handwritten digits,
         trained with `MLPRegressor` on its own input.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">20 / 24</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">22 / 26</div>
         """
     )
     return
@@ -737,7 +812,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="900px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">21 / 24</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">23 / 26</div>"""),
         ]
     )
     return
@@ -761,7 +836,7 @@ def _(mo):
         reach for a neural network when the data has *structure* (pixels,
         sequences) or the patterns are truly smooth.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">22 / 24</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">24 / 26</div>
         """
     )
     return
@@ -773,11 +848,13 @@ def _(mo):
         r"""
         ## Summary
 
-        - **Components** are the practical levers of a network: the
-          **activation** (sigmoid/tanh/ReLU/softmax), **weight initialization**
-          (Xavier/He), the **optimizer** (SGD → momentum → Adam),
-          **regularization** (weight decay, dropout, early stopping) and
-          **capacity** (width & depth).
+        - **Components** are the practical levers of a network: **weight
+          initialization** (Xavier/He), the **optimizer** (SGD → momentum →
+          Adam), **regularization** (weight decay, dropout, early stopping) and
+          **capacity** (width & depth). The **activation function** was covered
+          in Session 1.
+        - **Training in practice**: standardise the inputs, watch the train and
+          validation curves, and change one thing at a time.
         - **Softmax** extends networks to many classes; **CNNs** add the right
           inductive bias for images.
         - **Transformers** replace convolution with **self-attention** — the
@@ -786,7 +863,7 @@ def _(mo):
         - Rule of thumb: **logistic regression → random forest → neural
           network**, depending on the data.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">23 / 24</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">25 / 26</div>
         """
     )
     return
@@ -804,7 +881,7 @@ def _(mo):
         - This wraps the lecture series — the final project is an end-to-end
           ML pipeline on a dataset of your choice. Happy learning!
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">24 / 24</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">26 / 26</div>
         """
     )
     return
