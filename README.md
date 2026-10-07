@@ -11,7 +11,9 @@ within the [European University Alliance for Global Health (EUGLOH)](https://www
   in the browser — no Python kernel required.
 - **Exercises** are classic Jupyter notebooks (`.ipynb`) that you open and
   work in locally — click the exercise badge to view the notebook on GitHub,
-  then clone the repo (or download the file) to fill in your solutions.
+  then clone the repo (or download the file) to fill in your solutions. The
+  first exercise (Day 1, Session 1) also has a **Binder** badge to run it in the
+  cloud with no local setup.
 
 ## 📑 Content
 
@@ -28,6 +30,7 @@ the course schedule.
 
     [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/01/01_introduction/index.html)
     [![Beginner](https://img.shields.io/badge/-Beginner-brightgreen?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/01/01_introduction_beginner.ipynb)
+    [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Wickstrom/eugloh-machine-learning-handbook/main?urlpath=lab/tree/notebooks/01/01_introduction_beginner.ipynb)
     [![Intermediate](https://img.shields.io/badge/-Intermediate-yellow?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/01/01_introduction_intermediate.ipynb)
     [![Advanced](https://img.shields.io/badge/-Advanced-red?logo=jupyter&style=flat&labelColor=gray)](https://github.com/Wickstrom/eugloh-machine-learning-handbook/blob/main/notebooks/01/01_introduction_advanced.ipynb)
 
@@ -151,6 +154,18 @@ We use [**uv**](https://docs.astral.sh/uv/) for fast, reproducible Python enviro
 
 You only ever need `uv run` — it will use the `.venv` automatically, no need to
 manually activate or deactivate anything.
+
+### ☁️ Run the first exercise in Binder (no setup)
+
+The Day-1 Session-1 beginner exercise can run entirely in the cloud via
+[Binder](https://mybinder.org/):
+
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Wickstrom/eugloh-machine-learning-handbook/main?urlpath=lab/tree/notebooks/01/01_introduction_beginner.ipynb)
+
+The **first** launch is slow (Binder builds and caches the environment, usually
+a few minutes); later launches that reuse the cached image start in seconds.
+The environment is defined by [`binder/`](binder/) (`requirements.txt` +
+`runtime.txt`) and kept small so the build stays quick.
 
 ## 🎞 Lecture slides (GitHub Pages)
 

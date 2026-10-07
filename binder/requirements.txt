@@ -1,0 +1,12 @@
+# Minimal environment for Binder (mybinder.org / repo2docker).
+#
+# A `binder/` directory overrides the repo-root config, so Binder installs only
+# the packages the Jupyter *exercises* need. We deliberately skip marimo and the
+# Jupyter stack (jupyterlab, nbconvert, ...) because the Binder base image
+# already ships JupyterLab — this keeps the build fast.
+numpy>=1.24
+pandas>=2.0
+matplotlib>=3.7
+seaborn>=0.12
+scipy>=1.10
+scikit-learn>=1.3
