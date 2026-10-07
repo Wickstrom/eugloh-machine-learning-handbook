@@ -99,13 +99,16 @@ one level and move up.
 
 **Run them all in the cloud (no local setup):**
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Wickstrom/eugloh-machine-learning-handbook/main?urlpath=lab/tree/notebooks)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Wickstrom/eugloh-machine-learning-handbook/v2026-course?urlpath=lab/tree/notebooks)
 
 This opens JupyterLab in [Binder](https://mybinder.org/) with every exercise
 notebook under `notebooks/`. The **first** launch is slow (Binder builds and
 caches the environment, usually a few minutes); later launches reuse the cached
 image and start in seconds. The environment is defined by [`binder/`](binder/)
 (`requirements.txt` + `runtime.txt`) and kept small so the build stays quick.
+
+The link is pinned to the **`v2026-course`** release tag, so the notebooks stay
+frozen at a known-good state even as `main` keeps changing.
 
 **The three levels**
 
