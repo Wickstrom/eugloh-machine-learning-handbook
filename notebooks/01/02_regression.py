@@ -57,7 +57,7 @@ def _(mo):
 
         University of Novi Sad
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 35</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 37</div>
         """
     )
     return
@@ -81,7 +81,7 @@ def _(mo):
 
         Session 2 of 4 today.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 35</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 37</div>
         """
     )
     return
@@ -110,7 +110,7 @@ def _(mo):
         *hyperplane*). We keep the one-feature picture, because it is the
         easiest to see.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 35</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 37</div>
         """
     )
     return
@@ -138,7 +138,7 @@ def _(mo):
         not seen. The tool was the same **least-squares line** we are about to
         derive.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 35</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 37</div>
         """
     )
     return
@@ -146,30 +146,149 @@ def _(mo):
 
 @app.cell
 def _(mo):
+    import numpy as _np
+
+    # Hand-picked measurements built so the least-squares line is EXACTLY
+    # y = 1.5x + 2.0: the residuals sum to zero and are uncorrelated with x.
+    # Line C below is therefore the answer the computer will find later.
+    fit3_x = _np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], dtype=float)
+    fit3_y = _np.array(
+        [3.0, 5.4, 5.3, 8.8, 9.0, 12.0, 13.5, 13.5, 16.3, 15.8, 18.9, 19.5]
+    )
+    # Three candidate lines y = w x + b, with deliberately neutral labels.
+    fit3_lines = {"A": (2.0, 2.0), "B": (1.5, 5.0), "C": (1.5, 2.0)}
+
+    fit3_pick = mo.ui.radio(
+        options=["Line A", "Line B", "Line C"],
+        value="Line A",
+        label="Which line follows the data best?",
+    )
+    fit3_reveal = mo.ui.run_button(label="Reveal the verdict")
+    mo.md(
+        r"""
+        ## Your turn — which line fits?
+
+        Here are **12 measurements** and **three straight lines**. Two of them
+        miss the data; one follows it. **No formulas yet** — judge by eye,
+        commit to a line, then reveal the verdict.
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 37</div>
+        """
+    )
+    return fit3_lines, fit3_pick, fit3_reveal, fit3_x, fit3_y
+
+
+@app.cell
+def _(fit3_lines, fit3_pick, fit3_reveal, fit3_x, fit3_y, mo):
+    import io as _io
+
+    import matplotlib.pyplot as _plt
+    import numpy as _np
+
+    _key = fit3_pick.value.split()[-1]
+    _revealed = bool(fit3_reveal.value)
+    # Colourblind-safe palette (Okabe-Ito amber / blue / bluish-green).
+    _colors = {"A": "#E69F00", "B": "#0072B2", "C": "#009E73"}
+    _xs = _np.linspace(0.0, 13.0, 200)
+    # Sum of squared gaps for each line. Label C's value is the smallest.
+    _ssg = {
+        _k: float(_np.sum((_w * fit3_x + _b - fit3_y) ** 2))
+        for _k, (_w, _b) in fit3_lines.items()
+    }
+    _best = min(_ssg, key=_ssg.get)
+
+    if not _revealed:
+        _fig, _ax = _plt.subplots(figsize=(7.2, 4.4))
+        _ax.scatter(fit3_x, fit3_y, color="#111827", s=42, zorder=5, label="data")
+        for _k, (_w, _b) in fit3_lines.items():
+            _hot = _k == _key
+            _ax.plot(
+                _xs, _w * _xs + _b, color=_colors[_k],
+                lw=3.2 if _hot else 1.4, alpha=1.0 if _hot else 0.35,
+                label=f"Line {_k}",
+            )
+        _ax.set_xlabel("feature $x$")
+        _ax.set_ylabel("target $y$")
+        _ax.set_title("Three candidate lines — which one follows the data?")
+        _ax.legend(fontsize=9, loc="upper left")
+        _feedback = mo.md(
+            f"**You picked Line {_key}** (drawn thicker). "
+            "Press **Reveal the verdict** to check."
+        )
+        _width = "680px"
+    else:
+        _fig, _axes = _plt.subplots(1, 2, figsize=(12, 4.4))
+        _w, _b = fit3_lines[_key]
+        _axes[0].scatter(fit3_x, fit3_y, color="#111827", s=42, zorder=5)
+        _axes[0].plot(
+            _xs, _w * _xs + _b, color=_colors[_key], lw=2.5,
+            label=f"your line ({_key})",
+        )
+        _axes[0].vlines(fit3_x, fit3_y, _w * fit3_x + _b, color="gray", lw=1.2)
+        _axes[0].set_xlabel("feature $x$")
+        _axes[0].set_ylabel("target $y$")
+        _axes[0].set_title("Your line and its gaps to the data")
+        _axes[0].legend(fontsize=9, loc="upper left")
+
+        _order = ["A", "B", "C"]
+        _axes[1].bar(
+            _order, [_ssg[_k] for _k in _order], color=[_colors[_k] for _k in _order]
+        )
+        for _i, _k in enumerate(_order):
+            _axes[1].text(_i, _ssg[_k], f"{_ssg[_k]:.1f}", ha="center", va="bottom")
+        _axes[1].set_ylabel("sum of squared gaps")
+        _axes[1].set_title("lower is better")
+
+        _ok = (
+            "✅ Correct — you picked the line that follows the data."
+            if _key == _best
+            else f"Not quite — **Line {_best}** follows the data best."
+        )
+        _feedback = mo.md(
+            f"{_ok}\n\n"
+            "We just measured “fit” by the **total squared gap** between the line "
+            "and the data. On the next slide the computer minimises exactly this "
+            "gap for you — and then we give it a name."
+        )
+        _width = "900px"
+
+    _buf = _io.BytesIO()
+    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
+    _plt.close(_fig)
+    _buf.seek(0)
+    mo.vstack(
+        [
+            mo.hstack([fit3_pick, fit3_reveal], justify="start", gap=1.5),
+            mo.image(_buf, width=_width),
+            _feedback,
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 37</div>"""),
+        ]
+    )
+    return
+
+
+@app.cell
+def _(fit3_x, fit3_y, mo):
     import io as _io
 
     import matplotlib.pyplot as _plt
     import numpy as _np
     from sklearn.linear_model import LinearRegression as _LinReg
 
-    _rng = _np.random.default_rng(0)
-    _x = _np.linspace(0, 10, 40)
-    _y = 2.0 + 1.5 * _x + _rng.normal(scale=2.5, size=_x.size)
-
-    _model = _LinReg().fit(_x.reshape(-1, 1), _y)
-    _xs = _np.linspace(-0.5, 10.5, 100)
+    _model = _LinReg().fit(fit3_x.reshape(-1, 1), fit3_y)
+    _xs = _np.linspace(0.0, 13.0, 100)
     _yh = _model.predict(_xs.reshape(-1, 1))
-    _pred = _model.predict(_x.reshape(-1, 1))
+    _pred = _model.predict(fit3_x.reshape(-1, 1))
 
     _fig, _ax = _plt.subplots(figsize=(7, 4))
-    _ax.scatter(_x, _y, color="#2563eb", s=28, label="data")
-    _ax.plot(_xs, _yh, color="#dc2626", lw=2, label="fitted line")
-    for _xi, _yi, _pi in zip(_x[::4], _y[::4], _pred[::4]):
-        _ax.plot([_xi, _xi], [_yi, _pi], color="gray", lw=1)
+    _ax.scatter(fit3_x, fit3_y, color="#111827", s=32, label="data")
+    _ax.plot(_xs, _yh, color="#009E73", lw=2.5, label="least-squares line")
+    for _xi, _yi, _pi in zip(fit3_x, fit3_y, _pred):
+        _ax.plot([_xi, _xi], [_yi, _pi], color="gray", lw=1.2)
     _ax.set_xlabel("feature $x$")
     _ax.set_ylabel("target $y$")
     _ax.set_title(
-        rf"$\hat{{y}} = {_model.coef_[0]:.2f}x {_model.intercept_:+.2f}$"
+        rf"the computer's fit: $\hat{{y}} = {_model.coef_[0]:.2f}x {_model.intercept_:+.2f}$"
         "  (grey = residuals)"
     )
     _ax.legend()
@@ -180,7 +299,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 35</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 37</div>"""),
         ]
     )
     return
@@ -208,7 +327,7 @@ def _(mo):
           point, so there are no local traps
         - the grey segments in the figure above are exactly those residuals
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 35</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 37</div>
         """
     )
     return
@@ -242,7 +361,7 @@ def _(mo):
         - $\eta$ is the **learning rate** — how large each step is
         - repeat many times, and the line creeps towards the same answer
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 35</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 37</div>
         """
     )
     return
@@ -290,7 +409,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="860px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 35</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 37</div>"""),
         ]
     )
     return
@@ -320,7 +439,7 @@ def _(mo):
         - nothing new to learn here — it is the same least-squares fit, just
           computed on a growing prefix of the data
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 35</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 37</div>
         """
     )
     return fit_x, fit_y, n_seen
@@ -362,7 +481,7 @@ def _(fit_x, fit_y, mo, n_seen):
         [
             n_seen,
             mo.image(_buf, width="680px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 35</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 37</div>"""),
         ]
     )
     return
@@ -383,7 +502,7 @@ def _(mo):
         Report every number on a **held-out test set**, never on the training
         set. Below: the diabetes dataset (age, BMI, blood pressure, …).
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 35</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 37</div>
         """
     )
     return
@@ -436,7 +555,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="860px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 35</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 37</div>"""),
         ]
     )
     return
@@ -460,7 +579,7 @@ def _(mo):
           little bias for a lot less variance — the same idea we will meet again
           in logistic regression.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 35</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">15 / 37</div>
         """
     )
     return
@@ -480,7 +599,7 @@ def _(mo):
         Feed $0/1$ labels into a line and it happily predicts $-0.4$ or $1.4$ —
         which is meaningless as a probability:
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 35</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">16 / 37</div>
         """
     )
     return
@@ -504,7 +623,7 @@ def _(mo):
 
         — this is **gradient descent**, and $\eta$ is the **learning rate**.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">15 / 35</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">17 / 37</div>
         """
     )
     return
@@ -545,7 +664,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">16 / 35</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">18 / 37</div>"""),
         ]
     )
     return
@@ -571,7 +690,7 @@ def _(mo):
         It is smooth everywhere, which is what lets us train it with gradient
         descent.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">17 / 35</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">19 / 37</div>
         """
     )
     return
@@ -602,7 +721,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">18 / 35</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">20 / 37</div>"""),
         ]
     )
     return
@@ -621,7 +740,7 @@ def _(mo):
         - far right: $\sigma \approx 1$ — confidently class 1
         - in between: a probability!
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">19 / 35</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">21 / 37</div>
         """
     )
     return
@@ -664,7 +783,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="860px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">20 / 35</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">22 / 37</div>"""),
         ]
     )
     return
@@ -690,7 +809,7 @@ def _(mo):
         dimensions). Logistic regression does not fit the points; it finds the
         **separation** between the classes.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">21 / 35</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">23 / 37</div>
         """
     )
     return
@@ -712,7 +831,7 @@ def _(mo):
           confidently wrong
         - **convex** — gradient descent finds the single global minimum
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">22 / 35</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">24 / 37</div>
         """
     )
     return
@@ -742,7 +861,7 @@ def _(mo):
 
         $$w \leftarrow w - \eta \, \frac{\partial \mathcal{L}}{\partial w}$$
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">23 / 35</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">25 / 37</div>
         """
     )
     return
@@ -766,7 +885,7 @@ def _(mo):
 
         Keep this picture — it is the seed of tomorrow's lecture on neural networks.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">24 / 35</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">26 / 37</div>
         """
     )
     return
@@ -819,7 +938,7 @@ def _(mo):
         ~15 lines in total. We train it on the two-blob dataset — and on the
         next slide you can **scrub through the training**, one bit at a time.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">25 / 35</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">27 / 37</div>
         """
     )
     return (
@@ -880,7 +999,7 @@ def _(blobs_X, blobs_y, fit_logistic_gd, mo, train_slider):
             ),
             train_slider,
             mo.image(_buf, width="860px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">26 / 35</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">28 / 37</div>"""),
         ]
     )
     return
@@ -897,7 +1016,7 @@ def _(acc_hand, b_hand, blobs_X, blobs_y, mo, w_hand):
     print(f"by hand:      w = {w_hand.round(3)}, b = {b_hand:+.3f}, accuracy = {acc_hand:.3f}")
     print("(sklearn's weights are slightly smaller — it applies L2 regularisation by default)")
     mo.md(
-        r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">27 / 35</div>"""
+        r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">29 / 37</div>"""
     )
     return (logreg_clf,)
 
@@ -933,7 +1052,7 @@ def _(mo):
           emerges
         - the boundary is where the model is exactly $50/50$ ($z = 0$)
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">28 / 35</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">30 / 37</div>
         """
     )
     return incL_X, incL_y, logit_seen
@@ -982,7 +1101,7 @@ def _(incL_X, incL_y, logit_seen, mo):
         [
             logit_seen,
             mo.image(_buf, width="600px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">29 / 35</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">31 / 37</div>"""),
         ]
     )
     return
@@ -1007,7 +1126,7 @@ def _(mo):
         - the target is **binary** (otherwise: softmax),
         - there are **no strong outliers**, and the **sample size is large**.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">30 / 35</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">32 / 37</div>
         """
     )
     return
@@ -1037,7 +1156,7 @@ def _(mo):
         - **large $C$** (weak penalty) lets the model chase every point,
           producing a **sharp, over-confident** boundary.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">31 / 35</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">33 / 37</div>
         """
     )
     return (logc_slider,)
@@ -1106,7 +1225,7 @@ def _(logc_slider, mo):
         [
             logc_slider,
             mo.image(_buf, width="920px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">32 / 35</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">34 / 37</div>"""),
         ]
     )
     return
@@ -1127,7 +1246,7 @@ def _(mo):
 
         scikit-learn's `LogisticRegression` handles this automatically.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">33 / 35</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">35 / 37</div>
         """
     )
     return
@@ -1218,7 +1337,7 @@ def _(mo):
                 confident."""
             ),
             mo.image(_buf, width="920px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">34 / 35</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">36 / 37</div>"""),
         ]
     )
     return
@@ -1245,7 +1364,7 @@ def _(mo):
 
         Next session: **decision trees**.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">35 / 35</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">37 / 37</div>
         """
     )
     return
