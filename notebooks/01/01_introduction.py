@@ -265,10 +265,10 @@ def _(label_fraction, mo):
         )
     if _k == 0:
         _mode = "Unsupervised — no labels: look for structure"
-    elif _k < 0.5 * _n:
-        _mode = f"Semi-supervised — only {_k}/{_n} points labeled"
-    else:
+    elif _k == _n:
         _mode = "Supervised — every point has a label"
+    else:
+        _mode = f"Semi-supervised — only {_k}/{_n} points labeled"
     _ax.set_title(_mode)
     _ax.set_xticks([])
     _ax.set_yticks([])

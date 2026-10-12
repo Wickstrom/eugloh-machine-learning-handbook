@@ -158,11 +158,11 @@ def _(mo):
 @app.cell
 def _(mo):
     x1_slider = mo.ui.slider(
-        start=-2.0, stop=2.0, step=0.05, value=0.9,
+        start=-0.5, stop=1.5, step=0.05, value=1.0,
         label="input $x_1$", show_value=True, debounce=True,
     )
     x2_slider = mo.ui.slider(
-        start=-2.0, stop=2.0, step=0.05, value=-0.9,
+        start=-0.5, stop=1.5, step=0.05, value=0.0,
         label="input $x_2$", show_value=True, debounce=True,
     )
     mo.md(
@@ -175,7 +175,9 @@ def _(mo):
         they have been **pulled apart into a linearly separable arrangement**.
 
         Drag the sliders to move a point through the network and watch its
-        hidden activation — that is the **forward pass**.
+        hidden activation — that is the **forward pass**. (The network is
+        trained on standardised inputs internally; the picture shows the raw
+        measurements, so the sliders range over the unit square.)
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 9</div>
         """
@@ -209,16 +211,20 @@ def _(mo, x1_slider, x2_slider):
     _A1 = _np.tanh(_Xs @ _mlp.coefs_[0] + _mlp.intercepts_[0])
     _lr = _LR().fit(_A1, _y)
 
-    # forward pass for the point chosen by the sliders
+    # forward pass for the point chosen by the sliders (raw coordinates);
+    # the network expects standardised inputs, so transform the query first.
     _q = _np.array([[x1_slider.value, x2_slider.value]])
-    _qa = _np.tanh(_q @ _mlp.coefs_[0] + _mlp.intercepts_[0])
-    _prob = _mlp.predict_proba(_q)[0, 1]
+    _qs = _sc.transform(_q)
+    _qa = _np.tanh(_qs @ _mlp.coefs_[0] + _mlp.intercepts_[0])
+    _prob = _mlp.predict_proba(_qs)[0, 1]
 
     _xx, _yy = _np.meshgrid(
-        _np.linspace(_Xs[:, 0].min() - 0.4, _Xs[:, 0].max() + 0.4, 220),
-        _np.linspace(_Xs[:, 1].min() - 0.4, _Xs[:, 1].max() + 0.4, 220),
+        _np.linspace(_X[:, 0].min() - 0.15, _X[:, 0].max() + 0.15, 220),
+        _np.linspace(_X[:, 1].min() - 0.15, _X[:, 1].max() + 0.15, 220),
     )
-    _Zin = _mlp.predict(_np.c_[_xx.ravel(), _yy.ravel()]).reshape(_xx.shape)
+    _Zin = _mlp.predict(
+        _sc.transform(_np.c_[_xx.ravel(), _yy.ravel()])
+    ).reshape(_xx.shape)
 
     _hx, _hy = _np.meshgrid(
         _np.linspace(_A1[:, 0].min() - 0.3, _A1[:, 0].max() + 0.3, 220),
@@ -228,10 +234,12 @@ def _(mo, x1_slider, x2_slider):
 
     _fig, _axes = _plt.subplots(1, 2, figsize=(11, 4.4))
     _axes[0].contourf(_xx, _yy, _Zin, alpha=0.22, cmap="RdYlGn")
-    _axes[0].scatter(_Xs[_y == 0, 0], _Xs[_y == 0, 1], color="#dc2626", s=16)
-    _axes[0].scatter(_Xs[_y == 1, 0], _Xs[_y == 1, 1], color="#16a34a", s=16)
+    _axes[0].scatter(_X[_y == 0, 0], _X[_y == 0, 1], color="#dc2626", s=16)
+    _axes[0].scatter(_X[_y == 1, 0], _X[_y == 1, 1], color="#16a34a", s=16)
     _axes[0].scatter([_q[0, 0]], [_q[0, 1]], marker="*", s=260,
                      color="#2563eb", edgecolor="k", zorder=5)
+    _axes[0].set_xlabel("$x_1$")
+    _axes[0].set_ylabel("$x_2$")
     _axes[0].set_title("Input space — curved boundary")
     _axes[0].set_aspect("equal")
 
