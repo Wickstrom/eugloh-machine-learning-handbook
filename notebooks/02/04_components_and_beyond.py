@@ -58,7 +58,7 @@ def _(mo):
 
         University of Novi Sad
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 26</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 25</div>
         """
     )
     return
@@ -84,7 +84,7 @@ def _(mo):
 
         Session 4 of 4 today — this wraps the lecture series.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 26</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 25</div>
         """
     )
     return
@@ -123,7 +123,7 @@ def _(mo):
         scikit-learn does this for you; in PyTorch it is `nn.init.xavier_uniform_`
         / `nn.init.kaiming_normal_`.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 26</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 25</div>
         """
     )
     return
@@ -169,7 +169,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="700px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 26</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 25</div>"""),
         ]
     )
     return
@@ -198,7 +198,7 @@ def _(mo):
         In `MLPClassifier`: `solver="sgd"` (with `momentum=...`) or
         `solver="adam"`.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 26</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 25</div>
         """
     )
     return
@@ -245,7 +245,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="700px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 26</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 25</div>"""),
         ]
     )
     return
@@ -272,7 +272,7 @@ def _(mo):
         Regularization trades a little **training** accuracy for a lot of
         **test** accuracy.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 26</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 25</div>
         """
     )
     return
@@ -320,7 +320,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 26</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 25</div>"""),
         ]
     )
     return
@@ -340,7 +340,7 @@ def _(mo):
         Watch the gap between **train and validation** accuracy, and reach for
         **early stopping** when it opens.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 26</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 25</div>
         """
     )
     return
@@ -388,7 +388,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="900px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 26</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 25</div>"""),
         ]
     )
     return
@@ -412,7 +412,7 @@ def _(mo):
         overfit more. Switch the activation function and see how training
         changes. (One hidden unit cannot even bend the boundary!)
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 26</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 25</div>
         """
     )
     return act_dropdown, hidden_slider
@@ -461,7 +461,7 @@ def _(act_dropdown, hidden_slider, mo):
         [
             mo.hstack([hidden_slider, act_dropdown]),
             mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 26</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 25</div>"""),
         ]
     )
     return
@@ -487,7 +487,7 @@ def _(mo):
 
         In plain words: make it work on a small version first, then make it bigger.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 26</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 25</div>
         """
     )
     return
@@ -508,7 +508,7 @@ def _(mo):
         - **Learning rate.** Too small → the loss crawls. Too large → it
           oscillates or **diverges**.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 26</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 25</div>
         """
     )
     return
@@ -562,7 +562,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="880px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">15 / 26</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">15 / 25</div>"""),
         ]
     )
     return
@@ -585,7 +585,7 @@ def _(mo):
         Change **one thing at a time**, and keep the **validation set** as your
         judge — never the test set.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">16 / 26</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">16 / 25</div>
         """
     )
     return
@@ -614,7 +614,7 @@ def _(mo):
 
         Demo: 8×8 handwritten digits (1797 samples, 10 classes).
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">17 / 26</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">17 / 25</div>
         """
     )
     return
@@ -654,7 +654,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="860px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">18 / 26</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">18 / 25</div>"""),
         ]
     )
     return
@@ -679,7 +679,7 @@ def _(mo):
         The training recipe is unchanged — still backpropagation + gradient
         descent. Below: a digit and an edge-detecting convolution.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">19 / 26</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">19 / 25</div>
         """
     )
     return
@@ -717,7 +717,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="820px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">20 / 26</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">20 / 25</div>"""),
         ]
     )
     return
@@ -745,7 +745,7 @@ def _(mo):
         **BERT, GPT and modern LLMs**, and increasingly vision
         (ViT) and time series.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">21 / 26</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">21 / 25</div>
         """
     )
     return
@@ -772,7 +772,7 @@ def _(mo):
         Below: a 64 → 32 → **8** → 32 → 64 autoencoder on handwritten digits,
         trained with `MLPRegressor` on its own input.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">22 / 26</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">22 / 25</div>
         """
     )
     return
@@ -812,7 +812,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="900px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">23 / 26</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">23 / 25</div>"""),
         ]
     )
     return
@@ -836,7 +836,7 @@ def _(mo):
         reach for a neural network when the data has *structure* (pixels,
         sequences) or the patterns are truly smooth.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">24 / 26</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">24 / 25</div>
         """
     )
     return
@@ -863,25 +863,7 @@ def _(mo):
         - Rule of thumb: **logistic regression → random forest → neural
           network**, depending on the data.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">25 / 26</div>
-        """
-    )
-    return
-
-
-@app.cell
-def _(mo):
-    mo.md(
-        r"""
-        ## Where to go next
-
-        - **Exercise:** `notebooks/02/04_components_and_beyond_{beginner,intermediate,advanced}.ipynb`
-          — explore the digits data, compare activations/optimizers with
-          scikit-learn, and implement **SGD, momentum and Adam from scratch**.
-        - This wraps the lecture series — the final project is an end-to-end
-          ML pipeline on a dataset of your choice. Happy learning!
-
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">26 / 26</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">25 / 25</div>
         """
     )
     return

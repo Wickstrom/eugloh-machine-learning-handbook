@@ -58,7 +58,7 @@ def _(mo):
 
         University of Novi Sad
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 20</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 19</div>
         """
     )
     return
@@ -79,7 +79,7 @@ def _(mo):
 
         Session 3 of 4 today.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 20</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 19</div>
         """
     )
     return
@@ -103,7 +103,7 @@ def _(mo):
           confidently wrong
         - **convex** — gradient descent finds the single global minimum
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 20</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 19</div>
         """
     )
     return
@@ -133,7 +133,7 @@ def _(mo):
 
         $$w \leftarrow w - \eta \, \frac{\partial \mathcal{L}}{\partial w}$$
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 20</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 19</div>
         """
     )
     return
@@ -162,7 +162,7 @@ def _(mo):
         More sophisticated **optimizers** (momentum, Adam, …) build on this
         idea; we will meet them in the next session.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 20</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 19</div>
         """
     )
     return
@@ -208,7 +208,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="880px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 20</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 19</div>"""),
         ]
     )
     return
@@ -261,7 +261,7 @@ def _(mo):
         ~15 lines in total. We train it on the two-blob dataset — and on the
         next slide you can **scrub through the training**, one bit at a time.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 20</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 19</div>
         """
     )
     return (
@@ -322,7 +322,7 @@ def _(blobs_X, blobs_y, fit_logistic_gd, mo, train_slider):
             ),
             train_slider,
             mo.image(_buf, width="860px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 20</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 19</div>"""),
         ]
     )
     return
@@ -349,7 +349,7 @@ def _(acc_hand, b_hand, blobs_X, blobs_y, mo, w_hand):
         little **smaller** because it applies **L2 regularisation** by default —
         exactly the effect we explore with the $C$ slider below.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 20</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 19</div>
         """
     )
     return (logreg_clf,)
@@ -374,7 +374,7 @@ def _(mo):
         - the target is **binary** (otherwise: softmax),
         - there are **no strong outliers**, and the **sample size is large**.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 20</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 19</div>
         """
     )
     return
@@ -404,7 +404,7 @@ def _(mo):
         - **large $C$** (weak penalty) lets the model chase every point,
           producing a **sharp, over-confident** boundary.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 20</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 19</div>
         """
     )
     return (logc_slider,)
@@ -473,7 +473,7 @@ def _(logc_slider, mo):
         [
             logc_slider,
             mo.image(_buf, width="920px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 20</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 19</div>"""),
         ]
     )
     return
@@ -507,7 +507,7 @@ def _(mo):
         You will implement exactly these steps — by hand — below and in the
         exercise.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 20</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 19</div>
         """
     )
     return
@@ -532,7 +532,7 @@ def _(mo):
         - There is only **one loop** — the epochs; everything inside is
           **matrix multiplication**
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 20</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 19</div>
         """
     )
     return
@@ -560,7 +560,7 @@ def _(mo):
         All three are just matrix multiplications — so the whole implementation
         is only a few lines.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">15 / 20</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">15 / 19</div>
         """
     )
     return nn_Xs, nn_y
@@ -644,7 +644,7 @@ def _(b1h, b2h, mo, nn_Xs, nn_acc, nn_losses, nn_y, W1h, W2h):
     mo.vstack(
         [
             mo.image(_buf, width="860px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">16 / 20</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">16 / 19</div>"""),
         ]
     )
     return
@@ -666,7 +666,7 @@ def _(mo):
         tracks its loss curve, and supports early stopping. Same network, same
         data — a more robust optimizer under the hood.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">17 / 20</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">17 / 19</div>
         """
     )
     return
@@ -707,7 +707,7 @@ def _(mo, nn_Xs, nn_y):
     mo.vstack(
         [
             mo.image(_buf, width="860px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">18 / 20</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">18 / 19</div>"""),
         ]
     )
     return
@@ -733,23 +733,7 @@ def _(mo):
         Next session: the **components** — optimizers, weight initialization and
         capacity — and where neural networks go next.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">19 / 20</div>
-        """
-    )
-    return
-
-
-@app.cell
-def _(mo):
-    mo.md(
-        r"""
-        ## Where to go next
-
-        - **Exercise:** `notebooks/02/03_training_{beginner,intermediate,advanced}.ipynb`
-          — implement the **forward and backward pass by hand**, train a small
-          MLP, and compare against `MLPClassifier`.
-
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">20 / 20</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">19 / 19</div>
         """
     )
     return
