@@ -76,7 +76,8 @@ def _(mo):
           gradient descent
         - The 1801 story of **Piazzi, Ceres and Gauss** — one of the first fits
           to data
-        - Interactive demo: watching the fit update as **new samples arrive**
+        - Interactive demo: how the fit **stabilises** as you draw more
+          random samples
 
         Session 2 of 4 today. *(Logistic regression — the sigmoid, cross-entropy,
         training, and multi-class — now opens tomorrow's neural-network sessions.)*
@@ -217,27 +218,18 @@ def _(fit3_lines, fit3_pick, fit3_reveal, fit3_x, fit3_y, mo):
         )
         _width = "680px"
     else:
-        _fig, _axes = _plt.subplots(1, 2, figsize=(12, 4.4))
+        _fig, _ax = _plt.subplots(figsize=(7.2, 4.4))
         _w, _b = fit3_lines[_key]
-        _axes[0].scatter(fit3_x, fit3_y, color="#111827", s=42, zorder=5)
-        _axes[0].plot(
+        _ax.scatter(fit3_x, fit3_y, color="#111827", s=42, zorder=5)
+        _ax.plot(
             _xs, _w * _xs + _b, color=_colors[_key], lw=2.5,
             label=f"your line ({_key})",
         )
-        _axes[0].vlines(fit3_x, fit3_y, _w * fit3_x + _b, color="gray", lw=1.2)
-        _axes[0].set_xlabel("feature $x$")
-        _axes[0].set_ylabel("target $y$")
-        _axes[0].set_title("Your line and its gaps to the data")
-        _axes[0].legend(fontsize=9, loc="upper left")
-
-        _order = ["A", "B", "C"]
-        _axes[1].bar(
-            _order, [_ssg[_k] for _k in _order], color=[_colors[_k] for _k in _order]
-        )
-        for _i, _k in enumerate(_order):
-            _axes[1].text(_i, _ssg[_k], f"{_ssg[_k]:.1f}", ha="center", va="bottom")
-        _axes[1].set_ylabel("sum of squared gaps")
-        _axes[1].set_title("lower is better")
+        _ax.vlines(fit3_x, fit3_y, _w * fit3_x + _b, color="gray", lw=1.2)
+        _ax.set_xlabel("feature $x$")
+        _ax.set_ylabel("target $y$")
+        _ax.set_title("Your line and its gaps to the data")
+        _ax.legend(fontsize=9, loc="upper left")
 
         _ok = (
             "✅ Correct — you picked the line that follows the data."
@@ -250,7 +242,7 @@ def _(fit3_lines, fit3_pick, fit3_reveal, fit3_x, fit3_y, mo):
             "and the data. On the next slide the computer minimises exactly this "
             "gap for you — and then we give it a name."
         )
-        _width = "900px"
+        _width = "680px"
 
     _buf = _io.BytesIO()
     _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
@@ -335,6 +327,10 @@ def _(mo):
 
 @app.cell
 def _(mo):
+    gd_step = mo.ui.slider(
+        start=0, stop=200, step=1, value=0,
+        label="gradient-descent step", show_value=True, debounce=True,
+    )
     mo.md(
         r"""
         ## Two ways to find the best line
@@ -345,10 +341,7 @@ def _(mo):
         $$w = \frac{\sum_i (x_i - \bar{x})(y_i - \bar{y})}{\sum_i (x_i - \bar{x})^2},
         \qquad b = \bar{y} - w\,\bar{x}$$
 
-        where $\bar{x}$ and $\bar{y}$ are the means. No iteration — one
-        calculation gives the best line. (With many features the same idea is
-        written with matrices and solved once; `LinearRegression` uses a
-        numerically safer version of it.)
+        where $\bar{x}$ and $\bar{y}$ are the means.
 
         **2. Gradient descent.** With very many features that formula is
         expensive, so instead we *walk downhill* on the loss:
@@ -364,11 +357,11 @@ def _(mo):
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 16</div>
         """
     )
-    return
+    return (gd_step,)
 
 
 @app.cell
-def _(mo):
+def _(gd_step, mo):
     import io as _io
 
     import matplotlib.pyplot as _plt
@@ -380,35 +373,59 @@ def _(mo):
     _y = 3.0 * _X.ravel() + 1.0 + _rng.normal(scale=0.7, size=120)
 
     _closed = _LinReg().fit(_X, _y)
+    _cw = float(_closed.coef_[0])
+    _cb = float(_closed.intercept_)
 
-    _w, _b, _lr, _losses = _np.zeros(1), 0.0, 0.1, []
     _n = len(_y)
+    _lr = 0.1
+    _w = _b = 0.0
+    _ws, _bs = [_w], [_b]
+    _losses = [float(_np.mean((_X.ravel() * _w + _b - _y) ** 2))]
     for _ in range(200):
-        _pred = _X @ _w + _b
-        _losses.append(_np.mean((_pred - _y) ** 2))
-        _gw = (2 / _n) * _X.T @ (_pred - _y)
+        _pred = _X.ravel() * _w + _b
+        _gw = (2 / _n) * _np.sum((_pred - _y) * _X.ravel())
         _gb = (2 / _n) * _np.sum(_pred - _y)
         _w -= _lr * _gw
         _b -= _lr * _gb
+        _ws.append(_w)
+        _bs.append(_b)
+        _losses.append(float(_np.mean((_X.ravel() * _w + _b - _y) ** 2)))
 
-    _fig, _axes = _plt.subplots(1, 2, figsize=(11, 4))
-    _xs = _np.linspace(_X.min() - 0.3, _X.max() + 0.3, 100).reshape(-1, 1)
-    _axes[0].scatter(_X, _y, color="#2563eb", s=20, alpha=0.7)
-    _axes[0].plot(_xs, _closed.predict(_xs), color="#dc2626", lw=2, label="closed form")
-    _axes[0].plot(_xs, _xs @ _w + _b, color="#16a34a", lw=2, ls="--", label="gradient descent")
-    _axes[0].set_title("Both methods find the same line")
-    _axes[0].legend()
-    _axes[1].plot(_losses, color="#2563eb")
-    _axes[1].set_xlabel("epoch")
-    _axes[1].set_ylabel("MSE")
-    _axes[1].set_title("Gradient descent converges")
+    _t = int(gd_step.value)
+    _wt, _bt, _lt = _ws[_t], _bs[_t], _losses[_t]
+    _xs = _np.linspace(_X.min() - 0.3, _X.max() + 0.3, 100)
+
+    _fig, _axes = _plt.subplots(1, 3, figsize=(13.5, 4.1))
+
+    _axes[0].scatter(_X, _y, color="#2563eb", s=16, alpha=0.55)
+    _axes[0].plot(_xs, _cw * _xs + _cb, color="#dc2626", lw=2.5)
+    _axes[0].set_title(rf"closed form: $\hat y = {_cw:.2f}x {_cb:+.2f}$")
+    _axes[0].set_xlabel("$x$")
+    _axes[0].set_ylabel("$y$")
+
+    _axes[1].scatter(_X, _y, color="#2563eb", s=16, alpha=0.55)
+    _axes[1].plot(_xs, _cw * _xs + _cb, color="#dc2626", lw=2,
+                  label="closed form")
+    _axes[1].plot(_xs, _wt * _xs + _bt, color="#16a34a", lw=2, ls="--",
+                  label=f"gradient descent (step {_t})")
+    _axes[1].set_title("both lines")
+    _axes[1].set_xlabel("$x$")
+    _axes[1].legend(fontsize=8, loc="upper left")
+
+    _axes[2].plot(_losses, color="#2563eb", lw=1.8)
+    _axes[2].scatter([_t], [_lt], color="#16a34a", s=45, zorder=5)
+    _axes[2].set_title(f"MSE = {_lt:.3f}")
+    _axes[2].set_xlabel("step")
+    _axes[2].set_ylabel("MSE")
+
     _buf = _io.BytesIO()
     _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
     _plt.close(_fig)
     _buf.seek(0)
     mo.vstack(
         [
-            mo.image(_buf, width="860px"),
+            mo.hstack([gd_step], justify="start"),
+            mo.image(_buf, width="1040px"),
             mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 16</div>"""),
         ]
     )
@@ -422,54 +439,62 @@ def _(mo):
     _rng = _np.random.default_rng(7)
     fit_x = _np.sort(_rng.uniform(0, 10, 30))
     fit_y = 1.5 + 1.2 * fit_x + _rng.normal(scale=2.2, size=fit_x.size)
-    n_seen = mo.ui.slider(
+    k_slider = mo.ui.slider(
         start=2, stop=int(fit_x.size), step=1, value=4,
-        label="samples seen", show_value=True, debounce=True,
+        label="random samples (k)", show_value=True, debounce=True,
+    )
+    redraw = mo.ui.button(
+        value=0, on_click=lambda _v: _v + 1, label="🎲 draw a new sample",
     )
     mo.md(
         r"""
-        ## Interactive — fitting a line as the data arrives
+        ## Interactive — fitting a line from random samples
 
-        We never get all the data at once. The slider reveals the first $k$
-        samples; the line is re-fitted from those $k$ points **alone**.
+        Each time you **draw**, we pick $k$ points **at random** (not the first
+        $k$) and fit the line to those $k$ alone.
 
-        - with **few** points the line is shaky and its estimate jumps around
-        - as $k$ grows the line **settles down** towards the least-squares
-          answer for the full dataset
-        - nothing new to learn here — it is the same least-squares fit, just
-          computed on a growing prefix of the data
+        - with **few** points the line jumps around — every draw gives a very
+          different fit
+        - as $k$ grows the line **settles down** towards the least-squares line
+          for the whole dataset
+        - drag $k$ and click **draw** a few times to feel the difference
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 16</div>
         """
     )
-    return fit_x, fit_y, n_seen
+    return fit_x, fit_y, k_slider, redraw
 
 
 @app.cell
-def _(fit_x, fit_y, mo, n_seen):
+def _(fit_x, fit_y, k_slider, mo, redraw):
     import io as _io
 
     import matplotlib.pyplot as _plt
     import numpy as _np
     from sklearn.linear_model import LinearRegression as _LinReg
 
-    _k = int(n_seen.value)
+    _k = int(k_slider.value)
+    _rng = _np.random.default_rng(int(redraw.value))
+    _idx = _rng.choice(fit_x.size, size=_k, replace=False)
+    _sel = _np.zeros(fit_x.size, dtype=bool)
+    _sel[_idx] = True
+
     _full = _LinReg().fit(fit_x.reshape(-1, 1), fit_y)
-    _part = _LinReg().fit(fit_x[:_k].reshape(-1, 1), fit_y[:_k])
+    _part = _LinReg().fit(fit_x[_sel].reshape(-1, 1), fit_y[_sel])
     _xs = _np.linspace(-0.3, 10.3, 100).reshape(-1, 1)
 
-    _fig, _ax = _plt.subplots(figsize=(7, 4))
-    _ax.scatter(fit_x[_k:], fit_y[_k:], color="#cbd5e1", s=28, label="not yet seen")
-    _ax.scatter(fit_x[:_k], fit_y[:_k], color="#2563eb", s=34, label=f"seen ({_k})")
+    _fig, _ax = _plt.subplots(figsize=(7.2, 4.2))
+    _ax.scatter(fit_x[~_sel], fit_y[~_sel], color="#cbd5e1", s=28, label="not drawn")
+    _ax.scatter(fit_x[_sel], fit_y[_sel], color="#2563eb", s=40, label=f"drawn ({_k})")
     _ax.plot(_xs, _part.predict(_xs), color="#dc2626", lw=2.5,
-             label=f"fit on {_k} points")
+             label=f"fit on {_k} samples")
     _ax.plot(_xs, _full.predict(_xs), color="#16a34a", lw=1.6, ls="--",
              label="fit on all points")
-    _mse_part = _np.mean((_part.predict(fit_x[:_k].reshape(-1, 1)) - fit_y[:_k]) ** 2)
+    _mse_part = _np.mean((_part.predict(fit_x[_sel].reshape(-1, 1)) - fit_y[_sel]) ** 2)
     _ax.set_xlabel("feature $x$")
     _ax.set_ylabel("target $y$")
     _ax.set_title(
-        f"{_k} samples → w = {_part.coef_[0]:.2f}, b = {_part.intercept_:+.2f}"
+        f"{_k} random samples → w = {_part.coef_[0]:.2f}, b = {_part.intercept_:+.2f}"
         f"  (MSE {_mse_part:.2f})"
     )
     _ax.legend(loc="lower right", fontsize=8)
@@ -479,7 +504,7 @@ def _(fit_x, fit_y, mo, n_seen):
     _buf.seek(0)
     mo.vstack(
         [
-            n_seen,
+            mo.hstack([k_slider, redraw], justify="start", gap=1.5),
             mo.image(_buf, width="680px"),
             mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 16</div>"""),
         ]
@@ -489,6 +514,14 @@ def _(fit_x, fit_y, mo, n_seen):
 
 @app.cell
 def _(mo):
+    line_w = mo.ui.slider(
+        start=0, stop=2000, step=50, value=500,
+        label="slope w", show_value=True, debounce=True,
+    )
+    line_b = mo.ui.slider(
+        start=-100, stop=400, step=10, value=100,
+        label="intercept b", show_value=True, debounce=True,
+    )
     mo.md(
         r"""
         ## Evaluating a regression model
@@ -499,62 +532,76 @@ def _(mo):
         - **RMSE** — root mean squared error, in the same units as $y$, so its
           magnitude is directly interpretable.
 
-        Report every number on a **held-out test set**, never on the training
-        set. Below: the diabetes dataset (age, BMI, blood pressure, …).
+        Both numbers are properties of **the line you pick**. Drag the sliders
+        below (diabetes: BMI → disease progression) and watch $R^2$ and MSE
+        respond — the *best* line is the one that makes the MSE smallest. Report
+        these on a **held-out test set**, never the training set.
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 16</div>
         """
     )
-    return
+    return line_b, line_w
 
 
 @app.cell
-def _(mo):
+def _(line_b, line_w, mo):
     import io as _io
 
     import matplotlib.pyplot as _plt
     import numpy as _np
     from sklearn.datasets import load_diabetes as _load_diabetes
     from sklearn.linear_model import LinearRegression as _LinReg
-    from sklearn.metrics import mean_squared_error as _mse
-    from sklearn.metrics import r2_score as _r2
-    from sklearn.model_selection import train_test_split as _split
 
     _diab = _load_diabetes()
-    _Xtr, _Xte, _ytr, _yte = _split(
-        _diab.data, _diab.target, test_size=0.3, random_state=0
-    )
-    _m = _LinReg().fit(_Xtr, _ytr)
-    _pred = _m.predict(_Xte)
+    _x = _diab.data[:, 2]  # BMI (standardised)
+    _y = _diab.target
 
-    _rmse_model = _np.sqrt(_mse(_yte, _pred))
-    _rmse_base = _np.sqrt(_mse(_yte, _np.full_like(_yte, _yte.mean())))
+    _best = _LinReg().fit(_x.reshape(-1, 1), _y)
+    _bw = float(_best.coef_[0])
+    _bb = float(_best.intercept_)
 
-    _fig, _axes = _plt.subplots(1, 2, figsize=(11, 4.2))
-    _axes[0].scatter(_yte, _pred, color="#2563eb", s=22, alpha=0.7)
-    _lim = [_yte.min(), _yte.max()]
-    _axes[0].plot(_lim, _lim, color="gray", ls="--")
-    _axes[0].set_xlabel("true value")
-    _axes[0].set_ylabel("predicted value")
-    _axes[0].set_title(
-        f"closer to the dashed line = better (test $R^2$ = {_r2(_yte, _pred):.2f})"
-    )
+    _w = float(line_w.value)
+    _b = float(line_b.value)
+    _pred = _w * _x + _b
+    _sst = float(((_y - _y.mean()) ** 2).sum())
+    _mse_cur = float(_np.mean((_pred - _y) ** 2))
+    _r2_cur = float(1 - ((_pred - _y) ** 2).sum() / _sst)
+    _pred_best = _bw * _x + _bb
+    _mse_best = float(_np.mean((_pred_best - _y) ** 2))
+    _r2_best = float(1 - ((_pred_best - _y) ** 2).sum() / _sst)
+
+    _xo = _np.linspace(_x.min(), _x.max(), 100)
+    _fig, _axes = _plt.subplots(1, 2, figsize=(12, 4.3))
+
+    _axes[0].scatter(_x, _y, color="#2563eb", s=18, alpha=0.6)
+    _axes[0].vlines(_x, _y, _pred, color="gray", lw=0.6, alpha=0.5)
+    _axes[0].plot(_xo, _w * _xo + _b, color="#dc2626", lw=2.5, label="your line")
+    _axes[0].plot(_xo, _bw * _xo + _bb, color="#16a34a", lw=1.8, ls="--",
+                  label="best line")
+    _axes[0].set_xlabel("BMI (standardised)")
+    _axes[0].set_ylabel("disease progression")
+    _axes[0].set_title("drag the line around the data")
+    _axes[0].legend(fontsize=8, loc="upper left")
+
     _axes[1].bar(
-        ["predict the mean\n(baseline)", "our model"],
-        [_rmse_base, _rmse_model],
-        color=["#94a3b8", "#16a34a"],
+        ["your line", "best line"], [_mse_cur, _mse_best],
+        color=["#dc2626", "#16a34a"],
     )
-    _axes[1].set_ylabel("RMSE (same units as the target)")
-    _axes[1].set_title("lower is better")
-    for _i, _v in enumerate([_rmse_base, _rmse_model]):
-        _axes[1].text(_i, _v, f"{_v:.0f}", ha="center", va="bottom")
+    _axes[1].text(0, _mse_cur, f"MSE {_mse_cur:.0f}\n$R^2$ {_r2_cur:.2f}",
+                  ha="center", va="bottom", fontsize=9)
+    _axes[1].text(1, _mse_best, f"MSE {_mse_best:.0f}\n$R^2$ {_r2_best:.2f}",
+                  ha="center", va="bottom", fontsize=9)
+    _axes[1].set_ylabel("MSE (lower is better)")
+    _axes[1].set_title("the best line minimises the MSE")
+
     _buf = _io.BytesIO()
     _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
     _plt.close(_fig)
     _buf.seek(0)
     mo.vstack(
         [
-            mo.image(_buf, width="860px"),
+            mo.hstack([line_w, line_b], justify="start", gap=1.5),
+            mo.image(_buf, width="900px"),
             mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 16</div>"""),
         ]
     )
@@ -594,8 +641,8 @@ def _(mo):
         - **Linear regression** predicts a number and minimises the **MSE** —
           solvable in closed form, or by **gradient descent**. (Gauss fitted
           least squares to Piazzi's Ceres observations back in 1801.)
-        - We can watch the fit **improve as more samples arrive** — the estimate
-          stabilises as the data grows.
+        - We can watch the fit **stabilise as we draw more random samples** —
+          few points give a shaky line, many give a steady one.
         - **Always report on a held-out set**; use **R²** and **RMSE** to judge a
           regression model.
         - **Feature scaling** and **regularisation** are the practical levers.
