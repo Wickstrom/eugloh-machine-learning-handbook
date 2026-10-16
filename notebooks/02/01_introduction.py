@@ -9,8 +9,9 @@
 # ///
 #
 # Lecture 2 (Oct 20), Session 1 — Introduction to neural networks.
-# From linear to non-linear classifiers; the artificial neuron and activation
-# functions; the XOR problem; and a brief history of neural networks.
+# Logistic regression (sigmoid, cross-entropy, the linear decision boundary)
+# now opens this session; then the artificial neuron, activation functions, the
+# XOR problem, and a brief history of neural networks.
 # Run locally with `marimo edit notebooks/02/01_introduction.py`
 # or export to WASM for GitHub Pages (see .github/workflows/publish-slides.yml).
 #
@@ -53,7 +54,7 @@ def _(mo):
 
         University of Novi Sad
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 13</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 18</div>
         """
     )
     return
@@ -65,7 +66,7 @@ def _(mo):
         r"""
         ## Today's session
 
-        - **From linear to non-linear** classifiers — why we need them
+        - **Logistic regression** — the sigmoid and the linear decision boundary
         - **The artificial neuron** — a weighted sum plus a non-linear activation
         - **Activation functions** — the non-linearity that makes networks powerful
         - **The XOR problem** — the limitation of a single linear unit
@@ -73,7 +74,7 @@ def _(mo):
 
         Session 1 of 4 today.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 13</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 18</div>
         """
     )
     return
@@ -87,14 +88,161 @@ def _(mo):
 
         ## Introduction
 
-        - So far our classifiers have drawn **straight lines** (logistic
-          regression) or **axis-aligned cuts** (trees).
+        - We can regress with a **straight line** and classify with
+          **axis-aligned cuts** (trees).
+        - Now we classify with a straight line too — **logistic regression** —
+          and see where that runs out.
         - Many real problems need **smooth, curved boundaries**.
 
-        Our focus now shifts to **non-linear classifiers** — and we start
-        with the most influential one: the neural network.
+        So we build up to **non-linear classifiers**, starting from the logistic
+        unit and ending at the neural network.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 13</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 18</div>
+        """
+    )
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(
+        r"""
+        ## The logistic function
+
+        For classification the labels take only **two values** (0 and 1), so we
+        want a function bounded between 0 and 1 with a sharp transition — the
+        **logistic (sigmoid) function**:
+
+        $$\sigma(z) = \frac{1}{1 + e^{-z}}$$
+
+        In plain words: feed in **any** number $z$ and $\sigma$ bends it into
+        something between $0$ and $1$. A large positive $z$ gives almost $1$;
+        a large negative $z$ gives almost $0$; and $z = 0$ gives exactly
+        $0.5$.
+
+        It is smooth everywhere, which is what lets us train it with gradient
+        descent.
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 18</div>
+        """
+    )
+    return
+
+
+@app.cell
+def _(mo):
+    import io as _io
+
+    import matplotlib.pyplot as _plt
+    import numpy as _np
+
+    _z = _np.linspace(-6, 6, 300)
+    _sig = 1.0 / (1.0 + _np.exp(-_z))
+
+    _fig, _ax = _plt.subplots(figsize=(7, 3.4))
+    _ax.plot(_z, _sig, color="#2563eb", linewidth=2.5)
+    _ax.axhline(0.5, color="gray", linestyle="--", linewidth=1)
+    _ax.axvline(0, color="gray", linestyle="--", linewidth=1)
+    _ax.set_xlabel("z")
+    _ax.set_ylabel("σ(z)")
+    _ax.set_title("Bounded between 0 and 1, with a sharp transition")
+    _ax.grid(alpha=0.3)
+    _buf = _io.BytesIO()
+    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
+    _plt.close(_fig)
+    _buf.seek(0)
+    mo.vstack(
+        [
+            mo.image(_buf, width="620px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 18</div>"""),
+        ]
+    )
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(
+        r"""
+        ## A first intuition: compress the line into [0, 1]
+
+        Take the linear model $z = w^\top x + b$, then **squeeze** its output
+        through the sigmoid: $x \rightarrow w^\top x + b \rightarrow \sigma(w^\top x + b)$.
+
+        - far left: $\sigma \approx 0$ — confidently class 0
+        - far right: $\sigma \approx 1$ — confidently class 1
+        - in between: a probability!
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 18</div>
+        """
+    )
+    return
+
+
+@app.cell
+def _(mo):
+    import io as _io
+
+    import matplotlib.pyplot as _plt
+    import numpy as _np
+    from sklearn.linear_model import LinearRegression as _LinReg
+    from sklearn.linear_model import LogisticRegression as _LR
+
+    _rng = _np.random.default_rng(0)
+    _x0 = _rng.normal(loc=2.0, scale=0.9, size=60)
+    _x1 = _rng.normal(loc=6.0, scale=0.9, size=60)
+    _x = _np.concatenate([_x0, _x1])
+    _y = _np.concatenate([_np.zeros(60), _np.ones(60)])
+    _xs = _np.linspace(0, 8, 300)
+
+    _lin = _LinReg().fit(_x.reshape(-1, 1), _y)
+    _log = _LR().fit(_x.reshape(-1, 1), _y)
+
+    _fig, _axes = _plt.subplots(1, 2, figsize=(11, 3.8), sharey=True)
+    _axes[0].scatter(_x, _y, c=_y, cmap="RdYlGn", s=22)
+    _axes[0].plot(_xs, _lin.predict(_xs.reshape(-1, 1)), color="#2563eb", lw=2)
+    _axes[0].set_title("1. fit a line (unbounded)")
+    _axes[1].scatter(_x, _y, c=_y, cmap="RdYlGn", s=22)
+    _axes[1].plot(_xs, _log.predict_proba(_xs.reshape(-1, 1))[:, 1], color="#dc2626", lw=2)
+    _axes[1].axhline(0.5, color="gray", ls="--", lw=0.8)
+    _axes[1].set_title("2. squeeze it through σ → probabilities in [0, 1]")
+    for _ax in _axes:
+        _ax.set_xlabel("feature $x$")
+    _axes[0].set_ylabel("label / probability")
+    _buf = _io.BytesIO()
+    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
+    _plt.close(_fig)
+    _buf.seek(0)
+    mo.vstack(
+        [
+            mo.image(_buf, width="860px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 18</div>"""),
+        ]
+    )
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(
+        r"""
+        ## The statistical view
+
+        Encode the two classes as numbers: class A → $y = 1$, class B → $y = 0$.
+        The sigmoid output is then read as the **probability of class 1** given
+        the input.
+
+        **Why a sigmoid?** Picture the two classes as two **bell curves**
+        (Gaussians) with the *same spread*. The probability of class 1 then
+        works out to be exactly a logistic function of a linear score.
+
+        **Summary:** the model predicts $\hat{p} = \sigma(z)$ with
+        $z = w x + b$. At $z = 0$ the probability is $0.5$ — that is the
+        **decision boundary**, a straight line (a *hyperplane* in higher
+        dimensions). Logistic regression does not fit the points; it finds the
+        **separation** between the classes.
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 18</div>
         """
     )
     return
@@ -111,7 +259,7 @@ def _(mo):
     from sklearn.preprocessing import StandardScaler as _Scaler
 
     _X, _y = _make_circles(n_samples=400, factor=0.4, noise=0.1, random_state=0)
-    nn_X, nn_y = _X, _y
+    nn_y = _y
     nn_Xs = _Scaler().fit_transform(_X)  # scaled copy — used for training
 
     _clf = _LR().fit(nn_Xs, nn_y)
@@ -135,11 +283,16 @@ def _(mo):
     _buf.seek(0)
     mo.vstack(
         [
+            mo.md(
+                r"""Because the boundary is a line, logistic regression fails whenever
+                the classes are **not linearly separable** — here two concentric
+                circles, where no straight line can separate them."""
+            ),
             mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 13</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 18</div>"""),
         ]
     )
-    return nn_X, nn_Xs, nn_y
+    return nn_Xs, nn_y
 
 
 @app.cell
@@ -158,10 +311,11 @@ def _(mo):
 
         The **perceptron** is exactly this unit with a threshold/sigmoid
         activation. Recognise it? **Logistic regression is exactly one neuron**
-        with the sigmoid activation (Lecture 1, Session 2). A neural network is
-        *many neurons stacked in layers*, each feeding the next.
+        with the sigmoid activation — the model we opened this session with. A
+        neural network is *many neurons stacked in layers*, each feeding the
+        next.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 13</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 18</div>
         """
     )
     return
@@ -220,7 +374,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="760px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 13</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 18</div>"""),
         ]
     )
     return
@@ -243,7 +397,7 @@ def _(mo):
         still just a straight line. Compose enough of them and the network can
         approximate **any** smooth function.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 13</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 18</div>
         """
     )
     return
@@ -273,7 +427,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 13</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 18</div>"""),
         ]
     )
     return
@@ -295,7 +449,7 @@ def _(mo):
         triggered the first **AI winter**. The fix (a **hidden layer**) is the
         subject of the next session.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 13</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 18</div>
         """
     )
     return
@@ -308,8 +462,8 @@ def _(mo):
     import matplotlib.pyplot as _plt
     import numpy as _np
 
-    _rng = _np.random.default_rng(42)
-    _n, _std = 50, 0.15
+    _rng = _np.random.default_rng(0)
+    _n, _std = 60, 0.13
     _centers = _np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
     _labels = _np.array([0, 1, 1, 0])
     _X = _np.vstack([_c + _std * _rng.standard_normal((_n, 2)) for _c in _centers])
@@ -332,7 +486,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 13</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">15 / 18</div>"""),
         ]
     )
     return
@@ -352,7 +506,7 @@ def _(mo):
         - **AlexNet** (2012) — GPUs + ImageNet → the deep-learning revolution
         - **Transformers / LLMs** (2017–) — the same ideas, at scale
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 13</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">16 / 18</div>
         """
     )
     return
@@ -364,8 +518,11 @@ def _(mo):
         r"""
         ## Summary
 
-        - Linear models (regression) and axis-aligned trees cannot capture
-          **smooth, curved** boundaries — we need non-linear classifiers.
+        - **Logistic regression** squeezes a linear score into a probability
+          with the **sigmoid**; its boundary is a straight line (how it is
+          *trained* — on the cross-entropy — comes in Session 3).
+        - Linear models and axis-aligned trees cannot capture **smooth, curved**
+          boundaries — we need non-linear classifiers.
         - A **neuron** is a weighted sum plus a non-linear **activation**;
           **logistic regression is one neuron**.
         - The **activation function** supplies the non-linearity; without it a
@@ -376,7 +533,7 @@ def _(mo):
         Next session: **multilayer networks** — how a hidden layer reshapes the
         data, and the **forward pass**.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 13</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">17 / 18</div>
         """
     )
     return
@@ -392,7 +549,7 @@ def _(mo):
           — visualise the non-linear boundaries, play with activation functions,
           and see why a single neuron cannot solve XOR.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 13</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">18 / 18</div>
         """
     )
     return

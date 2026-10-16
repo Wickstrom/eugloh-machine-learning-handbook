@@ -9,8 +9,10 @@
 # ///
 #
 # Lecture 2 (Oct 20), Session 3 — Forward pass, backward pass and optimization.
-# An MLP written from scratch in numpy; sklearn for comparison; gradient descent
-# and the learning rate.
+# Opens with the logistic-regression training recipe (cross-entropy, by-hand
+# numpy, the learning rate and the regularisation strength C) as the on-ramp;
+# then an MLP written from scratch in numpy, sklearn for comparison, gradient
+# descent and backpropagation.
 # Run locally with `marimo edit notebooks/02/03_training.py`
 # or export to WASM for GitHub Pages (see .github/workflows/publish-slides.yml).
 #
@@ -56,7 +58,7 @@ def _(mo):
 
         University of Novi Sad
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 12</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 20</div>
         """
     )
     return
@@ -68,6 +70,8 @@ def _(mo):
         r"""
         ## Today's session
 
+        - **Training a logistic unit** — cross-entropy loss, by hand in numpy, and
+          the regularisation strength $C$
         - **The forward pass** — computing activations layer by layer
         - **The backward pass** — backpropagation: the chain rule, layer by layer
         - **Optimization** — gradient descent and the learning rate
@@ -75,7 +79,7 @@ def _(mo):
 
         Session 3 of 4 today.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 12</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 20</div>
         """
     )
     return
@@ -85,31 +89,21 @@ def _(mo):
 def _(mo):
     mo.md(
         r"""
-        # Part 1 — Training: forward, backward, update
+        # Part 1 — Training a linear classifier
 
-        ## Training: loss + backpropagation
+        ## Learning: the cross-entropy loss
 
-        The recipe is the same as for logistic regression — cross-entropy loss,
-        gradient descent. The new skill is computing the gradient *through* the
-        layers. We do it with the **chain rule**, working **backwards** from the
-        output to the input. This is **backpropagation**.
+        We want the model to give a **high probability to the true label**, and
+        to pay a price when it is confidently wrong. The **cross-entropy**
+        does exactly that:
 
-        - **Output layer.** It looks exactly like logistic regression: the
-          "error" is the predicted probability minus the true label,
-          $\hat{p} - y$.
-        - **Hidden layer.** We push that error back through the output weights,
-          then multiply by the derivative of the activation. (For $\tanh$ that
-          derivative is simply $1 - a^2$, where $a$ is the activation.)
-        - **Repeat.** Each layer's gradient is built from the *next* layer's
-          error, so every step is only local arithmetic.
+        $$\mathcal{L}(w, b) = -\frac{1}{n} \sum_{i=1}^{n} \left[ y_i \log \hat{p}_i + (1 - y_i) \log (1 - \hat{p}_i) \right]$$
 
-        In plain words: **blame flows backwards**. Each weight is told how much
-        it contributed to the final error, and is nudged to reduce it.
+        - small when the prediction matches the true label, large when it is
+          confidently wrong
+        - **convex** — gradient descent finds the single global minimum
 
-        You will implement exactly these steps — by hand — below and in the
-        exercise.
-
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 12</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 20</div>
         """
     )
     return
@@ -119,22 +113,27 @@ def _(mo):
 def _(mo):
     mo.md(
         r"""
-        ## The backpropagation recipe
+        ## Minimising the cross-entropy
 
-        1. **Initialise** the parameters (small random weights)
-        2. **Forward pass** — compute all activations
-        3. **Backward pass** — compute the gradients with the chain rule
-        4. **Update** all parameters with gradient descent
-        5. **Repeat!**
+        Setting the derivative to zero (as we did for linear regression) does
+        **not** give a formula for $w$ — there is **no closed-form solution**.
+        But the gradient is remarkably simple:
 
-        Top tips for implementing it:
+        $$\frac{\partial \mathcal{L}}{\partial w} = \frac{1}{n}\sum_i (\hat{p}_i - y_i)\, x_i,
+        \qquad \frac{\partial \mathcal{L}}{\partial b} = \frac{1}{n}\sum_i (\hat{p}_i - y_i)$$
 
-        - **Keep it simple in the beginning** — start with a fixed architecture
-        - **Do the calculations by hand first**, cross-reference while coding
-        - There is only **one loop** — the epochs; everything inside is
-          **matrix multiplication**
+        - the "error" here is just $\hat{p}_i - y_i$: predicted probability
+          minus true label
+        - the gradient is **small when the predictions are good** — learning
+          slows down on its own
+        - it is almost the same rule as for linear regression, with $\hat{p}$
+          in place of $\hat{y}$
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 12</div>
+        Repeated many times (each full pass over the data is an **epoch**):
+
+        $$w \leftarrow w - \eta \, \frac{\partial \mathcal{L}}{\partial w}$$
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 20</div>
         """
     )
     return
@@ -163,7 +162,7 @@ def _(mo):
         More sophisticated **optimizers** (momentum, Adam, …) build on this
         idea; we will meet them in the next session.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 12</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 20</div>
         """
     )
     return
@@ -209,8 +208,332 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="880px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 12</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 20</div>"""),
         ]
+    )
+    return
+
+
+@app.cell
+def _(mo):
+    import numpy as _np
+    from sklearn.datasets import make_blobs as _make_blobs
+
+    def fit_logistic_gd(X, y, lr=0.5, n_iter=500):
+        """Train binary logistic regression with full-batch gradient descent."""
+        n, d = X.shape
+        w = _np.zeros(d)
+        b = 0.0
+        losses = []
+        for _ in range(n_iter):
+            p = 1.0 / (1.0 + _np.exp(-(X @ w + b)))
+            losses.append(
+                -_np.mean(y * _np.log(p + 1e-12) + (1 - y) * _np.log(1 - p + 1e-12))
+            )
+            w -= lr * (X.T @ (p - y)) / n
+            b -= lr * _np.mean(p - y)
+        return w, b, losses
+
+    blobs_X, blobs_y = _make_blobs(
+        n_samples=200, centers=[(-2.0, -2.0), (2.0, 2.0)],
+        cluster_std=1.2, random_state=0,
+    )
+    w_hand, b_hand, losses_hand = fit_logistic_gd(blobs_X, blobs_y, n_iter=500)
+    acc_hand = _np.mean(
+        (1.0 / (1.0 + _np.exp(-(blobs_X @ w_hand + b_hand))) >= 0.5) == blobs_y
+    )
+
+    train_slider = mo.ui.slider(
+        start=1, stop=100, step=1, value=5,
+        label="epochs of training", show_value=True, debounce=True,
+    )
+    mo.md(
+        r"""
+        ## Logistic regression by hand (numpy) — and in scikit-learn
+
+        ```python
+        for _ in range(n_iter):                    # epochs
+            p = sigmoid(X @ w + b)                 # predict
+            w -= lr * (X.T @ (p - y)) / n          # gradient step
+            b -= lr * np.mean(p - y)
+        ```
+
+        ~15 lines in total. We train it on the two-blob dataset — and on the
+        next slide you can **scrub through the training**, one bit at a time.
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 20</div>
+        """
+    )
+    return (
+        acc_hand,
+        b_hand,
+        blobs_X,
+        blobs_y,
+        fit_logistic_gd,
+        losses_hand,
+        train_slider,
+        w_hand,
+    )
+
+
+@app.cell
+def _(blobs_X, blobs_y, fit_logistic_gd, mo, train_slider):
+    import io as _io
+
+    import matplotlib.pyplot as _plt
+    import numpy as _np
+
+    _n_iter = int(train_slider.value)
+    _w, _b, _losses = fit_logistic_gd(blobs_X, blobs_y, n_iter=_n_iter)
+    _prob = 1.0 / (1.0 + _np.exp(-(blobs_X @ _w + _b)))
+    _acc = _np.mean((_prob >= 0.5) == blobs_y)
+
+    _xx, _yy = _np.meshgrid(
+        _np.linspace(blobs_X[:, 0].min() - 1, blobs_X[:, 0].max() + 1, 250),
+        _np.linspace(blobs_X[:, 1].min() - 1, blobs_X[:, 1].max() + 1, 250),
+    )
+    _pp = (
+        1.0 / (1.0 + _np.exp(-(_np.c_[_xx.ravel(), _yy.ravel()] @ _w + _b)))
+    ).reshape(_xx.shape)
+
+    _fig, _axes = _plt.subplots(1, 2, figsize=(11, 4))
+    _axes[0].plot(_losses, color="#2563eb")
+    _axes[0].set_xlabel("epoch")
+    _axes[0].set_ylabel("cross-entropy")
+    _axes[0].set_xlim(0, 100)
+    _axes[0].set_ylim(0, 0.75)
+    _axes[0].set_title(f"loss after {_n_iter} epochs")
+    _cs = _axes[1].contourf(_xx, _yy, _pp, levels=20, cmap="RdYlGn", alpha=0.7)
+    _axes[1].scatter(blobs_X[blobs_y == 0, 0], blobs_X[blobs_y == 0, 1],
+                     color="#dc2626", s=16, label="class 0")
+    _axes[1].scatter(blobs_X[blobs_y == 1, 0], blobs_X[blobs_y == 1, 1],
+                     color="#16a34a", s=16, label="class 1")
+    _axes[1].set_title(f"boundary after {_n_iter} epochs (accuracy {_acc:.2f})")
+    _axes[1].legend()
+    _fig.colorbar(_cs, ax=_axes[1], label="p(class 1)")
+    _buf = _io.BytesIO()
+    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
+    _plt.close(_fig)
+    _buf.seek(0)
+    mo.vstack(
+        [
+            mo.md(
+                r"""**Scrub through training** — watch the loss fall and the boundary rotate into place."""
+            ),
+            train_slider,
+            mo.image(_buf, width="860px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 20</div>"""),
+        ]
+    )
+    return
+
+
+@app.cell
+def _(acc_hand, b_hand, blobs_X, blobs_y, mo, w_hand):
+    from sklearn.linear_model import LogisticRegression as _LR
+
+    logreg_clf = _LR().fit(blobs_X, blobs_y)
+    _skl_w = logreg_clf.coef_[0]
+    _skl_b = float(logreg_clf.intercept_[0])
+    _skl_acc = logreg_clf.score(blobs_X, blobs_y)
+    mo.md(
+        f"""
+        ## By hand vs scikit-learn
+
+        | | $w$ | $b$ | accuracy |
+        |---|---|---|---|
+        | **by hand** (numpy, GD) | ({w_hand[0]:.2f}, {w_hand[1]:.2f}) | {b_hand:+.3f} | {acc_hand:.3f} |
+        | **scikit-learn** | ({_skl_w[0]:.2f}, {_skl_w[1]:.2f}) | {_skl_b:+.3f} | {_skl_acc:.3f} |
+
+        Same model, same data, nearly the same answer. sklearn's weights are a
+        little **smaller** because it applies **L2 regularisation** by default —
+        exactly the effect we explore with the $C$ slider below.
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 20</div>
+        """
+    )
+    return (logreg_clf,)
+
+
+@app.cell
+def _(mo):
+    mo.md(
+        r"""
+        ## Practical considerations & assumptions
+
+        - **Feature scaling** — standardise features (mean 0, std 1) so gradient
+          descent converges quickly and features are treated fairly.
+        - **Regularisation** — sklearn penalises large weights by default
+          (`C = 1/λ`, larger `C` → weaker regularisation).
+        - **Probabilities vs labels** — `predict_proba` gives probabilities;
+          `predict` applies the 0.5 threshold.
+
+        Logistic regression works best when:
+
+        - observations are **independent**,
+        - the target is **binary** (otherwise: softmax),
+        - there are **no strong outliers**, and the **sample size is large**.
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 20</div>
+        """
+    )
+    return
+
+
+@app.cell
+def _(mo):
+    # The widget is created here; the *next* cell reads `.value` and displays
+    # the slider together with its figure. The md must be the LAST expression
+    # so it becomes the cell's output.
+    logc_slider = mo.ui.slider(
+        start=-3.0, stop=3.0, step=0.5, value=0.0,
+        label="log10(C) — larger C = weaker regularisation",
+        show_value=True, debounce=True,
+    )
+    mo.md(
+        r"""
+        ## Interactive demo — regularisation strength $C$
+
+        sklearn's `LogisticRegression` applies an L2 penalty with strength
+        $\lambda$, exposed as **$C = 1/\lambda$**. The two classes overlap and
+        two distant points (black rings) tempt the model to bend. Move the
+        slider:
+
+        - **small $C$** (strong penalty) shrinks the weights towards zero — the
+          model **underfits** and ignores the outliers;
+        - **large $C$** (weak penalty) lets the model chase every point,
+          producing a **sharp, over-confident** boundary.
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 20</div>
+        """
+    )
+    return (logc_slider,)
+
+
+@app.cell
+def _(logc_slider, mo):
+    import io as _io
+
+    import matplotlib.pyplot as _plt
+    import numpy as _np
+    from sklearn.linear_model import LogisticRegression as _LR
+
+    _rng = _np.random.default_rng(1)
+    _n = 12
+    _X0 = _rng.normal(loc=(-1.5, -1.5), scale=0.7, size=(_n, 2))
+    _X1 = _rng.normal(loc=(1.5, 1.5), scale=0.7, size=(_n, 2))
+    _out = _np.array([[5.0, -4.5], [4.6, -5.0]])
+    _X = _np.vstack([_X0, _X1, _out])
+    _y = _np.concatenate([_np.zeros(_n), _np.ones(_n), _np.ones(len(_out))])
+
+    _C = 10.0 ** float(logc_slider.value)
+    _clf = _LR(C=_C, max_iter=2000).fit(_X, _y)
+    _wnorm = _np.linalg.norm(_clf.coef_)
+
+    _x0, _x1 = _X[:, 0].min() - 0.8, _X[:, 0].max() + 0.8
+    _y0, _y1 = _X[:, 1].min() - 0.8, _X[:, 1].max() + 0.8
+    _xx, _yy = _np.meshgrid(_np.linspace(_x0, _x1, 250), _np.linspace(_y0, _y1, 250))
+    _pp = _clf.predict_proba(
+        _np.c_[_xx.ravel(), _yy.ravel()]
+    )[:, 1].reshape(_xx.shape)
+
+    # Weight magnitude as a function of C — the L2 penalty in action.
+    _cs = _np.logspace(-3, 3, 40)
+    _ws = [
+        _np.linalg.norm(_LR(C=_c, max_iter=2000).fit(_X, _y).coef_)
+        for _c in _cs
+    ]
+
+    _fig, _axes = _plt.subplots(1, 2, figsize=(11.5, 4.6))
+    _axes[0].contourf(_xx, _yy, _pp, levels=20, cmap="RdYlGn", alpha=0.7,
+                      vmin=0, vmax=1)
+    _axes[0].scatter(_X0[:, 0], _X0[:, 1], color="#dc2626", s=22, label="class 0")
+    _axes[0].scatter(_X1[:, 0], _X1[:, 1], color="#16a34a", s=22, label="class 1")
+    _axes[0].scatter(_out[:, 0], _out[:, 1], facecolors="none", edgecolors="k",
+                     s=90, label="outliers")
+    _axes[0].set_title(
+        f"C = {_C:.3g}  —  accuracy {_clf.score(_X, _y):.2f},  ‖w‖ = {_wnorm:.1f}"
+    )
+    _axes[0].set_xlabel("$x_1$")
+    _axes[0].set_ylabel("$x_2$")
+    _axes[0].set_aspect("equal")
+    _axes[0].legend(fontsize=8, loc="upper left")
+
+    _axes[1].semilogx(_cs, _ws, color="#2563eb")
+    _axes[1].scatter([_C], [_wnorm], color="#dc2626", zorder=5)
+    _axes[1].set_xlabel("C = 1/λ (log scale)")
+    _axes[1].set_ylabel("‖w‖")
+    _axes[1].set_title("strong penalty (small C) shrinks the weights")
+
+    _buf = _io.BytesIO()
+    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
+    _plt.close(_fig)
+    _buf.seek(0)
+    mo.vstack(
+        [
+            logc_slider,
+            mo.image(_buf, width="920px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 20</div>"""),
+        ]
+    )
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(
+        r"""
+        # Part 2 — Training a neural network
+
+        ## Training: loss + backpropagation
+
+        The recipe is the same as for logistic regression — cross-entropy loss,
+        gradient descent. The new skill is computing the gradient *through* the
+        layers. We do it with the **chain rule**, working **backwards** from the
+        output to the input. This is **backpropagation**.
+
+        - **Output layer.** It looks exactly like logistic regression: the
+          "error" is the predicted probability minus the true label,
+          $\hat{p} - y$.
+        - **Hidden layer.** We push that error back through the output weights,
+          then multiply by the derivative of the activation. (For $\tanh$ that
+          derivative is simply $1 - a^2$, where $a$ is the activation.)
+        - **Repeat.** Each layer's gradient is built from the *next* layer's
+          error, so every step is only local arithmetic.
+
+        In plain words: **blame flows backwards**. Each weight is told how much
+        it contributed to the final error, and is nudged to reduce it.
+
+        You will implement exactly these steps — by hand — below and in the
+        exercise.
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 20</div>
+        """
+    )
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(
+        r"""
+        ## The backpropagation recipe
+
+        1. **Initialise** the parameters (small random weights)
+        2. **Forward pass** — compute all activations
+        3. **Backward pass** — compute the gradients with the chain rule
+        4. **Update** all parameters with gradient descent
+        5. **Repeat!**
+
+        Top tips for implementing it:
+
+        - **Keep it simple in the beginning** — start with a fixed architecture
+        - **Do the calculations by hand first**, cross-reference while coding
+        - There is only **one loop** — the epochs; everything inside is
+          **matrix multiplication**
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 20</div>
+        """
     )
     return
 
@@ -237,7 +560,7 @@ def _(mo):
         All three are just matrix multiplications — so the whole implementation
         is only a few lines.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 12</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">15 / 20</div>
         """
     )
     return nn_Xs, nn_y
@@ -321,7 +644,7 @@ def _(b1h, b2h, mo, nn_Xs, nn_acc, nn_losses, nn_y, W1h, W2h):
     mo.vstack(
         [
             mo.image(_buf, width="860px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 12</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">16 / 20</div>"""),
         ]
     )
     return
@@ -343,7 +666,7 @@ def _(mo):
         tracks its loss curve, and supports early stopping. Same network, same
         data — a more robust optimizer under the hood.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 12</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">17 / 20</div>
         """
     )
     return
@@ -384,7 +707,7 @@ def _(mo, nn_Xs, nn_y):
     mo.vstack(
         [
             mo.image(_buf, width="860px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 12</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">18 / 20</div>"""),
         ]
     )
     return
@@ -396,6 +719,9 @@ def _(mo):
         r"""
         ## Summary
 
+        - **Logistic regression** is trained by minimising the **cross-entropy**;
+          the gradient is just $\hat{p} - y$, so gradient descent works with no
+          closed form — and $C$ controls the regularisation.
         - **Forward pass** computes the activations; **backward pass**
           (backpropagation) applies the **chain rule** to get every gradient.
         - **Optimization** turns gradients into updates — the **learning rate**
@@ -404,10 +730,10 @@ def _(mo):
           boundary no linear model could; sklearn does the same with a better
           optimizer (**Adam**).
 
-        Next session: the **components** — activation functions, optimizers and
-        weight initialization — and where neural networks go next.
+        Next session: the **components** — optimizers, weight initialization and
+        capacity — and where neural networks go next.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 12</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">19 / 20</div>
         """
     )
     return
@@ -423,7 +749,7 @@ def _(mo):
           — implement the **forward and backward pass by hand**, train a small
           MLP, and compare against `MLPClassifier`.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 12</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">20 / 20</div>
         """
     )
     return

@@ -30,16 +30,14 @@ the course schedule.
 
     [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/01/01_introduction/index.html)
 
-2. **Session 2 — Linear & logistic regression** (10:00)
+2. **Session 2 — Linear regression** (10:00)
     - Linear regression — MSE, the closed-form fit, and gradient descent
     - The 1801 story of **Piazzi, Ceres and Gauss** — least squares as one of
       the first uses of learning from data
-    - Logistic regression — sigmoid, cross-entropy, gradient descent,
-      implemented **by hand in numpy** and compared against scikit-learn
-    - Multi-class with one-vs-rest / softmax
-    - Interactive demos: watching the fit update as **new samples arrive**
-      (linear and logistic), scrubbing through gradient descent, and tuning
-      the **regularisation strength $C$**
+    - Evaluating a regression model: **R²** and **RMSE**, and why we report on a
+      held-out test set
+    - Interactive demos: judging a fit by eye, and watching the fit update as
+      **new samples arrive**
 
     [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/01/02_regression/index.html)
 
@@ -62,19 +60,25 @@ the course schedule.
 ### Day 2 — Oct 20
 
 5. **Session 1 — Introduction to neural networks** (09:00)
+    - **Logistic regression** — the sigmoid, the linear decision boundary, and
+      the statistical view
     - From linear to non-linear classifiers; the **artificial neuron** and
       **activation functions**; the **XOR problem**; a brief history
 
     [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/02/01_introduction/index.html)
 
 6. **Session 2 — Multilayer networks** (10:00)
+    - From regression to classification; **logistic regression is one neuron**
     - The big idea, what a **hidden layer** does to the data, the **forward
-      pass**, and the **MLP**
-    - Interactive demo: move an input through the network and watch it become separable
+      pass**, and the **MLP**; **multi-class** with one-vs-rest / softmax
+    - Interactive demos: the decision boundary as the data arrives, and moving an
+      input through the network to watch it become separable
 
     [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/02/02_perceptron_mlp/index.html)
 
 7. **Session 3 — Forward/backward pass & optimization** (11:15)
+    - **Logistic regression by hand** — cross-entropy and the training loop in
+      numpy, compared against scikit-learn; regularisation strength $C$
     - Forward pass, backpropagation, gradient descent and the learning rate
     - An MLP **written from scratch in numpy**, compared against `MLPClassifier`
 

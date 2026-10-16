@@ -184,9 +184,9 @@ def _(mo):
         - **Classification** — $y$ is a discrete label (spam / not spam, healthy / diseased)
         - **Regression** — $y$ is a continuous number (price, temperature)
 
-        Algorithms in this course: **linear & logistic regression** (session 2),
+        Algorithms in this course: **linear regression** (session 2),
         **decision trees** (session 3), **random forests** (session 4), and
-        **neural networks** (tomorrow).
+        **neural networks** on day 2 (opening with **logistic regression**).
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 17</div>
         """
@@ -487,7 +487,7 @@ def _(mo):
         - **Overfitting** (memorising) and **underfitting** (missing the pattern)
           are the two failure modes every model balances.
 
-        Next session: **linear and logistic regression**.
+        Next session: **linear regression**.
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">17 / 17</div>
         """
