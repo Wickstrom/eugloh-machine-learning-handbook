@@ -154,11 +154,22 @@ def _(mo, tree_X, tree_y):
 
     _tree = _DTC(max_depth=2, random_state=0).fit(tree_X, tree_y)
 
-    _fig, _ax = _plt.subplots(figsize=(10, 4.4))
+    _fig, _axes = _plt.subplots(
+        1, 2, figsize=(13.5, 4.6), gridspec_kw={"width_ratios": [1, 1.35]}
+    )
+    _axes[0].scatter(tree_X[tree_y == 0, 0], tree_X[tree_y == 0, 1],
+                     color="#dc2626", s=24, label="class 0")
+    _axes[0].scatter(tree_X[tree_y == 1, 0], tree_X[tree_y == 1, 1],
+                     color="#16a34a", s=24, label="class 1")
+    _axes[0].set_xlabel("$x_1$")
+    _axes[0].set_ylabel("$x_2$")
+    _axes[0].set_title("the data (slide 4)")
+    _axes[0].set_aspect("equal")
+    _axes[0].legend(fontsize=8)
     _plot_tree(_tree, feature_names=["$x_1$", "$x_2$"],
                class_names=["class 0", "class 1"], filled=True, rounded=True,
-               impurity=False, fontsize=11, ax=_ax)
-    for _txt in _ax.texts:  # drop the "samples"/"value" clutter
+               impurity=False, fontsize=11, ax=_axes[1])
+    for _txt in _axes[1].texts:  # drop the "samples"/"value" clutter
         _txt.set_text("\n".join(
             _ln for _ln in _txt.get_text().split("\n")
             if not _ln.startswith(("samples", "value"))
@@ -170,14 +181,14 @@ def _(mo, tree_X, tree_y):
     mo.vstack(
         [
             mo.md(
-                r"""Fitted to **slide 4's data**, here is the tree it grows.
-                The first question is the **root**; every box that asks a
-                question is a **node**; **branches** carry the yes/no answer;
-                and each final box is a **leaf** that predicts its majority
-                class. Inference = start at the root, answer the questions,
-                read the leaf."""
+                r"""Fitted to **slide 4's data** (left), here is the tree it
+                grows (right). The first question is the **root**; every box
+                that asks a question is a **node**; **branches** carry the
+                yes/no answer; and each final box is a **leaf** that predicts
+                its majority class. Inference = start at the root, answer the
+                questions, read the leaf."""
             ),
-            mo.image(_buf, width="880px"),
+            mo.image(_buf, width="980px"),
             mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 22</div>"""),
         ]
     )
@@ -186,7 +197,32 @@ def _(mo, tree_X, tree_y):
 
 @app.cell
 def _(mo):
-    mo.md(
+    import io as _io
+
+    import matplotlib.pyplot as _plt
+    from sklearn.datasets import load_iris as _load_iris
+    from sklearn.tree import DecisionTreeClassifier as _DTC
+    from sklearn.tree import plot_tree as _plot_tree
+
+    _iris = _load_iris()
+    _tree = _DTC(max_depth=3, random_state=0).fit(
+        _iris.data[:, 2:4], _iris.target  # petal length & width
+    )
+    _fig, _ax = _plt.subplots(figsize=(7.4, 4.8))
+    _plot_tree(_tree, feature_names=["petal length", "petal width"],
+               class_names=list(_iris.target_names), filled=True, rounded=True,
+               impurity=False, fontsize=9, ax=_ax)
+    for _txt in _ax.texts:  # drop the "samples"/"value" clutter
+        _txt.set_text("\n".join(
+            _ln for _ln in _txt.get_text().split("\n")
+            if not _ln.startswith(("samples", "value"))
+        ))
+    _buf = _io.BytesIO()
+    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
+    _plt.close(_fig)
+    _buf.seek(0)
+
+    _text = mo.md(
         r"""
         ## Building blocks
 
@@ -207,6 +243,16 @@ def _(mo):
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 22</div>
         """
+    )
+    mo.hstack(
+        [
+            _text,
+            mo.vstack([
+                mo.md("**A deeper tree (iris, depth 3) — still readable as rules:**"),
+                mo.image(_buf, width="520px"),
+            ]),
+        ],
+        widths=[1, 1.15], align="start", gap=1.5,
     )
     return
 
@@ -235,8 +281,7 @@ def _(mo):
         - a good split makes the two children *purer* than the parent
 
         In plain words: one number that answers *"how mixed is this group?"* —
-        $0$ means perfectly pure, larger means more mixed. (The $\log_2$ is just
-        a logarithm; you never compute it by hand.)
+        $0$ means perfectly pure, larger means more mixed.
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 22</div>
         """
@@ -258,7 +303,7 @@ def _(mo, tree_X):
         CART grows a tree by trying many splits and keeping the ones that
         leave the children **purest**. Here is slide 4's data: the slider
         moves a single cut along $x_1$. The right panel evaluates *every*
-        candidate cut — the **weighted impurity** of the two children. The
+        candidate cut — the **weighted Gini impurity** of the two children. The
         lowest point is the split CART would pick.
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 22</div>
@@ -280,22 +325,12 @@ def _(mo, split_slider, tree_X, tree_y):
         _q = _np.mean(labels)
         return 2 * _q * (1 - _q)
 
-    def _entropy(labels):
-        if len(labels) == 0:
-            return 0.0
-        _q = _np.mean(labels)
-        if _q in (0.0, 1.0):
-            return 0.0
-        return -_q * _np.log2(_q) - (1 - _q) * _np.log2(1 - _q)
-
     _x1 = tree_X[:, 0]
     _ts = _np.linspace(_x1.min(), _x1.max(), 220)
     _wg = _np.empty(_ts.size)
-    _we = _np.empty(_ts.size)
     for _i, _t in enumerate(_ts):
         _L, _R = tree_y[_x1 <= _t], tree_y[_x1 > _t]
         _wg[_i] = (len(_L) * _gini(_L) + len(_R) * _gini(_R)) / len(tree_y)
-        _we[_i] = (len(_L) * _entropy(_L) + len(_R) * _entropy(_R)) / len(tree_y)
 
     _tcur = split_slider.value
     _left = tree_y[_x1 <= _tcur]
@@ -317,13 +352,12 @@ def _(mo, split_slider, tree_X, tree_y):
     _axes[0].set_aspect("equal")
 
     _axes[1].plot(_ts, _wg, color="#2563eb", lw=2, label="weighted Gini")
-    _axes[1].plot(_ts, _we, color="#dc2626", lw=2, label="weighted entropy")
     _axes[1].axvline(_tcur, color="gray", ls="--")
     _axes[1].scatter([_tcur], [_gcur], color="#111827", zorder=5)
     _axes[1].scatter([_tbest], [_wg.min()], color="#16a34a", marker="*", s=150,
                      zorder=6, label=f"best: $x_1 \\leq {_tbest:.2f}$")
     _axes[1].set_xlabel("threshold on $x_1$")
-    _axes[1].set_ylabel("weighted impurity")
+    _axes[1].set_ylabel("weighted Gini impurity")
     _axes[1].set_title(f"current split — weighted Gini {_gcur:.3f}")
     _axes[1].legend(fontsize=8)
     _axes[1].grid(alpha=0.3)
@@ -383,7 +417,15 @@ def _(mo):
         |---|---|---|---|---|---|---|
         | $y$ | 0 | 0 | 0 | 1 | 0 | 1 |
 
-        Candidate thresholds sit between points: $t \in \{1.5, 2.5, 3.5, 4.5, 5.5\}$.
+        A split sends some samples **left** and the rest **right**. We score it
+        with the **weighted impurity** of the two children:
+
+        $$\text{impurity} = \frac{n_L}{n}\,G_L + \frac{n_R}{n}\,G_R,
+        \qquad G = 1 - p^2 - (1-p)^2$$
+
+        where $n_L, n_R$ are the child sizes, $n$ the total, and $p$ the
+        fraction of class 1 inside a child. Candidate thresholds sit between
+        points: $t \in \{1.5, 2.5, 3.5, 4.5, 5.5\}$.
 
         Try it with pen and paper first — then let the code check you.
 
