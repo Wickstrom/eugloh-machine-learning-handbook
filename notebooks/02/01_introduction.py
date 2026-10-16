@@ -54,7 +54,7 @@ def _(mo):
 
         University of Novi Sad
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 18</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 16</div>
         """
     )
     return
@@ -74,7 +74,7 @@ def _(mo):
 
         Session 1 of 4 today.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 18</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 16</div>
         """
     )
     return
@@ -82,23 +82,67 @@ def _(mo):
 
 @app.cell
 def _(mo):
-    mo.md(
+    import io as _io
+
+    import matplotlib.pyplot as _plt
+    import numpy as _np
+    from sklearn.linear_model import LinearRegression as _LinReg
+
+    _rng = _np.random.default_rng(3)
+
+    # (top) regression — a *continuous* label, fitted with a straight line
+    _xr = _np.linspace(0, 10, 25)
+    _yr = 1.5 * _xr + 2 + _rng.normal(scale=1.8, size=_xr.size)
+    _line = _LinReg().fit(_xr.reshape(-1, 1), _yr)
+
+    # (bottom) classification — a *discrete* label, split by a straight line
+    _xc0 = _rng.normal(loc=(2.0, 2.0), scale=0.8, size=(30, 2))
+    _xc1 = _rng.normal(loc=(4.5, 4.5), scale=0.8, size=(30, 2))
+    _xb = _np.linspace(0.5, 6.0, 50)
+
+    _fig, _axes = _plt.subplots(2, 1, figsize=(5.2, 6.2))
+    _axes[0].scatter(_xr, _yr, color="#2563eb", s=22)
+    _axes[0].plot(_xr, _line.predict(_xr.reshape(-1, 1)), color="#dc2626", lw=2)
+    _axes[0].set_title("continuous label — regression", fontsize=11)
+    _axes[0].set_xlabel("feature $x$")
+    _axes[0].set_ylabel("$y$")
+    _axes[0].grid(alpha=0.3)
+
+    _axes[1].scatter(_xc0[:, 0], _xc0[:, 1], color="#dc2626", s=22, label="class 0")
+    _axes[1].scatter(_xc1[:, 0], _xc1[:, 1], color="#16a34a", s=22, label="class 1")
+    _axes[1].plot(_xb, 6.5 - _xb, color="#6b7280", ls="--", lw=1.6,
+                  label="straight boundary")
+    _axes[1].set_title("discrete label — classification", fontsize=11)
+    _axes[1].set_xlabel("$x_1$")
+    _axes[1].set_ylabel("$x_2$")
+    _axes[1].legend(fontsize=8, loc="upper left")
+    _axes[1].grid(alpha=0.3)
+    _buf = _io.BytesIO()
+    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
+    _plt.close(_fig)
+    _buf.seek(0)
+
+    _text = mo.md(
         r"""
         # Part 1 — The basics
 
         ## Introduction
 
-        - We can regress with a **straight line** and classify with
-          **axis-aligned cuts** (trees).
-        - Now we classify with a straight line too — **logistic regression** —
-          and see where that runs out.
+        - We can regress with a **straight line** (top right: a *continuous*
+          label) and classify with **axis-aligned cuts** (trees).
+        - Now we classify with a straight line too — **logistic regression**
+          (bottom right: a *discrete* label) — and see where that runs out.
         - Many real problems need **smooth, curved boundaries**.
 
         So we build up to **non-linear classifiers**, starting from the logistic
         unit and ending at the neural network.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 18</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 16</div>
         """
+    )
+    mo.hstack(
+        [_text, mo.image(_buf, width="470px")],
+        widths=[1, 1], align="start", gap=1.5,
     )
     return
 
@@ -123,7 +167,7 @@ def _(mo):
         It is smooth everywhere, which is what lets us train it with gradient
         descent.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 18</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 16</div>
         """
     )
     return
@@ -154,7 +198,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 18</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 16</div>"""),
         ]
     )
     return
@@ -173,7 +217,7 @@ def _(mo):
         - far right: $\sigma \approx 1$ — confidently class 1
         - in between: a probability!
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 18</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 16</div>
         """
     )
     return
@@ -216,34 +260,8 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="860px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 18</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 16</div>"""),
         ]
-    )
-    return
-
-
-@app.cell
-def _(mo):
-    mo.md(
-        r"""
-        ## The statistical view
-
-        Encode the two classes as numbers: class A → $y = 1$, class B → $y = 0$.
-        The sigmoid output is then read as the **probability of class 1** given
-        the input.
-
-        **Why a sigmoid?** Picture the two classes as two **bell curves**
-        (Gaussians) with the *same spread*. The probability of class 1 then
-        works out to be exactly a logistic function of a linear score.
-
-        **Summary:** the model predicts $\hat{p} = \sigma(z)$ with
-        $z = w x + b$. At $z = 0$ the probability is $0.5$ — that is the
-        **decision boundary**, a straight line (a *hyperplane* in higher
-        dimensions). Logistic regression does not fit the points; it finds the
-        **separation** between the classes.
-
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 18</div>
-        """
     )
     return
 
@@ -289,7 +307,7 @@ def _(mo):
                 circles, where no straight line can separate them."""
             ),
             mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 18</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 16</div>"""),
         ]
     )
     return nn_Xs, nn_y
@@ -315,7 +333,7 @@ def _(mo):
         neural network is *many neurons stacked in layers*, each feeding the
         next.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 18</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 16</div>
         """
     )
     return
@@ -374,7 +392,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="760px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 18</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 16</div>"""),
         ]
     )
     return
@@ -397,7 +415,7 @@ def _(mo):
         still just a straight line. Compose enough of them and the network can
         approximate **any** smooth function.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 18</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 16</div>
         """
     )
     return
@@ -427,7 +445,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 18</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 16</div>"""),
         ]
     )
     return
@@ -449,7 +467,7 @@ def _(mo):
         triggered the first **AI winter**. The fix (a **hidden layer**) is the
         subject of the next session.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 18</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 16</div>
         """
     )
     return
@@ -486,7 +504,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">15 / 18</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 16</div>"""),
         ]
     )
     return
@@ -506,7 +524,7 @@ def _(mo):
         - **AlexNet** (2012) — GPUs + ImageNet → the deep-learning revolution
         - **Transformers / LLMs** (2017–) — the same ideas, at scale
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">16 / 18</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">15 / 16</div>
         """
     )
     return
@@ -533,23 +551,7 @@ def _(mo):
         Next session: **multilayer networks** — how a hidden layer reshapes the
         data, and the **forward pass**.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">17 / 18</div>
-        """
-    )
-    return
-
-
-@app.cell
-def _(mo):
-    mo.md(
-        r"""
-        ## Where to go next
-
-        - **Exercise:** `notebooks/02/01_introduction_{beginner,intermediate,advanced}.ipynb`
-          — visualise the non-linear boundaries, play with activation functions,
-          and see why a single neuron cannot solve XOR.
-
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">18 / 18</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">16 / 16</div>
         """
     )
     return
