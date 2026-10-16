@@ -55,7 +55,7 @@ def _(mo):
 
         University of Novi Sad
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 22</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 23</div>
         """
     )
     return
@@ -76,7 +76,7 @@ def _(mo):
 
         Session 3 of 4 today.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 22</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 23</div>
         """
     )
     return
@@ -102,7 +102,7 @@ def _(mo):
         A decision tree formalises this: **a sequence of questions, asked in
         the order that reduces uncertainty fastest.**
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 22</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 23</div>
         """
     )
     return
@@ -138,7 +138,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="620px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 22</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 23</div>"""),
         ]
     )
     return tree_X, tree_y
@@ -189,7 +189,7 @@ def _(mo, tree_X, tree_y):
                 questions, read the leaf."""
             ),
             mo.image(_buf, width="980px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 22</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 23</div>"""),
         ]
     )
     return
@@ -241,7 +241,7 @@ def _(mo):
         (housing prices). Inference is a walk from root to leaf — fully
         **interpretable**: you can read the model as a flowchart.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 22</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 23</div>
         """
     )
     mo.hstack(
@@ -283,7 +283,7 @@ def _(mo):
         In plain words: one number that answers *"how mixed is this group?"* —
         $0$ means perfectly pure, larger means more mixed.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 22</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 23</div>
         """
     )
     return
@@ -306,7 +306,7 @@ def _(mo, tree_X):
         candidate cut — the **weighted Gini impurity** of the two children. The
         lowest point is the split CART would pick.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 22</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 23</div>
         """
     )
     return (split_slider,)
@@ -370,7 +370,7 @@ def _(mo, split_slider, tree_X, tree_y):
         [
             split_slider,
             mo.image(_buf, width="920px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 22</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 23</div>"""),
         ]
     )
     return
@@ -399,8 +399,124 @@ def _(mo):
 
         The result is a **binary tree**; a leaf predicts its majority class.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 22</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 23</div>
         """
+    )
+    return
+
+
+@app.cell
+def _(mo):
+    import io as _io
+
+    import matplotlib.pyplot as _plt
+    import numpy as _np
+    from matplotlib.patches import Rectangle as _Rect
+    from sklearn.tree import DecisionTreeClassifier as _DTC
+
+    # Nine points. class 1 (red squares): the top-right corner plus the
+    # bottom-left pair — a "bent diagonal". Everything else is class 0.
+    _X = _np.array([[0, 2], [1, 2], [2, 2],
+                    [0, 1], [1, 1], [2, 1],
+                    [0, 0], [1, 0], [2, 0]], dtype=float)
+    _y = _np.array([0, 0, 1, 0, 0, 0, 1, 1, 0])
+
+    _lo, _hi = -0.5, 2.5
+    _fill = {0: "#dbeafe", 1: "#fecaca"}
+    _pt = {0: "#2563eb", 1: "#dc2626"}
+
+    _greedy = _DTC(random_state=0).fit(_X, _y)
+
+    def _leaf_boxes(_clf, _lo, _hi):
+        """Axis-aligned rectangle of every leaf (from the split path)."""
+        _t = _clf.tree_
+        _out = []
+        _stack = [(0, _lo, _hi, _lo, _hi)]
+        while _stack:
+            _node, _x1lo, _x1hi, _x2lo, _x2hi = _stack.pop()
+            if _t.children_left[_node] == -1:
+                _c = int(_np.argmax(_t.value[_node].reshape(-1)))
+                _out.append((_x1lo, _x1hi, _x2lo, _x2hi, _c))
+                continue
+            _f, _thr = _t.feature[_node], _t.threshold[_node]
+            if _f == 0:
+                _stack.append((_t.children_left[_node], _x1lo, _thr, _x2lo, _x2hi))
+                _stack.append((_t.children_right[_node], _thr, _x1hi, _x2lo, _x2hi))
+            else:
+                _stack.append((_t.children_left[_node], _x1lo, _x1hi, _x2lo, _thr))
+                _stack.append((_t.children_right[_node], _x1lo, _x1hi, _thr, _x2hi))
+        return _out
+
+    _gboxes = _leaf_boxes(_greedy, _lo, _hi)
+    # The smallest tree (4 leaves); hand-derived. Also 100% train accuracy.
+    _oboxes = [
+        (_lo, 1.5, _lo, 0.5, 1),
+        (_lo, 1.5, 0.5, _hi, 0),
+        (1.5, _hi, _lo, 1.5, 0),
+        (1.5, _hi, 1.5, _hi, 1),
+    ]
+
+    _fig, _axes = _plt.subplots(1, 2, figsize=(12.5, 4.9))
+    _titles = [f"greedy tree — {len(_gboxes)} leaves",
+               f"smallest tree — {len(_oboxes)} leaves"]
+    for _ax, _boxes, _title in zip(_axes, [_gboxes, _oboxes], _titles):
+        for _x1lo, _x1hi, _x2lo, _x2hi, _c in _boxes:
+            _ax.add_patch(_Rect(
+                (_x1lo, _x2lo), _x1hi - _x1lo, _x2hi - _x2lo,
+                facecolor=_fill[_c], edgecolor="#111827", lw=1.1, zorder=1,
+            ))
+        _ax.scatter(_X[_y == 0, 0], _X[_y == 0, 1], color=_pt[0], s=85,
+                    edgecolors="white", zorder=3, label="class 0")
+        _ax.scatter(_X[_y == 1, 0], _X[_y == 1, 1], color=_pt[1], s=85,
+                    marker="s", edgecolors="white", zorder=3, label="class 1")
+        _ax.set_xlim(_lo, _hi)
+        _ax.set_ylim(_lo, _hi)
+        _ax.set_xticks([0, 1, 2])
+        _ax.set_yticks([0, 1, 2])
+        _ax.set_aspect("equal")
+        _ax.set_xlabel("$x_1$")
+        _ax.set_ylabel("$x_2$")
+        _ax.set_title(_title)
+    _axes[0].axhline(0.5, color="#16a34a", lw=2.6, zorder=4,
+                     label="1st cut: $x_2 \\leq 0.5$ (impurity 0.33)")
+    _axes[1].axvline(1.5, color="#16a34a", lw=2.6, ls="--", zorder=4,
+                     label="1st cut: $x_1 \\leq 1.5$ (impurity 0.44)")
+    _axes[0].legend(fontsize=7.5, loc="lower right")
+    _axes[1].legend(fontsize=7.5, loc="lower right")
+    _buf = _io.BytesIO()
+    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
+    _plt.close(_fig)
+    _buf.seek(0)
+    mo.vstack(
+        [
+            mo.md(
+                r"""## Where "greedy" bites — a 2D example
+
+                CART never looks ahead: at each node it takes the split with the
+                **lowest immediate impurity**, then repeats. That is **not** the
+                same as building the smallest — or best — tree.
+
+                Nine points, two classes. Two candidate **first** cuts:
+
+                - **horizontal** $x_2 \leq 0.5$ → immediate impurity **0.33**
+                  ← greedy picks this
+                - **vertical** $x_1 \leq 1.5$ → immediate impurity **0.44**
+
+                The horizontal cut looks better *right now*, but it strands the
+                class-1 corner, so the tree CART grows needs **5 leaves**. The
+                "worse-looking" vertical cut leaves each child's class-1 points
+                in a single strip, so the **smallest tree needs only 4 leaves** —
+                from a first cut that was *more* impure. Both classify the data
+                perfectly.
+
+                **So greedy's myopia is visible in 2D** — this is a real
+                nine-point counterexample. It is just rarer and milder on tiny
+                clean data, and becomes the norm once features and label noise
+                multiply."""
+            ),
+            mo.image(_buf, width="940px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 23</div>"""),
+        ]
     )
     return
 
@@ -429,7 +545,7 @@ def _(mo):
 
         Try it with pen and paper first — then let the code check you.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 22</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 23</div>
         """
     )
     return
@@ -487,7 +603,7 @@ def _(mo):
         [
             mo.md(_table),
             mo.image(_buf, width="560px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 22</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 23</div>"""),
         ]
     )
     return
@@ -517,7 +633,7 @@ def _(mo):
         candidate and kept the one with the lowest weighted Gini, just as we
         did.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 22</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 23</div>
         """
     )
     return
@@ -537,7 +653,7 @@ def _(mo):
 
         Fitting is instant on small data — and the tree can be *drawn*.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 22</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">15 / 23</div>
         """
     )
     return
@@ -588,7 +704,7 @@ def _(mo, tree_X, tree_y):
             make exactly **one axis-aligned cut** — the plane is split into
             two rectangles."""),
             mo.image(_buf, width="900px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">15 / 22</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">16 / 23</div>"""),
         ]
     )
     return
@@ -639,7 +755,7 @@ def _(mo, tree_X, tree_y):
             question, carving its region further. Depth 2 gives up to four
             rectangles — notice every boundary is still **axis-aligned**."""),
             mo.image(_buf, width="900px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">16 / 22</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">17 / 23</div>"""),
         ]
     )
     return
@@ -700,7 +816,7 @@ def _(mo):
                 - petal width $> 1.75$ → **virginica**"""
             ),
             mo.image(_buf, width="920px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">17 / 22</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">18 / 23</div>"""),
         ]
     )
     return
@@ -756,7 +872,7 @@ def _(mo):
                 not the signal."""
             ),
             mo.image(_buf, width="980px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">18 / 22</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">19 / 23</div>"""),
         ]
     )
     return
@@ -786,7 +902,7 @@ def _(mo):
         the switch to inject **label noise** and watch the test curve peak and
         then fall as the tree fences off individual mistakes.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">19 / 22</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">20 / 23</div>
         """
     )
     return depth_slider, noise_switch
@@ -869,7 +985,7 @@ def _(depth_slider, mo, noise_switch):
             depth_slider,
             noise_switch,
             mo.image(_buf, width="920px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">20 / 22</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">21 / 23</div>"""),
         ]
     )
     return
@@ -898,7 +1014,7 @@ def _(mo):
         *(For regression trees the recipe is identical — split by variance
         reduction instead of Gini, and leaves predict the mean.)*
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">21 / 22</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">22 / 23</div>
         """
     )
     return
@@ -920,7 +1036,7 @@ def _(mo):
 
         Next session: **random forests**.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">22 / 22</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">23 / 23</div>
         """
     )
     return
