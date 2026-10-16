@@ -41,7 +41,7 @@ the course schedule.
 
     [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/01/02_regression/index.html)
 
-3. **Session 3 — Decision trees** (11:15)
+3. **Session 3 — Decision trees** (11:00)
     - Impurity (Gini/entropy), CART, one split computed **by hand**
     - Interpretability — reading a tree as rules, and where it breaks down
     - Overfitting, pruning, complexity
@@ -50,7 +50,7 @@ the course schedule.
 
     [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/01/03_decision_trees/index.html)
 
-4. **Session 4 — Random forests & ensembles** (12:15)
+4. **Session 4 — Random forests & ensembles** (12:00)
     - Bagging, boosting, feature importance
     - Why trees dominate tabular machine learning
     - Interactive demo: number of trees and depth
@@ -76,7 +76,7 @@ the course schedule.
 
     [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/02/02_perceptron_mlp/index.html)
 
-7. **Session 3 — Forward/backward pass & optimization** (11:15)
+7. **Session 3 — Forward/backward pass & optimization** (11:00)
     - **Logistic regression by hand** — cross-entropy and the training loop in
       numpy, compared against scikit-learn; regularisation strength $C$
     - Forward pass, backpropagation, gradient descent and the learning rate
@@ -84,7 +84,7 @@ the course schedule.
 
     [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/02/03_training/index.html)
 
-8. **Session 4 — Components & going beyond** (12:15)
+8. **Session 4 — Components & going beyond** (12:00)
     - Components: weight initialization, optimizers (SGD/momentum/Adam),
       regularization, capacity
     - Training in practice: reading the curves, **feature scaling**, and the
