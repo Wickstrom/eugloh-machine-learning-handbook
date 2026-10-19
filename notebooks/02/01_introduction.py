@@ -538,7 +538,7 @@ def _(mo):
 
         - **Logistic regression** squeezes a linear score into a probability
           with the **sigmoid**; its boundary is a straight line (how it is
-          *trained* — on the cross-entropy — comes in Session 3).
+          *trained* — on the cross-entropy — comes in Session 2).
         - Linear models and axis-aligned trees cannot capture **smooth, curved**
           boundaries — we need non-linear classifiers.
         - A **neuron** is a weighted sum plus a non-linear **activation**;

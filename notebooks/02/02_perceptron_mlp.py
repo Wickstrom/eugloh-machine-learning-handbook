@@ -135,8 +135,8 @@ def _(mo):
 
         That chain is **matrix multiplication** — the reason GPUs are so good
         at this. (One hidden layer with enough units can approximate *any*
-        continuous function — but nobody tells you how many units; you learn
-        that from the data.)
+        continuous function, on a bounded region — but nobody tells you how many
+        units; you learn that from the data.)
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 20</div>
         """
@@ -302,7 +302,7 @@ def _(mo):
 
         - small when the prediction matches the true label, large when it is
           **confidently wrong**;
-        - for a *single* neuron it is **convex** — for a whole network it is
+        - for a single **logistic** neuron it is **convex** — for a whole network it is
           **not**, so we settle for a good local minimum;
         - and, crucially, its gradient is a **simple** function of the error
           $\hat p - y$.

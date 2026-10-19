@@ -142,7 +142,8 @@ def _(mo):
 
         - **GPT** (2018–) is pretrained with a single objective:
           **predict the next token**. At enough scale, that one objective
-          yields models that summarise, translate, code and reason.
+          yields models that summarise, translate, answer questions and write
+          code.
         - **Scaling laws** — performance improves smoothly with model size,
           data and compute; the empirical engine of the last decade.
         - **In-context learning** — a large model can perform a *new* task from
