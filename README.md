@@ -128,7 +128,7 @@ frozen at a known-good state even as `main` keeps changing.
 
 - One notebook per session per level, named
   `notebooks/<day>/<session>_<level>.ipynb` — for example
-  `notebooks/02/03_training_advanced.ipynb`, `notebooks/01/02_regression_intermediate.ipynb`.
+  `notebooks/02/03_beyond_advanced.ipynb`, `notebooks/01/02_regression_intermediate.ipynb`.
 - Every notebook has the **same five tasks**, so the levels line up: each task
   has a short explanation, a cell with a `# TODO` for you to fill in, and a
   **Wrap-up** at the end to check your understanding.
