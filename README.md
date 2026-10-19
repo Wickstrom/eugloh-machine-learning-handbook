@@ -68,31 +68,33 @@ the course schedule.
     [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/02/01_introduction/index.html)
 
 6. **Session 2 — Multilayer networks** (10:00)
-    - From regression to classification; **logistic regression is one neuron**
-    - The big idea, what a **hidden layer** does to the data, the **forward
-      pass**, and the **MLP**; **multi-class** with one-vs-rest / softmax
-    - Interactive demos: the decision boundary as the data arrives, and moving an
-      input through the network to watch it become separable
+    - The **big idea**, the **MLP** architecture and the **forward pass**; what a
+      hidden layer does to the data
+    - **Training**: cross-entropy, the **backward pass** (backpropagation),
+      gradient descent, and an MLP **written from scratch in numpy**
+    - The practical levers — **initialization, optimizers, regularization,
+      capacity** — and **multi-class** with **softmax**
 
     [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/02/02_perceptron_mlp/index.html)
 
-7. **Session 3 — Forward/backward pass & optimization** (11:00)
-    - **Logistic regression by hand** — cross-entropy and the training loop in
-      numpy, compared against scikit-learn; regularisation strength $C$
-    - Forward pass, backpropagation, gradient descent and the learning rate
-    - An MLP **written from scratch in numpy**, compared against `MLPClassifier`
+7. **Session 3 — Beyond the MLP: CNNs & transformers** (11:00)
+    - From vectors to structure — why an MLP is the wrong tool for pixels and
+      sequences
+    - **Convolutional networks** — locality, weight sharing, pooling and a CNN
+      architecture
+    - **Transformers** — self-attention, multi-head attention, positional
+      encoding and the block; plus **autoencoders**
 
-    [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/02/03_training/index.html)
+    [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/02/03_beyond/index.html)
 
-8. **Session 4 — Components & going beyond** (12:00)
-    - Components: weight initialization, optimizers (SGD/momentum/Adam),
-      regularization, capacity
-    - Training in practice: reading the curves, **feature scaling**, and the
-      common **failure modes**
-    - Going beyond: softmax, convolutional networks, **transformers**, autoencoders
-    - Interactive demo: hidden-layer-size and activation-function widgets
+8. **Session 4 — Foundation models** (12:00)
+    - From task-specific models to **pretrain-then-adapt**: the arc through
+      **text** (embeddings → BERT/GPT), **vision** (AlexNet → self-supervised →
+      ViT) and **vision–language** (CLIP), to **multimodal** generative models
+    - Why this enables applications in **low-data regimes** — fine-tuning, linear
+      probes, zero/few-shot, **LoRA** and **RAG** — and the caveats
 
-    [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/02/04_components_and_beyond/index.html)
+    [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/02/04_foundation_models/index.html)
 
 ## 📚 Exercises
 
