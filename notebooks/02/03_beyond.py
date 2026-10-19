@@ -59,7 +59,7 @@ def _(mo):
 
         University of Novi Sad
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 16</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 19</div>
         """
     )
     return
@@ -84,7 +84,7 @@ def _(mo):
 
         Session 3 of 4 today.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 16</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 19</div>
         """
     )
     return
@@ -113,7 +113,7 @@ def _(mo):
         objects are **translation-invariant**, that tokens are **relational**.
         Two architectures dominate: **CNNs** and **transformers**.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 16</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 19</div>
         """
     )
     return
@@ -139,7 +139,7 @@ def _(mo):
         find **edges**, deeper layers compose them into **textures, parts and
         objects**. Below: a digit, an edge-detecting kernel, and its feature map.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 16</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 19</div>
         """
     )
     return
@@ -177,7 +177,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="820px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 16</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 19</div>"""),
         ]
     )
     return
@@ -248,7 +248,7 @@ def _(mo):
         - After a few blocks the maps are **flattened** and fed to dense
           layers — from there it is an ordinary MLP.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 16</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 19</div>
         """
     )
     mo.vstack([_text, mo.image(_buf, width="900px")])
@@ -270,9 +270,39 @@ def _(mo):
         *engineered* features by hand. A CNN **learns** them — and the deeper
         the network, the more abstract the features become.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 16</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 19</div>
         """
     )
+    return
+
+
+@app.cell
+def _(mo):
+    _fig = mo.image(
+        str(mo.notebook_location() / "public" / "resnet_block.png"),
+        width="340px",
+    )
+    _text = mo.md(
+        r"""
+        ## Example — skip connections
+
+        Depth is not free: **plain** very deep CNNs got *worse* training error.
+        **ResNet** (He et al., 2015) fixed this by making each block learn a
+        **residual** $F(x)$ and adding the input back unchanged:
+
+        $$y = F(x) + x$$
+
+        The **identity skip connection** carries the signal — and the gradient —
+        straight through, so 50–150-layer networks become trainable. The *same*
+        trick reappears in every transformer block, a few slides later.
+
+        *(He et al., Deep Residual Learning for Image Recognition, 2015 —
+        arXiv:1512.03385)*
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 19</div>
+        """
+    )
+    mo.hstack([_text, _fig], widths=[1, 1], align="start", gap=1.5)
     return
 
 
@@ -292,7 +322,7 @@ def _(mo):
         throws out recurrence: every token can look at **every other token at
         once**, in parallel. The mechanism is **self-attention**.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 16</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 19</div>
         """
     )
     return
@@ -320,7 +350,7 @@ def _(mo):
         Each token's output is a **weighted mixture** of the values of the
         tokens it deems relevant. The next slide computes this by hand.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 16</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 19</div>
         """
     )
     return
@@ -365,7 +395,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="560px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 16</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 19</div>"""),
         ]
     )
     return
@@ -387,7 +417,7 @@ def _(mo):
         - Stack these blocks over huge datasets and you get **BERT, GPT and
           ViT** — text, and increasingly vision and time series.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 16</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 19</div>
         """
     )
     return
@@ -462,12 +492,78 @@ def _(mo):
         Stack $N$ blocks (dozens in an LLM), train with backpropagation and
         **Adam** — it is the *same* machinery as the MLP, scaled up.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 16</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 19</div>
         """
     )
     mo.hstack(
         [_text, mo.image(_buf, width="430px")],
         widths=[1, 1], align="start", gap=1.5,
+    )
+    return
+
+
+@app.cell
+def _(mo):
+    _fig = mo.image(
+        str(mo.notebook_location() / "public" / "transformer_architecture.png"),
+        width="330px",
+    )
+    _text = mo.md(
+        r"""
+        ## Example — the transformer, end to end
+
+        Zooming out from a single block: the original transformer (Vaswani
+        et al., 2017) stacks an **encoder** and a **decoder**, each $N = 6$
+        of the blocks we just drew.
+
+        - the **encoder** (left) reads the input and builds contextual
+          representations;
+        - the **decoder** (right) attends to the encoder's output and generates
+          one token at a time;
+        - **residual connections** and **layer norm** wrap every sub-layer —
+          exactly the $x + f(x)$ idea from the ResNet slide.
+
+        Modern LLMs keep the **decoder** stack; ViT keeps the **encoder**.
+
+        *(Vaswani et al., Attention Is All You Need, 2017 — arXiv:1706.03762)*
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 19</div>
+        """
+    )
+    mo.hstack([_text, _fig], widths=[1, 1], align="start", gap=1.5)
+    return
+
+
+@app.cell
+def _(mo):
+    _text = mo.md(
+        r"""
+        ## Example — the same recipe for images (ViT)
+
+        **ViT** (Dosovitskiy et al., 2021) shows the transformer is **not
+        text-specific**: split an image into fixed-size **patches**, embed each
+        patch as a **token**, and run the *same* encoder you just saw.
+
+        - a **patch plays the role of a word**; positional embeddings keep the
+          2-D layout;
+        - a learnable `[class]` token collects the image representation;
+        - with enough pretraining data, this matches or beats CNNs — and
+          **unifies** vision and language under one architecture.
+
+        *(Dosovitskiy et al., An Image is Worth 16×16 Words, 2021 —
+        arXiv:2010.11929)*
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">15 / 19</div>
+        """
+    )
+    mo.vstack(
+        [
+            _text,
+            mo.image(
+                str(mo.notebook_location() / "public" / "vit_overview.png"),
+                width="820px",
+            ),
+        ]
     )
     return
 
@@ -492,7 +588,7 @@ def _(mo):
         used for compression, denoising and **pretraining** (the bridge to
         foundation models, next session).
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 16</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">16 / 19</div>
         """
     )
     return
@@ -537,7 +633,7 @@ def _(mo):
                 through **8** numbers and reconstructed well enough to recognise."""
             ),
             mo.image(_buf, width="900px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 16</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">17 / 19</div>"""),
         ]
     )
     return
@@ -562,7 +658,7 @@ def _(mo):
         (pixels, sequences) or the patterns are truly smooth — and reach for
         **CNNs / transformers** when that structure is rich.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">15 / 16</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">18 / 19</div>
         """
     )
     return
@@ -586,7 +682,7 @@ def _(mo):
         Next session: **foundation models** — what happens when we train these
         architectures on internet-scale data.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">16 / 16</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">19 / 19</div>
         """
     )
     return

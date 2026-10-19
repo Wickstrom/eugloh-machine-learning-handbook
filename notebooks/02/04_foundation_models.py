@@ -55,7 +55,7 @@ def _(mo):
 
         University of Novi Sad
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 17</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 20</div>
         """
     )
     return
@@ -79,7 +79,7 @@ def _(mo):
 
         Session 4 of 4 today — this wraps the lecture series.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 17</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 20</div>
         """
     )
     return
@@ -106,7 +106,7 @@ def _(mo):
         all**. The payoff is **transfer**: a single generalist backbone serves
         thousands of downstream tasks.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 17</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 20</div>
         """
     )
     return
@@ -128,7 +128,7 @@ def _(mo):
         - Fine-tune BERT on a task with a **small** labelled set and it beats
           models trained from scratch on far more data.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 17</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 20</div>
         """
     )
     return
@@ -151,8 +151,74 @@ def _(mo):
           (*few-shot prompting*). **Instruction tuning / RLHF** then align it
           to be helpful.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 17</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 20</div>
         """
+    )
+    return
+
+
+@app.cell
+def _(mo):
+    _text = mo.md(
+        r"""
+        ## Example — in-context learning
+
+        The headline discovery of **GPT-3** (Brown et al., 2020): a large enough
+        language model can perform a **new** task from a few examples placed in
+        the **prompt**, with **no gradient updates** at all.
+
+        - a natural-language instruction plus examples raises accuracy;
+        - the ability **grows with scale** — the 175B model uses the context far
+          better than the 1.3B one;
+        - "learning" happens at **inference time**, inside the context window.
+
+        *(Brown et al., Language Models are Few-Shot Learners, 2020 —
+        arXiv:2005.14165)*
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 20</div>
+        """
+    )
+    mo.vstack(
+        [
+            _text,
+            mo.image(
+                str(mo.notebook_location() / "public" / "gpt3_in_context.png"),
+                width="800px",
+            ),
+        ]
+    )
+    return
+
+
+@app.cell
+def _(mo):
+    _text = mo.md(
+        r"""
+        ## Example — scaling laws
+
+        Why does scale work? **Kaplan et al. (2020)** measured test loss across
+        hundreds of runs and found it falls as a smooth **power law** in each of
+        three factors:
+
+        - **compute**, **dataset size** and **parameters**;
+        - the three must grow *together* — scaling one alone quickly saturates;
+        - this empirical regularity is why the field bets on bigger models and
+          bigger data.
+
+        *(Kaplan et al., Scaling Laws for Neural Language Models, 2020 —
+        arXiv:2001.08361)*
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 20</div>
+        """
+    )
+    mo.vstack(
+        [
+            _text,
+            mo.image(
+                str(mo.notebook_location() / "public" / "scaling_laws.png"),
+                width="780px",
+            ),
+        ]
     )
     return
 
@@ -197,7 +263,7 @@ def _(mo):
     mo.vstack(
         [
             mo.image(_buf, width="940px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 17</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 20</div>"""),
         ]
     )
     return
@@ -219,7 +285,7 @@ def _(mo):
         - These general visual features **transfer** to detection, segmentation
           and medical imaging — often with only a handful of labels.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 17</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 20</div>
         """
     )
     return
@@ -265,7 +331,7 @@ def _(mo):
         - this **unifies** vision and language under one architecture — the key
           to the multimodal models next.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 17</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 20</div>
         """
     )
     mo.hstack(
@@ -296,7 +362,7 @@ def _(mo):
         names ("a photo of a cat"), embed the image, pick the closest — with
         **no training on the target classes at all**.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 17</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 20</div>
         """
     )
     return
@@ -342,12 +408,45 @@ def _(mo):
         text* — the basis for **zero-shot classification**, retrieval and the
         vision towers inside multimodal LLMs.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 17</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 20</div>
         """
     )
     mo.hstack(
         [_text, mo.image(_buf, width="430px")],
         widths=[1, 1], align="start", gap=1.5,
+    )
+    return
+
+
+@app.cell
+def _(mo):
+    _text = mo.md(
+        r"""
+        ## Example — CLIP, from the paper
+
+        The actual diagram (Radford et al., 2021) — the same three ideas as the
+        previous slide, drawn out:
+
+        - **(1) contrastive pre-training** — match $N$ images with $N$ captions
+          in a batch;
+        - **(2) build a classifier from text** — embed the class names;
+        - **(3) zero-shot prediction** — pick the caption whose embedding is
+          *closest* to the image. No labelled images for the target task.
+
+        *(Radford et al., Learning Transferable Visual Models From Natural
+        Language Supervision, 2021 — arXiv:2103.00020)*
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 20</div>
+        """
+    )
+    mo.vstack(
+        [
+            _text,
+            mo.image(
+                str(mo.notebook_location() / "public" / "clip_overview.png"),
+                width="860px",
+            ),
+        ]
     )
     return
 
@@ -368,7 +467,7 @@ def _(mo):
           sequences, even tabular data — a shared encoder plus a task head,
           pretrained at scale.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 17</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 20</div>
         """
     )
     return
@@ -392,7 +491,7 @@ def _(mo):
         - **Zero / few-shot** — with CLIP or an LLM you may need **no training
           at all** — just describe the task.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">12 / 17</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">15 / 20</div>
         """
     )
     return
@@ -440,7 +539,7 @@ def _(mo):
         **small-data regimes** that dominate real projects — rare medical
         conditions, niche industrial defects, small-company datasets.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 17</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">16 / 20</div>
         """
     )
     mo.hstack(
@@ -468,7 +567,7 @@ def _(mo):
           and put them in the context, so the model answers from **your** data
           *without* retraining.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">14 / 17</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">17 / 20</div>
         """
     )
     return
@@ -489,7 +588,7 @@ def _(mo):
         - **The low-data cases that used to be hopeless** — rare diseases,
           niche defects on a factory line, small tabular datasets.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">15 / 17</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">18 / 20</div>
         """
     )
     return
@@ -513,7 +612,7 @@ def _(mo):
           change; the classical workflow (validation sets, honest baselines)
           still matters.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">16 / 17</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">19 / 20</div>
         """
     )
     return
@@ -538,7 +637,7 @@ def _(mo):
 
         That wraps the lecture series — thanks!
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">17 / 17</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">20 / 20</div>
         """
     )
     return
