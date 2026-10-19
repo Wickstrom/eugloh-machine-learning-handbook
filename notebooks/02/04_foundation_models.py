@@ -178,14 +178,17 @@ def _(mo):
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 20</div>
         """
     )
-    mo.vstack(
+    mo.hstack(
         [
             _text,
             mo.image(
                 str(mo.notebook_location() / "public" / "gpt3_in_context.png"),
-                width="800px",
+                width="360px",
             ),
-        ]
+        ],
+        widths=[1, 1],
+        align="start",
+        gap=1.5,
     )
     return
 
@@ -211,14 +214,17 @@ def _(mo):
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 20</div>
         """
     )
-    mo.vstack(
+    mo.hstack(
         [
             _text,
             mo.image(
                 str(mo.notebook_location() / "public" / "scaling_laws.png"),
-                width="780px",
+                width="360px",
             ),
-        ]
+        ],
+        widths=[1, 1],
+        align="start",
+        gap=1.5,
     )
     return
 
@@ -439,14 +445,17 @@ def _(mo):
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">13 / 20</div>
         """
     )
-    mo.vstack(
+    mo.hstack(
         [
             _text,
             mo.image(
                 str(mo.notebook_location() / "public" / "clip_overview.png"),
-                width="860px",
+                width="360px",
             ),
-        ]
+        ],
+        widths=[1, 1],
+        align="start",
+        gap=1.5,
     )
     return
 

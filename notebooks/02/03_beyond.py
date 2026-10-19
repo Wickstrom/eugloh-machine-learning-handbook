@@ -556,14 +556,17 @@ def _(mo):
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">15 / 19</div>
         """
     )
-    mo.vstack(
+    mo.hstack(
         [
             _text,
             mo.image(
                 str(mo.notebook_location() / "public" / "vit_overview.png"),
-                width="820px",
+                width="360px",
             ),
-        ]
+        ],
+        widths=[1, 1],
+        align="start",
+        gap=1.5,
     )
     return
 
