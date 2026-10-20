@@ -207,6 +207,28 @@ for nb in notebooks/*/*.py; do
 done
 ```
 
+### PDF handouts
+
+Pre-built PDF versions of every deck live in [`pdfs/`](pdfs/), mirroring the
+`notebooks/` layout. Regenerate them with:
+
+```bash
+uv run python scripts/build_pdfs.py            # every deck
+uv run python scripts/build_pdfs.py notebooks/02/02_perceptron_mlp.py
+```
+
+This needs `nbconvert[webpdf]` + Playwright:
+
+```bash
+uv pip install "nbconvert[webpdf]" playwright
+playwright install chromium
+```
+
+The script uses marimo's default `--raster-server=static`. The docs recommend
+`--raster-server=live` for slides, but with these widget-heavy decks the live
+capture silently drops slide content (fully blank pages); `static` is correct
+and faster here.
+
 To edit a lecture locally with live code, file watchers, and a variable
 explorer:
 
