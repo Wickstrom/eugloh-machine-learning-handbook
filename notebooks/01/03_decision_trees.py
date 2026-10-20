@@ -487,36 +487,36 @@ def _(mo):
     _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
     _plt.close(_fig)
     _buf.seek(0)
-    mo.vstack(
-        [
-            mo.md(
-                r"""## Where "greedy" bites — a 2D example
+    _text = mo.md(
+        r"""## Where "greedy" bites — a 2D example
 
-                CART never looks ahead: at each node it takes the split with the
-                **lowest immediate impurity**, then repeats. That is **not** the
-                same as building the smallest — or best — tree.
+        CART never looks ahead: at each node it takes the split with the
+        **lowest immediate impurity**, then repeats. That is **not** the
+        same as building the smallest — or best — tree.
 
-                Nine points, two classes. Two candidate **first** cuts:
+        Nine points, two classes. Two candidate **first** cuts:
 
-                - **horizontal** $x_2 \leq 0.5$ → immediate impurity **0.33**
-                  ← greedy picks this
-                - **vertical** $x_1 \leq 1.5$ → immediate impurity **0.44**
+        - **horizontal** $x_2 \leq 0.5$ → immediate impurity **0.33**
+          ← greedy picks this
+        - **vertical** $x_1 \leq 1.5$ → immediate impurity **0.44**
 
-                The horizontal cut looks better *right now*, but it strands the
-                class-1 corner, so the tree CART grows needs **5 leaves**. The
-                "worse-looking" vertical cut leaves each child's class-1 points
-                in a single strip, so the **smallest tree needs only 4 leaves** —
-                from a first cut that was *more* impure. Both classify the data
-                perfectly.
+        The horizontal cut looks better *right now*, but it strands the
+        class-1 corner, so the tree CART grows needs **5 leaves**. The
+        "worse-looking" vertical cut leaves each child's class-1 points
+        in a single strip, so the **smallest tree needs only 4 leaves** —
+        from a first cut that was *more* impure. Both classify the data
+        perfectly.
 
-                **So greedy's myopia is visible in 2D** — this is a real
-                nine-point counterexample. It is just rarer and milder on tiny
-                clean data, and becomes the norm once features and label noise
-                multiply."""
-            ),
-            mo.image(_buf, width="940px"),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 23</div>"""),
-        ]
+        **So greedy's myopia is visible in 2D** — this is a real
+        nine-point counterexample. It is just rarer and milder on tiny
+        clean data, and becomes the norm once features and label noise
+        multiply.
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">11 / 23</div>"""
+    )
+    mo.hstack(
+        [_text, mo.image(_buf, width="520px")],
+        widths=[1, 1.05], align="start", gap=1.5,
     )
     return
 
