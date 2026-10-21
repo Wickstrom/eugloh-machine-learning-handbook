@@ -96,6 +96,49 @@ the course schedule.
 
     [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/02/04_foundation_models/index.html)
 
+### Day 3 — Oct 23–24 (on-site)
+
+The two on-site days are built around the **aurora hands-on project**: classify
+real all-sky camera images of the northern lights. We start with a briefing and
+two background sessions, then you pick one of five project levels and work
+through it with the getting-started notebook.
+
+**Background sessions**
+
+9. **The Aurora Project — briefing**
+    - What the project is, how it is graded, and which level to pick
+    - A 30-minute tour of the paper (Kvammen et al., 2020), of **PCA**, and of
+      how **pretrained features** are extracted from images
+
+    [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/03/00_aurora_project/index.html)
+
+10. **Dimensionality reduction — PCA & t-SNE**
+    - The curse of dimensionality, PCA from the data's point of view, and t-SNE
+    - Why we *look* at data in 2-D but *predict* from the full features
+
+    [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/03/01_dimensionality_reduction/index.html)
+
+11. **Pretrained models — from ImageNet to foundation models**
+    - Feature extraction vs fine-tuning, and reading a network as a feature map
+    - The idea behind the whole project: reuse a network trained on millions of
+      images as a **feature extractor** for aurora images
+
+    [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/03/02_pretrained_models/index.html)
+
+**The project — five levels (pick one)**
+
+| Level | What you do | Slides |
+|:------|:------------|:-------|
+| 🟢 **1 · Beginner** | Recreate Figure 5 of the paper: plot the t-SNE map and overlay example images | [Slides](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/03/03_project_beginner/index.html) |
+| 🟡 **2 · Intermediate** | Extract the features yourself with a pretrained ResNet, then reduce them with PCA | [Slides](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/03/04_project_intermediate/index.html) |
+| 🔴 **3 · Advanced** | Train a linear classifier on the 2-D map, draw its decision boundary, evaluate it | [Slides](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/03/05_project_advanced/index.html) |
+| 🔴 **4 · Expert** | Compare decision tree / random forest / MLP on the 512-d features vs the 2-D map | [Slides](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/03/06_project_expert/index.html) |
+| ⚫ **5 · God-like** | Fetch live Kiruna all-sky images, extract features, and classify them | [Slides](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/03/07_project_godlike/index.html) |
+
+Each level ships with a **getting-started Jupyter notebook** and a folder of data
+(and any models) sent out before the session — everything except the live sky-cam
+data, which you fetch yourself in Level 5.
+
 ## 📚 Exercises
 
 Every session comes with a set of **Jupyter notebooks** in three difficulty
