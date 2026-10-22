@@ -4,6 +4,7 @@
 #     "marimo",
 #     "numpy",
 #     "matplotlib",
+#     "scikit-learn",
 # ]
 # ///
 #
@@ -315,40 +316,51 @@ earlier in the course.**"""
 @app.cell
 def _(mo):
     import io as _io
-    import numpy as _np
     import matplotlib.pyplot as _plt
-    from matplotlib.patches import FancyArrowPatch as _FAP
+    from sklearn.datasets import load_iris as _load_iris
+    from sklearn.decomposition import PCA as _PCA
+    from sklearn.preprocessing import StandardScaler as _StandardScaler
 
     _ink = "#0f172a"
-    _rng = _np.random.default_rng(3)
-    _X = _rng.multivariate_normal([0, 0], [[1.0, 0.82], [0.82, 1.0]], size=90)
-    _X[:, 0] *= 1.35
-    _Xc = _X - _X.mean(0)
-    _U, _S, _Vt = _np.linalg.svd(_Xc, full_matrices=False)
-    _pc1, _pc2 = _Vt[0], _Vt[1]
-    _mean = _X.mean(0)
-    _k = 2.0 * 1.3 / _np.sqrt(len(_X))
+    _iris = _load_iris()
+    _X, _y = _iris.data, _iris.target
+    _cols = ["#ef4444", "#3b82f6", "#22c55e"]
+    _species = ["setosa", "versicolor", "virginica"]
 
-    _fig, _ax = _plt.subplots(figsize=(6.6, 4.6))
-    _ax.scatter(_X[:, 0], _X[:, 1], s=26, color="#93c5fd",
-                edgecolor="#3b82f6", lw=0.6, zorder=3)
-    for _p in _X[::6]:
-        _proj = _mean + _np.dot(_p - _mean, _pc1) * _pc1
-        _ax.plot([_p[0], _proj[0]], [_p[1], _proj[1]], color="#94a3b8",
-                 lw=0.8, ls="--", zorder=2)
-    _ax.add_patch(_FAP(_mean, _mean + _k * _S[0] * _pc1, arrowstyle="-|>",
-                       mutation_scale=22, lw=3, color="#dc2626", zorder=4))
-    _ax.add_patch(_FAP(_mean, _mean + _k * _S[1] * _pc2, arrowstyle="-|>",
-                       mutation_scale=18, lw=3, color="#f59e0b", zorder=4))
-    _ax.text(*(_mean + _k * _S[0] * 1.08 * _pc1), "PC1 (most variance)", color="#dc2626",
-             fontsize=10, ha="left", va="bottom")
-    _ax.text(*(_mean + _k * _S[1] * 1.25 * _pc2), "PC2", color="#b45309", fontsize=10)
-    _ax.set_title("PCA finds the directions of maximum variance", fontsize=12, color=_ink)
-    _ax.set_xticks([])
-    _ax.set_yticks([])
-    for _s in _ax.spines.values():
-        _s.set_visible(False)
-    _ax.margins(0.18)
+    _fig = _plt.figure(figsize=(11, 3.6), layout="constrained")
+
+    # --- left: we can only draw three of the four features ---
+    _ax1 = _fig.add_subplot(1, 2, 1, projection="3d")
+    for _i, (_c, _s) in enumerate(zip(_cols, _species)):
+        _m = _y == _i
+        _ax1.scatter(_X[_m, 0], _X[_m, 1], _X[_m, 2], s=22, color=_c,
+                     alpha=0.85, label=_s, depthshade=False)
+    _ax1.set_xlabel("feature 1  (sepal len)", fontsize=8)
+    _ax1.set_ylabel("feature 2  (sepal wid)", fontsize=8)
+    _ax1.set_zlabel("feature 3  (petal len)", fontsize=8)
+    _ax1.set_title("4 features — we can only draw 3", fontsize=11, color=_ink)
+    _ax1.tick_params(labelsize=7)
+    _ax1.text2D(0.02, 0.92, "feature 4 (petal width) = ?",
+                transform=_ax1.transAxes, fontsize=10, color="#b45309",
+                bbox=dict(boxstyle="round,pad=0.35", fc="#fef3c7", ec="#f59e0b"))
+
+    # --- right: PCA puts all four features on one 2-D map ---
+    _Xs = _StandardScaler().fit_transform(_X)
+    _pca = _PCA(n_components=2)
+    _Xp = _pca.fit_transform(_Xs)
+    _ev = _pca.explained_variance_ratio_ * 100
+    _ax2 = _fig.add_subplot(1, 2, 2)
+    for _i, (_c, _s) in enumerate(zip(_cols, _species)):
+        _m = _y == _i
+        _ax2.scatter(_Xp[_m, 0], _Xp[_m, 1], s=22, color=_c, alpha=0.85, label=_s)
+    _ax2.set_xlabel("PC1  (%.0f%% of variance)" % _ev[0], fontsize=9)
+    _ax2.set_ylabel("PC2  (%.0f%%)" % _ev[1], fontsize=9)
+    _ax2.set_title("PCA — all 4 features in one 2-D map", fontsize=11, color=_ink)
+    _ax2.tick_params(labelsize=7)
+
+    _handles, _labels = _ax2.get_legend_handles_labels()
+    _fig.legend(_handles, _labels, loc="outside lower center", ncol=3,
+                frameon=False, fontsize=8)
 
     _buf = _io.BytesIO()
     _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
@@ -359,18 +371,10 @@ def _(mo):
             mo.md(
                 r"""## Idea 2 — PCA in 60 seconds
 
-PCA finds the **directions the data is stretched along**.
-
-1. **Centre** the data (subtract the mean).
-2. Find the direction of **largest spread** — that is **PC1**; the next,
-   orthogonal direction is **PC2**.
-3. **Keep the first two** and you have a flat 2-D picture of the data.
-
-- **Linear, fast, deterministic** — the right first thing to try.
-- **Standardise first** — PCA is scale-sensitive.
-- **Big variance is not the same as good separation** — it ignores the labels."""
+**iris** has 4 features, but we can only *draw* **three** axes — what about **feature 4?** ❓
+**PCA** keeps the two directions of largest spread (**PC1**, **PC2**) and projects **all** the features onto them."""
             ),
-            mo.image(_buf, width="540px"),
+            mo.image(_buf, width="700px"),
             mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 13</div>"""),
         ]
     )
