@@ -49,7 +49,7 @@ def _(mo):
 
         **Machine Learning with Python** — On-site project (Oct 23–24)
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 8</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 9</div>
         """
     )
     return
@@ -72,7 +72,7 @@ def _(mo):
         The point: **see the features with your own hands** — where they come from,
         and what PCA does to them.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 8</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 9</div>
         """
     )
     return
@@ -105,7 +105,7 @@ def _(mo):
         You will call `aurora_features.extract_embeddings(...)` — everything else
         is the same plotting you already know.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 8</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 9</div>
         """
     )
     return
@@ -131,7 +131,32 @@ def _(mo):
         that it works offline. Extracting features for all 3846 images takes a
         **few minutes on a laptop CPU**.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 8</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 9</div>
+        """
+    )
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(
+        r"""
+        ## The code — extracting features
+
+        ```python
+        from aurora_features import load_data, extract_embeddings, CLASS_NAMES
+
+        x_train, y_train, x_test, y_test = load_data("data/data.npz")
+
+        z_train = extract_embeddings(x_train)   # (3000, 512)
+        z_test  = extract_embeddings(x_test)    # (846, 512)
+        ```
+
+        - `load_data` gives you the **images** (`x`) and **labels** (`y`), train and test.
+        - `extract_embeddings` runs the pretrained **ResNet-18** and returns **512 numbers per image**.
+        - after that it is just `StandardScaler` → `PCA(n_components=2)` → scatter.
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 9</div>
         """
     )
     return
@@ -143,17 +168,14 @@ def _(mo):
         r"""
         ## The tasks (in the notebook)
 
-        1. **Load** the images and look at a few — plot a small grid per class.
-        2. **Check** the array shapes and confirm the labels line up.
-        3. **Extract** the 512-d features with the pretrained ResNet (`aurora_features.py`).
-        4. **Standardise** the features, then run **PCA**: plot the **cumulative
-           explained variance** — how many components reach 90%?
-        5. **Project to 2-D** with PCA and scatter the points, coloured by class.
-        6. **Compare** with the t-SNE map from the lecture. Which separates the
-           classes better? **Why?** (one short paragraph)
-        7. *(Optional)* run **t-SNE** on your features and compare again.
+        1. **Load** the images with `load_data("data/data.npz")` and show a few.
+        2. **Extract** the 512-d features with the pretrained ResNet — one line:
+           `extract_embeddings(x_train)`.
+        3. **Standardise**, then run **PCA to 2-D**.
+        4. **Scatter** the result, coloured by class.
+        5. **Your turn:** how much variance do the two PCs keep? Plot the **test** points.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 8</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 9</div>
         """
     )
     return
@@ -168,7 +190,7 @@ def _(mo):
                 str(mo.notebook_location() / "public" / "aurora_pca_2d.png"),
                 width="780px",
             ),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 8</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 9</div>"""),
         ]
     )
     return
@@ -192,7 +214,7 @@ def _(mo):
         That last point is a **cliffhanger** for the next level: if the 2-D map
         throws information away, how well can a classifier do on it?
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 8</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 9</div>
         """
     )
     return
@@ -204,15 +226,14 @@ def _(mo):
         r"""
         ## Nice work — you extracted features yourself
 
-        - built a grid of **example images**,
-        - drew the **cumulative explained-variance** curve,
-        - plotted the **2-D PCA scatter** coloured by class,
-        - compared it with the t-SNE map.
+        - loaded the **images** and labels,
+        - ran the pretrained **ResNet-18** to get **512-d features**,
+        - compressed them to **2-D with PCA** and plotted the map.
 
         **Done? Try Level 3 (Advanced)** — put a classifier on the 2-D map and
         draw its decision boundary.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 8</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 9</div>
         """
     )
     return

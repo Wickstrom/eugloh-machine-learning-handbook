@@ -50,7 +50,7 @@ def _(mo):
 
         **Machine Learning with Python** — On-site project (Oct 23–24)
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 8</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">1 / 9</div>
         """
     )
     return
@@ -74,7 +74,7 @@ def _(mo):
 
         That is exactly the picture from **Figure 5** of the paper.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 8</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 9</div>
         """
     )
     return
@@ -89,7 +89,7 @@ def _(mo):
                 str(mo.notebook_location() / "public" / "aurora_fig5_reference.png"),
                 width="720px",
             ),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 8</div>"""),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 9</div>"""),
         ]
     )
     return
@@ -118,7 +118,7 @@ def _(mo):
 
         Open `getting_started_beginner.ipynb` and work through it in order.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 8</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 9</div>
         """
     )
     return
@@ -144,7 +144,34 @@ def _(mo):
 
         **Nothing to install, nothing to train** — this level runs in seconds.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 8</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 9</div>
+        """
+    )
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(
+        r"""
+        ## The code — loading the map
+
+        ```python
+        import pandas as pd
+        import matplotlib.pyplot as plt
+
+        test = pd.read_csv("data/aurora_2d_test.csv")
+        test.head()
+        ```
+
+        - `pd.read_csv` reads the file into a table (a **DataFrame**).
+        - every **row** is one test image: its `tsne_1`, `tsne_2` and its class.
+        - `test.head()` shows the first rows so you can check the columns.
+
+        After that you only **scatter** `tsne_1` vs `tsne_2`. The notebook leaves
+        the colouring for **you** to fill in.
+
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 9</div>
         """
     )
     return
@@ -156,16 +183,14 @@ def _(mo):
         r"""
         ## The tasks (in the notebook)
 
-        1. **Load** the data and print its shape, its columns, and the class counts.
-        2. **Plot** the t-SNE map — `tsne_1` vs `tsne_2` — one colour per class, with a legend.
-        3. **Show** a grid of example images, a few per class.
-        4. **Overlay** a few images on the map: pick a point, load its PNG, draw it as a small inset near the point. *(This rebuilds Figure 5.)*
-        5. **Label** the clusters — add text near each group naming the class.
-        6. **Answer** the short wrap-up questions about what you notice.
+        1. **Load** `data/aurora_2d_test.csv` and look at `head()`.
+        2. **Count** the images per class with `value_counts()`.
+        3. **Plot** the map: `tsne_1` vs `tsne_2` (a starting cell is given).
+        4. **Colour** the points by class and add a legend — **your turn**: fill in the blank.
+        5. **Overlay** an example image on the map — one is worked out for you, add more.
+        6. Answer the short **Your turn** questions.
 
-        Take your time on 2 and 4 — those are the heart of the level.
-
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 8</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 9</div>
         """
     )
     return
@@ -188,7 +213,7 @@ def _(mo):
         Read that last point again: the map is not just pretty, it **explains the
         mistakes** the models will make later.
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 8</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 9</div>
         """
     )
     return
@@ -198,18 +223,16 @@ def _(mo):
 def _(mo):
     mo.md(
         r"""
-        ## Nice work — you rebuilt Figure 5
+        ## Nice work — you rebuilt the map
 
-        You just did the same picture the paper is known for:
+        - loaded the precomputed **2-D coordinates** and the **labels**,
+        - coloured the scatter by **aurora class**,
+        - placed an **example image** onto the map.
 
-        - loaded the precomputed **features** and **labels**,
-        - coloured a 2-D **t-SNE map** by class,
-        - placed **example images** onto the map.
+        **Done? Try Level 2 (Intermediate)** — there you extract the features
+        yourself.
 
-        Keep it simple and readable. **Done? Try Level 2 (Intermediate)**, where
-        you extract the features yourself.
-
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 8</div>
+        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 9</div>
         """
     )
     return
