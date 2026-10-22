@@ -142,8 +142,9 @@ def _(mo):
 
         1. **Fetch** the latest image (and a few recent ones) with `fetch_skycam.py`.
            Display them.
-        2. **Preprocess** to the training format — resize/crop to
-           $128\times128$. Try a couple of crops and note what changes.
+        2. **Preprocess** — this is the point. The model wants a $128\times128$
+           **crop**, not the whole fisheye. Cut a window that matches the training
+           crops (central 50% by default) and try a few zooms.
         3. **Extract features** with `aurora_features.extract_embeddings(...)`.
         4. **Classify** with the provided model. Show the predicted class, the
            probability of each class, and a simple **"aurora / not aurora"** flag.
@@ -164,16 +165,17 @@ def _(mo):
         r"""
         ## Watch out — this is the hard level, and that is the point
 
-        - **Domain gap.** The model learned from **labelled $128\times128$
-          crops**. The live all-sky image is a full **fisheye** frame with a
-          different scale and field of view. A naive resize may confuse the model.
-          **Cropping to match the training images matters** — experiment.
+        - **Crop, don't just resize.** The model learned from **labelled
+          $128\times128$ zoomed-in night crops**. A live frame is a whole-sky
+          **fisheye** (480x480, black disk edge plus a timestamp/compass overlay).
+          Feeding it the full disk is out of distribution — so **choosing the crop
+          is the whole task.** Start with the central 50% and experiment.
         - **URLs change.** The "latest" image is overwritten every minute; grab it,
           don't cache it, and handle a failed download gracefully.
         - **No labels for live images.** You cannot compute accuracy here — so you
           must reason about whether the predictions *look* right.
         - **Be honest about uncertainty.** A confident wrong answer is worse than
-          saying "the model is out of its depth on this image".
+          flagging an image the model clearly cannot handle.
 
         That is why this level is worth a **whole section of your write-up**: the
         result matters less than the reasoning.
@@ -190,8 +192,8 @@ def _(mo):
         r"""
         ## Stretch ideas
 
-        - **Time series.** Fetch the keogram (`latest_nkeogram.gif`) and look at
-          auroral activity over the whole night.
+        - **Time series.** Fetch a stretch of the night (many frames from the day's
+          manifest) and watch auroral activity rise and fall.
         - **Compare nights.** Pick a quiet night and a stormy night from the
           archive and classify both.
         - **Train your own head.** Re-extract features for the training set and

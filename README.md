@@ -17,8 +17,8 @@ within the [European University Alliance for Global Health (EUGLOH)](https://www
 
 ## 📑 Content
 
-Each day is split into **four sessions** (one Marimo deck per session), following
-the course schedule.
+Days 1–2 are each split into **four sessions** (one Marimo deck per session),
+following the course schedule.
 
 ### Day 1 — Oct 19
 
@@ -99,9 +99,9 @@ the course schedule.
 ### Day 3 — Oct 23–24 (on-site)
 
 The two on-site days are built around the **aurora hands-on project**: classify
-real all-sky camera images of the northern lights. We start with a briefing and
-two background sessions, then you pick one of five project levels and work
-through it with the getting-started notebook.
+real all-sky camera images of the northern lights. We start with a briefing, then
+you pick one of five project levels and work through it with the getting-started
+notebook.
 
 **Background sessions**
 
@@ -111,19 +111,6 @@ through it with the getting-started notebook.
       how **pretrained features** are extracted from images
 
     [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/03/00_aurora_project/index.html)
-
-10. **Dimensionality reduction — PCA & t-SNE**
-    - The curse of dimensionality, PCA from the data's point of view, and t-SNE
-    - Why we *look* at data in 2-D but *predict* from the full features
-
-    [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/03/01_dimensionality_reduction/index.html)
-
-11. **Pretrained models — from ImageNet to foundation models**
-    - Feature extraction vs fine-tuning, and reading a network as a feature map
-    - The idea behind the whole project: reuse a network trained on millions of
-      images as a **feature extractor** for aurora images
-
-    [![Slides](https://img.shields.io/badge/-Slides-blue?logo=marimo&style=flat&labelColor=gray)](https://wickstrom.github.io/eugloh-machine-learning-handbook/notebooks/03/02_pretrained_models/index.html)
 
 **The project — five levels (pick one)**
 
