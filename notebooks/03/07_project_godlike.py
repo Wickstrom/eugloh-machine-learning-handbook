@@ -212,14 +212,15 @@ def _(mo):
 def _(mo):
     mo.md(
         r"""
-        ## What to hand in
+        ## Nice work — the whole arc, end to end
 
-        A **short report** (notebook or markdown) with:
+        You took the project all the way:
 
-        - the **live images** you fetched and how you preprocessed them,
-        - the **predicted class** and **aurora/not-aurora** verdict per image,
-        - your **nowcast** output,
-        - a few honest sentences on **how much you trust it and why**.
+        - fetched **live images** and preprocessed them,
+        - produced a **predicted class** and an **aurora / not-aurora** verdict
+          per image,
+        - built a **nowcast**,
+        - judged **how much to trust it** — the most important skill of all.
 
         You have now done the whole arc: **raw image → features → model →
         prediction on the live sky.** Well done. 🌌

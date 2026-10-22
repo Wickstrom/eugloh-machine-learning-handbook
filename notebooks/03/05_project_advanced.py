@@ -191,16 +191,15 @@ def _(mo):
 def _(mo):
     mo.md(
         r"""
-        ## What to hand in
+        ## Nice work — a classifier on the 2-D map
 
-        Your notebook, containing:
+        - drew the **scatter plot** and the **decision-boundary** figure,
+        - read off the **confusion matrix**,
+        - compared **accuracy and macro F1** for the baseline and for logistic
+          regression,
+        - answered: *how much does the 2-D map cost us?*
 
-        - the **scatter plot** and the **decision-boundary** figure,
-        - the **confusion matrix**,
-        - **accuracy and macro F1** for the baseline and for logistic regression,
-        - one short paragraph: *how much does the 2-D map cost us?*
-
-        Done? **Level 4 (Expert)** uses the **full 512-d features** and compares
+        **Done? Level 4 (Expert)** uses the **full 512-d features** and compares
         several models.
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 8</div>

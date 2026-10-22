@@ -162,10 +162,14 @@ def _(mo):
     mo.vstack(
         [
             mo.image(
-                str(mo.notebook_location() / "public" / "aurora_tsne_classes.png"),
-                width="860px",
+                str(mo.notebook_location() / "public" / "aurora_paper_fig5.jpg"),
+                width="780px",
             ),
-            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 13</div>"""),
+            mo.md(
+                r"""*Kvammen et al. (2020), Figure 5 — reproduced under CC BY. The ResNet-50 features of the test set, projected to 2-D with t-SNE, with example images drawn on the map. **This is the figure we rebuild in Level 1** (we use ResNet-18).*
+
+                <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 13</div>"""
+            ),
         ]
     )
     return
@@ -174,47 +178,55 @@ def _(mo):
 @app.cell
 def _(mo):
     import io as _io
-
     import matplotlib.pyplot as _plt
-    from matplotlib.patches import Rectangle as _Rect
+    from matplotlib.patches import FancyBboxPatch as _Box, FancyArrowPatch as _Arrow
 
-    _fig, _ax = _plt.subplots(figsize=(9.6, 3.1), layout="constrained")
+    _ink = "#0f172a"
+    _pal = {
+        "image": ("#eef2ff", "#6366f1"),
+        "cnn": ("#e0f2fe", "#0284c7"),
+        "feat": ("#dcfce7", "#16a34a"),
+        "reduce": ("#ede9fe", "#7c3aed"),
+        "clf": ("#fef3c7", "#d97706"),
+    }
+
+    def _bx(ax, xy, wh, text, kind, fs=11):
+        x, y = xy
+        w, h = wh
+        fc, ec = _pal[kind]
+        ax.add_patch(_Box((x, y), w, h, boxstyle="round,pad=0.0,rounding_size=0.14",
+                          lw=1.8, edgecolor=ec, facecolor=fc, zorder=2))
+        ax.text(x + w / 2, y + h / 2, text, ha="center", va="center",
+                fontsize=fs, color=_ink, zorder=3)
+
+    def _ar(ax, p, q):
+        ax.add_patch(_Arrow(p, q, arrowstyle="-|>", mutation_scale=18, lw=2.0,
+                            color="#475569", shrinkA=2, shrinkB=2, zorder=1))
+
+    _fig, _ax = _plt.subplots(figsize=(12, 3.6))
+    _ax.set_xlim(0, 12)
+    _ax.set_ylim(0, 3.6)
+    _ax.set_aspect("equal")
     _ax.axis("off")
-    _ax.set_xlim(0, 10)
-    _ax.set_ylim(0, 3)
 
-    _ax.add_patch(_Rect((0.2, 1.0), 1.2, 1.0, color="#e2e8f0", ec="#94a3b8"))
-    _ax.text(0.8, 1.5, "image", ha="center", va="center", fontsize=9)
+    _bx(_ax, (0.15, 1.35), (1.9, 0.9), "raw image", "image")
+    _bx(_ax, (2.65, 1.25), (2.7, 1.1), "pretrained CNN\n(frozen)", "cnn")
+    _bx(_ax, (5.95, 1.35), (2.1, 0.9), "feature vector\n(512-d)", "feat")
+    _bx(_ax, (8.75, 2.05), (3.05, 0.8), "reduce to 2-D (PCA / t-SNE)\nto look", "reduce", fs=10)
+    _bx(_ax, (8.75, 0.45), (3.05, 0.8), "classifier\nto predict the class", "clf", fs=10)
+    _ar(_ax, (2.05, 1.8), (2.65, 1.8))
+    _ar(_ax, (5.35, 1.8), (5.95, 1.8))
+    _ar(_ax, (8.05, 2.0), (8.75, 2.45))
+    _ar(_ax, (8.05, 1.6), (8.75, 0.85))
 
-    _ax.add_patch(_Rect((2.0, 0.8), 2.2, 1.4, color="#dbeafe", ec="#60a5fa"))
-    _ax.text(3.1, 1.75, "pretrained CNN", ha="center", fontsize=9)
-    _ax.text(3.1, 1.25, "(frozen)", ha="center", fontsize=8, color="#6b7280")
-
-    _ax.add_patch(_Rect((4.9, 0.9), 1.5, 1.2, color="#dcfce7", ec="#16a34a"))
-    _ax.text(5.65, 1.5, "features", ha="center", va="center", fontsize=9)
-
-    _ax.add_patch(_Rect((7.0, 1.85), 2.7, 0.8, color="#ede9fe", ec="#8b5cf6"))
-    _ax.text(8.35, 2.25, "PCA → t-SNE  (look)", ha="center", va="center", fontsize=8.5)
-
-    _ax.add_patch(_Rect((7.0, 0.35), 2.7, 0.8, color="#fef3c7", ec="#f59e0b"))
-    _ax.text(8.35, 0.75, "classifier  (predict)", ha="center", va="center", fontsize=8.5)
-
-    for _xy, _xytext in [((2.0, 1.5), (1.4, 1.5)), ((4.9, 1.5), (4.2, 1.5))]:
-        _ax.annotate("", xy=_xy, xytext=_xytext,
-                     arrowprops=dict(arrowstyle="-|>", lw=1.6, color="#6b7280"))
-    _ax.annotate("", xy=(7.0, 2.25), xytext=(6.4, 1.6),
-                 arrowprops=dict(arrowstyle="-|>", lw=1.6, color="#6b7280"))
-    _ax.annotate("", xy=(7.0, 0.75), xytext=(6.4, 1.4),
-                 arrowprops=dict(arrowstyle="-|>", lw=1.6, color="#6b7280"))
-
-    _ax.set_title("The whole project in one picture")
+    _ax.set_title("The whole project in one picture", fontsize=13, color=_ink, pad=10)
     _buf = _io.BytesIO()
     _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
     _plt.close(_fig)
     _buf.seek(0)
     mo.vstack(
         [
-            mo.image(_buf, width="880px"),
+            mo.image(_buf, width="900px"),
             mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 13</div>"""),
         ]
     )
@@ -223,75 +235,204 @@ def _(mo):
 
 @app.cell
 def _(mo):
-    mo.md(
-        r"""
-        ## Idea 1 — pretrained features
+    import io as _io
+    import matplotlib.pyplot as _plt
+    from matplotlib.patches import (
+        FancyBboxPatch as _FBP,
+        FancyArrowPatch as _FAP,
+        Rectangle as _Rect,
+    )
 
-        Training an image model from scratch needs millions of labelled images
-        and many GPUs. Instead we take a network already trained on a huge
-        dataset (ImageNet) and **keep the layer just before its classifier**.
+    _ink = "#0f172a"
+    _muted = "#475569"
 
-        - For any image that layer produces a **feature vector** — an
-          **embedding** (512 or 2048 numbers).
-        - **Similar images land near each other** in this space.
-        - We can then feed the embedding to **any** classifier we know —
-          logistic regression, a tree, a forest, a small MLP.
+    _fig, _ax = _plt.subplots(figsize=(11.5, 3.4))
+    _ax.set_xlim(0, 11.5)
+    _ax.set_ylim(0, 3.4)
+    _ax.set_aspect("equal")
+    _ax.axis("off")
 
-        In plain words: **turn each image into a compact, meaningful vector, then
-        use the models from earlier in the course.**
+    _ax.add_patch(_Rect((0.2, 0.9), 1.5, 1.5, facecolor="#0b3d1f",
+                        edgecolor="#334155", lw=1.5, zorder=2))
+    _ax.text(0.95, 0.45, "128$\\times$128 image", ha="center", fontsize=9, color=_muted)
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 13</div>
-        """
+    for _x, _s in zip([2.6, 4.6, 6.6], [1.5, 1.1, 0.8]):
+        for _k in (2, 1, 0):
+            _d = _k * 0.12
+            _ax.add_patch(_FBP((_x + _d, 0.9 + _d), _s, _s,
+                               boxstyle="round,pad=0.0,rounding_size=0.06",
+                               facecolor="#bae6fd", edgecolor="#0284c7",
+                               lw=1.2, alpha=0.9, zorder=2 + _k))
+    _ax.text(5.3, 0.45, "convolutional feature maps", ha="center", fontsize=9, color=_muted)
+
+    _fx = 8.4
+    for _i in range(10):
+        _ax.add_patch(_Rect((_fx, 0.7 + _i * 0.18), 0.45, 0.16,
+                            facecolor="#bbf7d0", edgecolor="#16a34a", lw=1.0, zorder=2))
+    _ax.text(_fx + 0.22, 0.45, "feature vector (512-d)", ha="center", fontsize=9, color=_muted)
+
+    for _p, _q in [((1.75, 1.65), (2.55, 1.65)), ((4.25, 1.65), (4.55, 1.65)),
+                   ((6.25, 1.65), (6.55, 1.65)), ((7.6, 1.65), (8.35, 1.65))]:
+        _ax.add_patch(_FAP(_p, _q, arrowstyle="-|>", mutation_scale=18, lw=2.0,
+                           color=_muted, shrinkA=2, shrinkB=2, zorder=1))
+
+    _ax.text(9.95, 2.5, "similar images\nland near each other", ha="center", va="center",
+             fontsize=10, color=_ink,
+             bbox=dict(boxstyle="round,pad=0.4", fc="#f8fafc", ec="#cbd5e1"))
+    _ax.annotate("", xy=(8.95, 1.9), xytext=(9.7, 2.25),
+                 arrowprops=dict(arrowstyle="-|>", color=_muted, lw=1.4))
+    _ax.set_title("From an image to a feature vector", fontsize=13, color=_ink, pad=10)
+
+    _buf = _io.BytesIO()
+    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
+    _plt.close(_fig)
+    _buf.seek(0)
+    mo.vstack(
+        [
+            mo.md(
+                r"""## Idea 1 — pretrained features
+
+Training an image model from scratch needs millions of labelled images and many
+GPUs. Instead we take a network already trained on a huge dataset (ImageNet) and
+**keep the layer just before its classifier**.
+
+- For any image, that layer produces a **feature vector** — an **embedding**
+  (512 numbers).
+- **Similar images land near each other** in this space.
+- We then feed the embedding to **any** classifier we know — logistic regression,
+  a tree, a forest, a small MLP.
+
+**In plain words: turn each image into a compact vector, then use the models from
+earlier in the course.**"""
+            ),
+            mo.image(_buf, width="820px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 13</div>"""),
+        ]
     )
     return
 
 
 @app.cell
 def _(mo):
-    mo.md(
-        r"""
-        ## Idea 2 — PCA in 60 seconds
+    import io as _io
+    import numpy as _np
+    import matplotlib.pyplot as _plt
+    from matplotlib.patches import FancyArrowPatch as _FAP
 
-        PCA finds the directions in which the data **varies the most**.
+    _ink = "#0f172a"
+    _rng = _np.random.default_rng(3)
+    _X = _rng.multivariate_normal([0, 0], [[1.0, 0.82], [0.82, 1.0]], size=90)
+    _X[:, 0] *= 1.35
+    _Xc = _X - _X.mean(0)
+    _U, _S, _Vt = _np.linalg.svd(_Xc, full_matrices=False)
+    _pc1, _pc2 = _Vt[0], _Vt[1]
+    _mean = _X.mean(0)
+    _k = 2.0 * 1.3 / _np.sqrt(len(_X))
 
-        1. **Centre** the features (subtract the mean).
-        2. Find the **directions of maximum variance** (eigenvectors of the
-           covariance, equivalently the **SVD**).
-        3. **Project**: keep the top directions — for us, **two**, so we can plot.
+    _fig, _ax = _plt.subplots(figsize=(6.6, 4.6))
+    _ax.scatter(_X[:, 0], _X[:, 1], s=26, color="#93c5fd",
+                edgecolor="#3b82f6", lw=0.6, zorder=3)
+    for _p in _X[::6]:
+        _proj = _mean + _np.dot(_p - _mean, _pc1) * _pc1
+        _ax.plot([_p[0], _proj[0]], [_p[1], _proj[1]], color="#94a3b8",
+                 lw=0.8, ls="--", zorder=2)
+    _ax.add_patch(_FAP(_mean, _mean + _k * _S[0] * _pc1, arrowstyle="-|>",
+                       mutation_scale=22, lw=3, color="#dc2626", zorder=4))
+    _ax.add_patch(_FAP(_mean, _mean + _k * _S[1] * _pc2, arrowstyle="-|>",
+                       mutation_scale=18, lw=3, color="#f59e0b", zorder=4))
+    _ax.text(*(_mean + _k * _S[0] * 1.08 * _pc1), "PC1 (most variance)", color="#dc2626",
+             fontsize=10, ha="left", va="bottom")
+    _ax.text(*(_mean + _k * _S[1] * 1.25 * _pc2), "PC2", color="#b45309", fontsize=10)
+    _ax.set_title("PCA finds the directions of maximum variance", fontsize=12, color=_ink)
+    _ax.set_xticks([])
+    _ax.set_yticks([])
+    for _s in _ax.spines.values():
+        _s.set_visible(False)
+    _ax.margins(0.18)
 
-        - It is **linear, fast and deterministic** — the right first thing to try.
-        - Always **standardise** first; PCA is scale-sensitive.
-        - **Maximum variance is not the same as best separation** — it ignores
-          the labels.
+    _buf = _io.BytesIO()
+    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
+    _plt.close(_fig)
+    _buf.seek(0)
+    mo.vstack(
+        [
+            mo.md(
+                r"""## Idea 2 — PCA in 60 seconds
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 13</div>
-        """
+PCA finds the **directions the data is stretched along**.
+
+1. **Centre** the data (subtract the mean).
+2. Find the direction of **largest spread** — that is **PC1**; the next,
+   orthogonal direction is **PC2**.
+3. **Keep the first two** and you have a flat 2-D picture of the data.
+
+- **Linear, fast, deterministic** — the right first thing to try.
+- **Standardise first** — PCA is scale-sensitive.
+- **Big variance is not the same as good separation** — it ignores the labels."""
+            ),
+            mo.image(_buf, width="540px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 13</div>"""),
+        ]
     )
     return
 
 
 @app.cell
 def _(mo):
-    mo.md(
-        r"""
-        ## Idea 2 (cont.) — t-SNE in 60 seconds
+    import io as _io
+    import numpy as _np
+    import matplotlib.pyplot as _plt
 
-        t-SNE ignores variance. It asks: **which points are neighbours?** — then
-        lays them out in 2-D so neighbours stay close.
+    _ink = "#0f172a"
+    _rng = _np.random.default_rng(1)
+    _cols = ["#ef4444", "#3b82f6", "#22c55e"]
+    _centers = [[0.6, 0.4], [2.2, 1.0], [1.3, 2.0]]
 
-        - **Perplexity** sets how many neighbours each point cares about.
-        - Great for **seeing** clusters.
-        - **But be careful:** cluster *distances* and *sizes* are **not**
-          meaningful, and it is **stochastic** — trust what is stable across
-          re-runs.
-        - **Do not** feed the 2-D coordinates into a classifier because they
-          look pretty — this is for looking, not predicting.
+    _fig, _axes = _plt.subplots(1, 2, figsize=(10.5, 4.3), layout="constrained")
+    for _c, _cen in zip(_cols, _centers):
+        _P = _rng.normal(_cen, 0.55, size=(40, 2))
+        _axes[0].scatter(_P[:, 0], _P[:, 1], s=20, color=_c, alpha=0.8)
+    _axes[0].set_title("feature space (512-d): classes overlap",
+                       fontsize=11, color=_ink)
+    for _c, _cen in zip(_cols, _centers):
+        _P = _rng.normal(_cen, 0.18, size=(40, 2))
+        _axes[1].scatter(_P[:, 0], _P[:, 1], s=20, color=_c, alpha=0.8)
+    _axes[1].set_title("t-SNE map (2-D): clusters separated",
+                       fontsize=11, color=_ink)
+    for _ax in _axes:
+        _ax.set_xticks([])
+        _ax.set_yticks([])
+        for _s in _ax.spines.values():
+            _s.set_visible(False)
+        _ax.margins(0.12)
+    _fig.suptitle("t-SNE keeps neighbours close", fontsize=13, color=_ink)
 
-        That last warning is exactly what makes the *Advanced* level interesting:
-        what happens if you do it anyway?
+    _buf = _io.BytesIO()
+    _fig.savefig(_buf, format="png", dpi=150, bbox_inches="tight")
+    _plt.close(_fig)
+    _buf.seek(0)
+    mo.vstack(
+        [
+            mo.md(
+                r"""## Idea 2 (cont.) — t-SNE in 60 seconds
 
-        <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 13</div>
-        """
+t-SNE ignores variance. It keeps **neighbours together**: points that are close
+in the 512-d space are placed close in 2-D.
+
+- **Perplexity** = how many neighbours each point cares about.
+- Great for **seeing clusters**.
+- **Careful:** the distances *between* clusters and the cluster *sizes* are
+  **not** meaningful, and it is **stochastic** — trust what is stable across
+  re-runs.
+- **Do not predict** from the 2-D map just because it looks tidy — it is for
+  looking.
+
+That last warning is exactly what makes the *Advanced* level interesting: what
+happens if you do it anyway?"""
+            ),
+            mo.image(_buf, width="740px"),
+            mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">10 / 13</div>"""),
+        ]
     )
     return
 
@@ -352,16 +493,12 @@ def _(mo):
 def _(mo):
     mo.md(
         r"""
-        ## What to hand in
+        ## Over to you
 
-        A notebook (yours, based on the getting-started one) that shows:
-
-        1. the **figures** you produced,
-        2. a **short written answer** to each task — a sentence or two is enough,
-        3. the **numbers** you measured (accuracy, F1, …), on the **test set**.
-
-        There is no hidden test and no single "right" score — we care that you
-        **look at the data**, **explain what you see**, and **evaluate honestly**.
+        Pick a level, open the folder, and work through the getting-started
+        notebook. There is no hidden test and no single "right" score — we care
+        that you **look at the data**, **explain what you see**, and **evaluate
+        honestly**.
 
         > Questions at any point — that is what these two days are for.
         > **Let's get started.**

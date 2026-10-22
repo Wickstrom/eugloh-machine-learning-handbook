@@ -202,16 +202,14 @@ def _(mo):
 def _(mo):
     mo.md(
         r"""
-        ## What to hand in
+        ## Nice work — you extracted features yourself
 
-        Your notebook, containing:
+        - built a grid of **example images**,
+        - drew the **cumulative explained-variance** curve,
+        - plotted the **2-D PCA scatter** coloured by class,
+        - compared it with the t-SNE map.
 
-        - a grid of example images,
-        - the **cumulative explained-variance** curve,
-        - the **2-D PCA scatter** coloured by class,
-        - your comparison with the t-SNE map, in a few sentences.
-
-        Done? Try **Level 3 (Advanced)** — put a classifier on the 2-D map and
+        **Done? Try Level 3 (Advanced)** — put a classifier on the 2-D map and
         draw its decision boundary.
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 8</div>

@@ -198,17 +198,16 @@ def _(mo):
 def _(mo):
     mo.md(
         r"""
-        ## What to hand in
+        ## Nice work — you rebuilt Figure 5
 
-        Your notebook, containing:
+        You just did the same picture the paper is known for:
 
-        - the **t-SNE map** coloured by class,
-        - the map with **example images overlaid** (your Figure 5),
-        - the **grid of example images**,
-        - your answers to the wrap-up questions.
+        - loaded the precomputed **features** and **labels**,
+        - coloured a 2-D **t-SNE map** by class,
+        - placed **example images** onto the map.
 
-        Keep it simple and readable. **Done — then try Level 2 (Intermediate)**,
-        where you extract the features yourself.
+        Keep it simple and readable. **Done? Try Level 2 (Intermediate)**, where
+        you extract the features yourself.
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 8</div>
         """

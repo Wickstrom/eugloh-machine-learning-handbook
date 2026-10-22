@@ -178,17 +178,15 @@ def _(mo):
 def _(mo):
     mo.md(
         r"""
-        ## What to hand in
+        ## Nice work — comparing models on full features
 
-        Your notebook, containing:
+        - built the **comparison table** (models × representations, accuracy and
+          macro F1),
+        - drew the **decision-boundary** figures for tree / forest / MLP on the
+          2-D map,
+        - answered: *which model won, on which representation, and why?*
 
-        - the **comparison table** (models × representations, accuracy and macro
-          F1),
-        - the **decision-boundary** figures for tree / forest / MLP on the 2-D
-          map,
-        - a few sentences: *which model won, on which representation, and why?*
-
-        Done? **Level 5 (God-like)** takes the trained model out of the notebook
+        **Done? Level 5 (God-like)** takes the trained model out of the notebook
         and points it at the **live sky**.
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">7 / 7</div>
