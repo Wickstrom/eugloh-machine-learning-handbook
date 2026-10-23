@@ -452,7 +452,7 @@ def _(mo):
         | **1 · Beginner** 🟢 | recreate the t-SNE figure (Fig 5) | loading data, plotting, visualising |
         | **2 · Intermediate** 🟡 | reduce the 512-d features to 2-D with **PCA** | PCA, plotting |
         | **3 · Advanced** 🔴 | train a classifier on the 2-D map, find its mistakes | classification, evaluation |
-        | **4 · Expert** 🔴 | 512-d vs 2-D: compare accuracy and **errors** | model comparison, error analysis |
+        | **4 · Expert** 🔴 | compare classifiers on the 2-D map, find their **errors** | model comparison, error analysis |
         | **5 · God-like** ⚫ | classify **live** images from the Kiruna sky cam | the whole pipeline, end to end |
 
         You may **start at any level**. All levels use the same data and the same

@@ -71,7 +71,9 @@ def _(mo):
         2. **Classify every test image** and measure accuracy / macro F1.
         3. **Plot every test point**: **green** if the prediction is correct,
            **red** if it is wrong.
-        4. Read the red points: which classes does the 2-D map confuse?
+        4. **Draw the decision regions** by predicting a **grid** of points and
+           **scattering** them — no `contourf`.
+        5. Read the red points: which classes does the 2-D map confuse?
 
         This connects the **supervised models from Day 1** to the features from
         Day 3.
@@ -147,7 +149,9 @@ def _(mo):
            The notebook links to the sklearn docs.
         3. **Score** with **accuracy** and **macro F1**.
         4. **Your turn:** colour every test point **green** (correct) / **red** (wrong).
-        5. **Your turn (more):** which classes have the most red points? Try
+        5. **Your turn:** the **grid is built for you** — predict it and `scatter`
+           it to see the decision regions.
+        6. **Your turn (more):** which classes have the most red points? Try
            `class_weight="balanced"`.
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 9</div>
@@ -160,7 +164,7 @@ def _(mo):
 def _(mo):
     mo.vstack(
         [
-            mo.md(r"""## The target — green = correct, red = wrong"""),
+            mo.md(r"""## The target — regions + green/red errors"""),
             mo.image(
                 str(mo.notebook_location() / "public" / "aurora_errors_2d.png"),
                 width="680px",
@@ -222,10 +226,10 @@ def _(mo):
         - trained a **logistic regression** on the 2-D coordinates,
         - read off **accuracy** and **macro F1**,
         - plotted every test point **green/red** by whether it was right,
+        - drew the decision regions with a **grid + scatter** (no `contourf`),
         - saw *which* images the 2-D map costs us.
 
-        **Done? Level 4 (Expert)** uses the **full 512-d features** and compares
-        the errors of the two representations.
+        **Done? Level 4 (Expert)** compares **three models** on the same map.
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 9</div>
         """
