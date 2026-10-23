@@ -7,8 +7,8 @@
 # ///
 #
 # On-site project — Level 4 (Expert) task slides.
-# Compare several models (tree, forest, MLP, ...) on the full 512-d features and
-# on the 2-D map, and draw decision boundaries in the 2-D case.
+# Fit the same model on the 512-d features and on the 2-D map, then plot both
+# models' errors on the map (green = correct, red = wrong).
 #
 # Run locally with `marimo edit notebooks/03/06_project_expert.py`
 # or export to WASM for GitHub Pages (see .github/workflows/publish-slides.yml).
@@ -43,9 +43,9 @@ def _(mo):
         r"""
         # Project · Level 4 — Expert
 
-        ## Compare models on the full features and on the 2-D map
+        ## One model, two inputs — and where each fails
 
-        🔴 **model comparison · decision boundaries**
+        🔴 **model comparison · error analysis**
 
         **Machine Learning with Python** — On-site project (Oct 23–24)
 
@@ -61,19 +61,18 @@ def _(mo):
         r"""
         ## Your mission
 
-        Level 3 used a **single linear** model on the **2-D** map. Now you run a
-        proper comparison.
+        Level 3 used only the **2-D map**. Now compare it with the **full 512-d
+        features**.
 
-        1. Take **two representations** of every image:
-           the **full 512-d ResNet features**, and the **2-D map**.
-        2. Train a **range of models** on each: logistic regression, **decision
-           tree**, **random forest**, **k-NN**, and a small **MLP**.
-        3. **Compare** them with **accuracy** and **macro F1**.
-        4. **Draw the decision boundaries** for the tree, forest and MLP on the
-           2-D map — and see how they differ from a straight line.
+        1. Take **two representations** of every image: the **512-d ResNet
+           features** and the **2-D t-SNE map**.
+        2. Fit the **same model** on each — a logistic regression. The code is
+           **your job**; the notebook links to the sklearn docs.
+        3. **Compare** the two accuracies: how much does the 2-D map cost us?
+        4. **Plot both models' mistakes on the same map**: **green** = correct,
+           **red** = wrong. Where does each representation fail?
 
-        This is the whole supervised-learning toolkit from the course, applied to
-        new features.
+        The point: **the representation matters as much as the model.**
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 8</div>
         """
@@ -112,24 +111,25 @@ def _(mo):
 def _(mo):
     mo.md(
         r"""
-        ## The code — one model, two representations
+        ## The code — loading both representations
 
         ```python
-        from sklearn.linear_model import LogisticRegression
-        from sklearn.metrics import accuracy_score
+        import numpy as np
+        import pandas as pd
 
-        model = LogisticRegression(max_iter=5000, class_weight="balanced")
+        f = np.load("data/features_resnet18.npz")
+        z_train, y_train = f["z_train"], f["y_train"]
+        z_test,  y_test  = f["z_test"],  f["y_test"]
 
-        model.fit(z_train, y_train)                    # 512-d features
-        print("512-d:", accuracy_score(y_test, model.predict(z_test)))
-
-        model.fit(X_train2, y_train)                   # 2-D map
-        print("2-D  :", accuracy_score(y_test, model.predict(X_test2)))
+        d2_train = pd.read_csv("data/aurora_2d_train.csv")
+        d2_test  = pd.read_csv("data/aurora_2d_test.csv")
+        X_train2 = d2_train[["tsne_1", "tsne_2"]].to_numpy()
+        X_test2  = d2_test[["tsne_1", "tsne_2"]].to_numpy()
         ```
 
-        - the **same model** is fitted twice — only the input changes.
-        - `z_*` are the **512-d features**; `X_*2` are the two t-SNE columns.
-        - the gap between the two numbers is what the **2-D map costs us**.
+        - `z_*` are the **512-d features**; `X_*2` are the **2-D coordinates** of the same images.
+        - the labels are shared, so the two representations are directly comparable.
+        - **your turn:** fit a logistic regression on each and keep `pred_512` / `pred_2d`.
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 8</div>
         """
@@ -143,11 +143,11 @@ def _(mo):
         r"""
         ## The tasks (in the notebook)
 
-        1. **Load** the 512-d features (`features_resnet18.npz`) and the 2-D coordinates.
-        2. **Train** the **same model twice**: once on the 512-d features, once on the 2-D map.
+        1. **Load** the 512-d features and the 2-D coordinates.
+        2. **Your turn:** fit the **same model twice** (512-d and 2-D) → `pred_512`, `pred_2d`.
         3. **Compare** the two accuracies — how much does 2-D cost?
-        4. **Your turn:** swap in a random forest or k-NN. Does it beat logistic regression?
-        5. **Your turn:** which representation wins, and by how much?
+        4. **Your turn:** plot both models' errors on the map, **green** = correct, **red** = wrong.
+        5. **Your turn (more):** swap in a random forest or k-NN.
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 8</div>
         """
@@ -159,9 +159,9 @@ def _(mo):
 def _(mo):
     mo.vstack(
         [
-            mo.md(r"""## What it looks like — one scoreboard, two representations"""),
+            mo.md(r"""## The target — the same map, two error patterns"""),
             mo.image(
-                str(mo.notebook_location() / "public" / "aurora_model_comparison.png"),
+                str(mo.notebook_location() / "public" / "aurora_errors_2d_vs_512.png"),
                 width="820px",
             ),
             mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 8</div>"""),
@@ -176,15 +176,14 @@ def _(mo):
         r"""
         ## Watch out
 
-        - **Macro F1, not accuracy.** With *Patchy* dominating, accuracy flatters
-          every model. Macro F1 exposes the models that ignore the rare classes.
-        - **Trees overfit the 2-D map** — they can carve the plane into thousands
-          of tiny boxes. Limit `max_depth` (or `min_samples_leaf`) and watch the
-          boundary get simpler.
-        - **MLPs need scaling.** Standardise the 512-d features first, or the
-          network trains badly. Also set a seed (`random_state=0`).
-        - **k-NN is lazy.** No training, but prediction is slower and it needs the
-          whole training set.
+        - **Accuracy lies on imbalanced data.** *Patchy* dominates, so a lazy model
+          looks good. Also report **macro F1**.
+        - **Same model, different representation.** If 512-d wins, that is the
+          **representation**, not a better model.
+        - **Green/red hides *which* class is wrong.** Follow it with a confusion
+          matrix.
+        - **The t-SNE coordinates leak.** They were fitted on train and test
+          together, so the 2-D scores look better than for genuinely new images.
         - **Do not tune on the test set.** Use cross-validation on the training
           data, then touch the test set **once**.
 
@@ -200,12 +199,13 @@ def _(mo):
         r"""
         ## Nice work — comparing two representations
 
-        - trained the **same model** on the **512-d features** and on the **2-D map**,
+        - fitted the **same model** on the **512-d features** and on the **2-D map**,
         - measured how much accuracy the 2-D map costs,
-        - tried a second model type. Which won?
+        - plotted both models' errors on the same map, **green/red**,
+        - saw **where** each representation fails.
 
-        **Done? Level 5 (God-like)** takes the trained model out of the notebook
-        and points it at the **live sky**.
+        **Done? Level 5 (God-like)** takes a trained model out of the notebook and
+        points it at the **live sky**.
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">8 / 8</div>
         """

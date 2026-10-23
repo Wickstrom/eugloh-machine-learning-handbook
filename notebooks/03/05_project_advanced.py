@@ -7,8 +7,8 @@
 # ///
 #
 # On-site project — Level 3 (Advanced) task slides.
-# Train a linear classifier on the 2-D t-SNE coordinates, draw its decision
-# boundary, and evaluate it.
+# Train a logistic regression on the 2-D t-SNE coordinates, then colour the test
+# predictions green (correct) / red (wrong).
 #
 # Run locally with `marimo edit notebooks/03/05_project_advanced.py`
 # or export to WASM for GitHub Pages (see .github/workflows/publish-slides.yml).
@@ -43,9 +43,9 @@ def _(mo):
         r"""
         # Project · Level 3 — Advanced
 
-        ## A linear classifier on the 2-D map
+        ## A classifier on the 2-D map — and its mistakes
 
-        🔴 **classification · decision boundary · evaluation**
+        🔴 **classification · evaluation · error analysis**
 
         **Machine Learning with Python** — On-site project (Oct 23–24)
 
@@ -63,16 +63,18 @@ def _(mo):
 
         You have the **2-D t-SNE map** (Level 1) and you know that **t-SNE is for
         looking, not for predicting**. In this level you ignore that warning on
-        purpose — and measure the cost.
+        purpose — and look at the cost.
 
         1. Train a **logistic regression** on the 2-D coordinates: predict the
-           aurora class from `(tsne_1, tsne_2)`.
-        2. **Draw the decision boundary** on the map.
-        3. **Evaluate**: accuracy, per-class F1, and a **confusion matrix**.
-        4. Ask: how much does the 2-D map *lose* compared with the full features?
+           aurora class from `(tsne_1, tsne_2)`. The notebook links to the sklearn
+           docs — the code is **your job**.
+        2. **Classify every test image** and measure accuracy / macro F1.
+        3. **Plot every test point**: **green** if the prediction is correct,
+           **red** if it is wrong.
+        4. Read the red points: which classes does the 2-D map confuse?
 
-        This connects the **supervised models from Day 1** (logistic regression,
-        trees) to the new features from Day 3.
+        This connects the **supervised models from Day 1** to the features from
+        Day 3.
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 9</div>
         """
@@ -110,22 +112,23 @@ def _(mo):
 def _(mo):
     mo.md(
         r"""
-        ## The code — train and score
+        ## The code — loading the map
 
         ```python
-        from sklearn.linear_model import LogisticRegression
-        from sklearn.metrics import accuracy_score
+        import pandas as pd
 
-        clf = LogisticRegression(max_iter=5000, class_weight="balanced")
-        clf.fit(X_train, y_train)
+        train = pd.read_csv("data/aurora_2d_train.csv")
+        test  = pd.read_csv("data/aurora_2d_test.csv")
 
-        pred = clf.predict(X_test)
-        print("accuracy:", accuracy_score(y_test, pred))
+        X_train = train[["tsne_1", "tsne_2"]].to_numpy()
+        y_train = train["label"].to_numpy()
+        X_test  = test[["tsne_1", "tsne_2"]].to_numpy()
+        y_test  = test["label"].to_numpy()
         ```
 
-        - `X_train` is the two columns `tsne_1`, `tsne_2`; `y_train` is the class.
-        - `clf.fit` learns the **straight-line** boundaries between the classes.
-        - `clf.predict` gives one label per test point; we score it against `y_test`.
+        - one row per image: `tsne_1`, `tsne_2` are the coordinates, `label` is the class.
+        - `X` holds the two coordinates; `y` holds the answer we want to predict.
+        - **your turn:** `LogisticRegression(...).fit(X_train, y_train)` — link in the notebook.
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 9</div>
         """
@@ -140,11 +143,12 @@ def _(mo):
         ## The tasks (in the notebook)
 
         1. **Load** the train/test points and build `X = [tsne_1, tsne_2]`, `y = label`.
-        2. **Train** a **logistic regression** on the 2-D coordinates.
+        2. **Your turn:** train a **logistic regression** and predict the test set.
+           The notebook links to the sklearn docs.
         3. **Score** with **accuracy** and **macro F1**.
-        4. **Baseline:** work out the "always predict the majority class" accuracy — **your turn**.
-        5. **Draw the decision boundary** with the `plot_boundary` helper.
-        6. **Your turn:** read the confusion matrix — which classes are confused?
+        4. **Your turn:** colour every test point **green** (correct) / **red** (wrong).
+        5. **Your turn (more):** which classes have the most red points? Try
+           `class_weight="balanced"`.
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 9</div>
         """
@@ -156,9 +160,9 @@ def _(mo):
 def _(mo):
     mo.vstack(
         [
-            mo.md(r"""## The target — a linear boundary on the 2-D map"""),
+            mo.md(r"""## The target — green = correct, red = wrong"""),
             mo.image(
-                str(mo.notebook_location() / "public" / "aurora_logreg_boundary.png"),
+                str(mo.notebook_location() / "public" / "aurora_errors_2d.png"),
                 width="680px",
             ),
             mo.md(r"""<div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 9</div>"""),
@@ -216,12 +220,12 @@ def _(mo):
         ## Nice work — a classifier on the 2-D map
 
         - trained a **logistic regression** on the 2-D coordinates,
-        - read off **accuracy**, **macro F1** and the **confusion matrix**,
-        - drew the **decision boundary**,
-        - answered: *how much does the 2-D map cost us?*
+        - read off **accuracy** and **macro F1**,
+        - plotted every test point **green/red** by whether it was right,
+        - saw *which* images the 2-D map costs us.
 
         **Done? Level 4 (Expert)** uses the **full 512-d features** and compares
-        representations.
+        the errors of the two representations.
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 9</div>
         """

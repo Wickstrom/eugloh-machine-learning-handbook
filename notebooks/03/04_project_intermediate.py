@@ -7,8 +7,7 @@
 # ///
 #
 # On-site project — Level 2 (Intermediate) task slides.
-# Extract features from the raw images with a pretrained network, reduce them
-# with PCA, and plot the 2-D map.
+# Load the precomputed 512-d features, reduce them with PCA, and plot the 2-D map.
 #
 # Run locally with `marimo edit notebooks/03/04_project_intermediate.py`
 # or export to WASM for GitHub Pages (see .github/workflows/publish-slides.yml).
@@ -43,9 +42,9 @@ def _(mo):
         r"""
         # Project · Level 2 — Intermediate
 
-        ## Extract the features yourself
+        ## Reduce the features with PCA
 
-        🟡 **pretrained models · PCA**
+        🟡 **features · PCA**
 
         **Machine Learning with Python** — On-site project (Oct 23–24)
 
@@ -61,16 +60,19 @@ def _(mo):
         r"""
         ## Your mission
 
-        In Level 1 someone else computed the features for you. Now **you** do it.
+        In Level 1 someone else computed the 2-D map for you. Now **you** make one
+        yourself.
 
-        1. Take the **raw images** ($128\times128$, the archive you were given).
-        2. Push them through a **pretrained ResNet-18** and keep the last layer
-           before the classifier → a **512-number feature vector** per image.
-        3. **Standardise** the features and reduce them to **2-D with PCA**.
-        4. **Plot** the result and compare it with the t-SNE map from the lecture.
+        1. Take the **512-d feature vectors** — already computed for you (feature
+           extraction is slow, so we did it once).
+        2. **Standardise** them.
+        3. Reduce them to **2-D with PCA** — the code is **your job**; the notebook
+           links to the sklearn docs.
+        4. **Plot** the result with your **Level 1 plotting code** and compare it
+           with the t-SNE map.
 
-        The point: **see the features with your own hands** — where they come from,
-        and what PCA does to them.
+        The point: **PCA is another way to get to 2-D.** t-SNE is for looking; PCA
+        is something you can fit and reuse.
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">2 / 9</div>
         """
@@ -87,23 +89,23 @@ def _(mo):
         ```
         intermediate/
           getting_started_intermediate.ipynb   ← start here
-          aurora_features.py                   ← loads the ResNet and extracts features
-          data/data.npz                        ← images + labels (train & test)
+          data/features_resnet18.npz           ← 512-d features + labels (precomputed)
+          data/dataset_info.json
           data/00_ReadMe.txt, data/kagolicens.pdf
           README.md
         ```
 
-        `data.npz` holds four arrays:
+        `features_resnet18.npz` holds four arrays:
 
         | key | shape | meaning |
         |:----|:------|:--------|
-        | `a` | `(3000, 3, 128, 128)` | training images |
-        | `b` | `(3000,)` | training labels (0–6) |
-        | `c` | `(846, 3, 128, 128)` | test images |
-        | `d` | `(846,)` | test labels |
+        | `z_train` | `(3000, 512)` | training features |
+        | `y_train` | `(3000,)` | training labels (0–6) |
+        | `z_test` | `(846, 512)` | test features |
+        | `y_test` | `(846,)` | test labels |
 
-        You will call `aurora_features.extract_embeddings(...)` — everything else
-        is the same plotting you already know.
+        You **load** these and do the **PCA yourself** — everything else is the
+        plotting you already know.
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">3 / 9</div>
         """
@@ -115,21 +117,20 @@ def _(mo):
 def _(mo):
     mo.md(
         r"""
-        ## How to start — pick one
+        ## How to start
 
-        **Easiest — Google Colab.** `torch` is already installed. Upload the
-        folder, open the notebook, done.
-
-        **Local.** This level needs **PyTorch** (one extra dependency):
+        **No PyTorch, no downloads** — just `numpy`, `matplotlib` and
+        `scikit-learn`, and the features are already in the folder.
 
         ```bash
-        uv pip install torch torchvision
         uv run jupyter lab
         ```
 
-        The **first** run downloads the ResNet-18 weights (about 45 MB) — after
-        that it works offline. Extracting features for all 3846 images takes a
-        **few minutes on a laptop CPU**.
+        or upload the folder to **Google Colab**. The notebook runs in **seconds**.
+
+        You will **write the PCA code yourself**. The notebook links to the
+        sklearn docs:
+        <https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html>
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">4 / 9</div>
         """
@@ -141,20 +142,22 @@ def _(mo):
 def _(mo):
     mo.md(
         r"""
-        ## The code — extracting features
+        ## The code — loading the features
 
         ```python
-        from aurora_features import load_data, extract_embeddings, CLASS_NAMES
+        import numpy as np
 
-        x_train, y_train, x_test, y_test = load_data("data/data.npz")
+        data = np.load("data/features_resnet18.npz")
 
-        z_train = extract_embeddings(x_train)   # (3000, 512)
-        z_test  = extract_embeddings(x_test)    # (846, 512)
+        z_train = data["z_train"]      # (3000, 512)
+        y_train = data["y_train"]
+        z_test  = data["z_test"]       # (846, 512)
+        y_test  = data["y_test"]
         ```
 
-        - `load_data` gives you the **images** (`x`) and **labels** (`y`), train and test.
-        - `extract_embeddings` runs the pretrained **ResNet-18** and returns **512 numbers per image**.
-        - after that it is just `StandardScaler` → `PCA(n_components=2)` → scatter.
+        - each image is already a **512-number vector** — no extraction needed.
+        - `z_train`/`y_train` are the training set, `z_test`/`y_test` the test set.
+        - from here it is **your turn**: `PCA(n_components=2)`, then plot.
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">5 / 9</div>
         """
@@ -168,12 +171,12 @@ def _(mo):
         r"""
         ## The tasks (in the notebook)
 
-        1. **Load** the images with `load_data("data/data.npz")` and show a few.
-        2. **Extract** the 512-d features with the pretrained ResNet — one line:
-           `extract_embeddings(x_train)`.
-        3. **Standardise**, then run **PCA to 2-D**.
-        4. **Scatter** the result, coloured by class.
-        5. **Your turn:** how much variance do the two PCs keep? Plot the **test** points.
+        1. **Load** the 512-d features with `np.load(...)`.
+        2. **Your turn:** make a `PCA(n_components=2)` and `fit_transform` the
+           training features. The notebook links to the sklearn docs.
+        3. **Plot** the 2-D result with your **Level 1 plotting code**.
+        4. **Check** `pca.explained_variance_ratio_` — how much did the two PCs keep?
+        5. **Your turn (more):** plot the test points too.
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">6 / 9</div>
         """
@@ -224,14 +227,14 @@ def _(mo):
 def _(mo):
     mo.md(
         r"""
-        ## Nice work — you extracted features yourself
+        ## Nice work — you did PCA yourself
 
-        - loaded the **images** and labels,
-        - ran the pretrained **ResNet-18** to get **512-d features**,
-        - compressed them to **2-D with PCA** and plotted the map.
+        - loaded the precomputed **512-d features**,
+        - standardised them and reduced them to **2-D with PCA**,
+        - plotted the map with your **Level 1 plotting code**.
 
-        **Done? Try Level 3 (Advanced)** — put a classifier on the 2-D map and
-        draw its decision boundary.
+        **Done? Try Level 3 (Advanced)** — train a classifier on the 2-D map and
+        find the images it gets wrong.
 
         <div style="position:fixed;bottom:12px;left:16px;font-size:13px;color:#888;font-family:system-ui,sans-serif;">9 / 9</div>
         """
